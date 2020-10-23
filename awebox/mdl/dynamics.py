@@ -57,11 +57,14 @@ import awebox.tools.print_operations as print_op
 
 from awebox.logger.logger import Logger as awelogger
 
-def make_dynamics(options, atmos, wind, parameters, architecture):
+import pdb
+
+def make_dynamics(options, winch, atmos, wind, parameters, architecture):
+    """ winch ### """
+    
     # system architecture (see zanon2013a)
     number_of_nodes = architecture.number_of_nodes
     parent_map = architecture.parent_map
-
     # --------------------------------------------------------------------------------------
     # generate system states, controls, algebraic vars, lifted vars, generalized coordinates
     # --------------------------------------------------------------------------------------
@@ -70,6 +73,7 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     # -----------------------------------
     # generate structured SX.sym objects
     # -----------------------------------
+    
     system_variables = {}
     system_variables['scaled'], variables_dict = struct_op.generate_variable_struct(system_variable_list)
     system_variables['SI'], scaling = generate_scaled_variables(options['scaling'], system_variables['scaled'])
@@ -82,6 +86,7 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     generalized_coordinates = {}
     generalized_coordinates['scaled'] = generate_generalized_coordinates(system_variables['scaled'], system_gc)
     generalized_coordinates['SI'] = generate_generalized_coordinates(system_variables['SI'], system_gc)
+
 
     # define outputs to monitor system constraints etc.
     outputs = {}
@@ -126,6 +131,13 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     if options['induction_model'] != 'not_in_use':
         outputs = induction_equations(options, atmos, wind, system_variables['SI'], outputs, parameters, architecture)
 
+
+
+    if (options['generator']['type']['type'] != 'not_in_use') and (options['generator']['type']['type'] != 'experimentell'):
+        #generator_ode = gen_ode(options, system_variables['SI'], outputs, architecture, winch)
+        outputs = generator_inequality(options, system_variables['SI'], outputs, architecture, winch)
+        """ ### generator dgl und einschränkungen holen, doppel type ??"""
+
     # ---------------------------------
     # rotation second law
     # ---------------------------------
@@ -142,7 +154,7 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     [out, out_fun, out_dict] = make_output_structure(outputs, system_variables, parameters)
     [constraint_out, constraint_out_fun] = make_output_constraint_structure(options, outputs, system_variables,
                                                                             parameters)
-
+    
     e_kinetic = sum(outputs['e_kinetic'][nodes] for nodes in list(outputs['e_kinetic'].keys()))
     e_potential = sum(outputs['e_potential'][nodes] for nodes in list(outputs['e_potential'].keys()))
 
@@ -153,6 +165,7 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     #  dynamics of the system in implicit form
     # ----------------------------------------
     dynamics_list = []
+
 
     # lhs of lagrange equations
     q_translation = cas.vertcat(generalized_coordinates['scaled']['xgc'].cat,
@@ -169,10 +182,12 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
                                                  q_translation, qdot_translation, None) \
                                  - cas.jacobian(lag, generalized_coordinates['scaled']['xgc'].cat).T
 
+
     lagrangian_lhs_constraints = gddot + 2. * \
                                  parameters['theta0', 'tether', 'kappa'] * gdot + parameters[
                                      'theta0', 'tether', 'kappa'] ** 2. * g
     # lagrangian_lhs_constraints = gddot
+
 
     # lagrangian momentum correction
     if options['tether']['use_wound_tether']:
@@ -199,7 +214,7 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     forces_scaling = node_masses_scaling * options['scaling']['other']['g']
     dynamics_translation = (lagrangian_lhs_translation - lagrangian_rhs_translation) / forces_scaling
     dynamics_constraints = (lagrangian_lhs_constraints - lagrangian_rhs_constraints) / holonomic_scaling
-
+    
     # rotation dynamics
     # above
 
@@ -210,14 +225,23 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
         trivial_dynamics_controls,
         dynamics_constraints]
 
+    
+    #pdb.set_trace()
+    """ ### """ 
+
+
+    if (options['generator']['type']['type'] != 'not_in_use') and (options['generator']['type']['type'] != 'experimentell'):
+        """ ### winch ode """
+        dynamics_generator = winch_ode(options, system_variables['SI'], outputs, parameters, architecture, winch)
+        dynamics_list += dynamics_generator
+
     # generate empty integral_outputs struct
     integral_outputs = cas.struct_SX([])
     integral_outputs_struct = cas.struct_symSX([])
 
     integral_scaling = {}
-
     # energy
-    power = get_power(options, system_variables['SI'], outputs, architecture)
+    power = get_power(options, system_variables['SI'], outputs, architecture, winch)
 
     if options['integral_outputs']:
         integral_outputs = cas.struct_SX([cas.entry('e', expr=power / options['scaling']['xd']['e'])])
@@ -259,7 +283,21 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     # generate integral outputs function
     integral_outputs_fun = cas.Function('integral_outputs', [system_variables['scaled'], parameters],
                                         [integral_outputs], opts)
-
+    """
+    print(system_variables['scaled'])
+    print(variables_dict)
+    print(scaling)
+    print(dynamics)
+    print(out)
+    print(out_fun)
+    print(out_dict)
+    print(constraint_out)
+    print(constraint_out_fun)
+    print(holonomic_fun)
+    print(integral_outputs_struct)
+    print(integral_outputs_fun)
+    print(integral_scaling)
+    """
     return [
         system_variables['scaled'],
         variables_dict,
@@ -508,16 +546,53 @@ def get_drag_power_from_kite(kite, variables_si, outputs, architecture):
     return kite_drag_power
 
 
-def get_power(options, variables_si, outputs, architecture):
+def get_power(options, variables_si, outputs, architecture, winch):
     if options['trajectory']['system_type'] == 'drag_mode':
         power = cas.SX.zeros(1, 1)
         for kite in architecture.kite_nodes:
             power += get_drag_power_from_kite(kite, variables_si, outputs, architecture)
-    else:
-        power = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * variables_si['xd']['dl_t']
-
+            
+    else:   #eigentlich muss drag_mode auch rein
+        if options['generator']['type']['type'] == 'not_in_use':
+            """ ### if options """
+            power = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * variables_si['xd']['dl_t']
+        else:
+            power = power_el(options, variables_si, outputs, architecture, winch)
+            """ ### generator """
     return power
 
+
+
+def power_el(options, variables_si, outputs, architecture, winch):  #vlt dann auch in ein neues Dokument
+    gen_type = options['generator']['type']['type']
+    if gen_type == 'pmsm':
+        return gen_pmsm(options, variables_si, outputs, architecture, winch)
+    elif gen_type == 'asynchronous_motor':
+        return gen_asynchron(options, variables_si, outputs, architecture, winch)
+    elif gen_type == 'experimentell':
+        return gen_experimentell(options, variables_si, winch)
+
+
+def gen_experimentell(options, variables_si, winch):
+    """ ### Problem da radius_drum kolleriert mit prams von ground station in default ### """
+    omega_mech = variables_si['xd']['dl_t'] / winch['winch_geometry']['radius_drum']    #etwas falsch 
+    T_mech = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * winch['winch_geometry']['radius_drum']
+    # muss eigentlich zu sowas umgewandelt werden: winch = options['generator']['experimentell']
+    winch = winch['winch_el']
+    P_el = winch['a_0'] + winch['a_1'] * omega_mech + winch['a_2'] * omega_mech ** 2 + \
+           winch['a_3'] * T_mech + winch['a_4'] * T_mech ** 2 + \
+           winch['a_5'] * omega_mech * T_mech
+    return P_el
+
+
+def gen_pmsm(options, variables_si, outputs, architecture, winch):
+    """ ### leistung """
+    v_sd = variables_si['u']['v_s'][0]
+    v_sq = variables_si['u']['v_s'][1]
+    i_sd = variables_si['xd']['i_s'][0]
+    i_sq = variables_si['xd']['i_s'][1]
+    P_el = 3/2 * (v_sd*i_sd + v_sq*i_sq)
+    return P_el
 
 
 def drag_mode_outputs(variables_si, outputs, architecture):
@@ -576,6 +651,10 @@ def comparison_kin_and_pot_power_outputs(outputs, system_variables, architecture
         outputs['power_balance_comparison'][type] = -1. * P
 
     return outputs
+
+
+
+
 
 def time_derivative(expr, q_sym, dq_sym, ddq_sym=None):
     deriv = cas.mtimes(cas.jacobian(expr, q_sym), dq_sym)
@@ -654,6 +733,7 @@ def kinetic_power_outputs(options, outputs, system_variables, architecture):
 
 
     return outputs
+
 
 def potential_power_outputs(options, outputs, system_variables, architecture):
     """Compute rate of change of potential energy for all system nodes
@@ -854,13 +934,80 @@ def acceleration_inequality(options, variables, outputs, parameters):
             acc = variables['xddot'][name]
             acc_sq = cas.mtimes(acc.T, acc)
             acc_sq_norm = acc_sq / acc_max ** 2.
-
             # acc^2 < acc_max^2 -> acc^2 / acc_max^2 - 1 < 0
             local_ineq = acc_sq_norm - 1.
 
             outputs['acceleration']['n' + var_label] = local_ineq
 
     return outputs
+
+
+def winch_ode(options, variables_si, outputs, parameters, architecture, winch):
+    """ ### """
+    ode = []
+    t_em = t_em_ode(options, variables_si, outputs, parameters, architecture, winch)
+    if options['generator']['type']['type'] == 'pmsm':
+        ode += generator_ode(options, variables_si, outputs, parameters, architecture, winch)
+    
+    radius = winch['winch_geometry']['radius_drum']
+    j_winch = options['generator']['j_winch']
+    f_c = options['generator']['f_c']
+    omega = - variables_si['xd']['dl_t'] / radius
+    domega = - variables_si['xd']['ddl_t'] / radius
+    t_tur = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius
+    t_frict = f_c * omega
+    rhs = t_tur - t_em - t_frict
+    lhs = j_winch * domega
+    torque = rhs - lhs
+
+    ode += [torque]
+    return ode
+    
+
+def t_em_ode(options, variables_si, outputs, parameters, architecture, winch):
+    """ ### torque of the electromagnetic generator """
+    if options['generator']['type']['type'] == 'pmsm':
+        i_sd = variables_si['xd']['i_s'][0]
+        i_sq = variables_si['xd']['i_s'][1]
+        opt = options['generator']['pmsm']
+        ld = opt['l_d']
+        lq = opt['l_q']
+        rs = opt['r_s']
+        p_p = opt['p_p']
+        phi_f = opt['phi_f']
+        t_em = 3/2 * p_p * ((ld - lq) * i_sd*i_sq + i_sq * phi_f)
+        
+    return t_em
+
+
+
+def generator_ode(options, variables_si, outputs, parameters, architecture, winch):
+    """ ### """
+    ode = []
+    omega = variables_si['xd']['dl_t'] / options['generator']['radius']
+    if options['generator']['type']['type'] == 'pmsm':
+        v_sd = variables_si['u']['v_s'][0]
+        v_sq = variables_si['u']['v_s'][1]
+        i_sd = variables_si['xd']['i_s'][0]
+        i_sq = variables_si['xd']['i_s'][1]
+        opt = options['generator']['pmsm']
+        ld = opt['l_d']
+        lq = opt['l_q']
+        rs = opt['r_s']
+        phi_f = opt['phi_f']
+        p_p = opt['p_p']
+        rhs = v_sd - rs*i_sd + lq*i_sq * omega
+        lhs = ld * variables_si['xddot']['di_s'][0]
+        i_sd_ode = rhs - lhs
+        rhs = v_sq - rs*i_sq + p_p * omega * ld * i_sd - p_p * omega * phi_f
+        lhs = lq * variables_si['xddot']['di_s'][1]
+        i_sq_ode = rhs - lhs
+        ode += [i_sd_ode]
+        ode += [i_sq_ode]
+
+    return ode
+
+    
 
 
 def airspeed_inequality(options, variables, outputs, parameters, architecture):
@@ -1009,6 +1156,44 @@ def wound_tether_length_inequality(options, variables, outputs, parameters, arch
     return outputs
 
 
+
+def generator_inequality(options, variables, outputs, parameters, architecture):
+    """ ### inequality of diffrent generators """
+    if options['generator']['type']['type'] == 'pmsm':
+        return voltage_generator_pmsm_inequality(options, variables, outputs, parameters, architecture)
+    elif options['generator']['type']['type'] == 'asynchronous_motor':
+        return voltage_generator_asynchronous_motor_inequality(options, variables, outputs, parameters, architecture)
+        #fehlt bisher: TU Delft machine
+
+    
+
+def voltage_generator_pmsm_inequality(options, variables, outputs, parameters, architecture):
+    """ ### Voltage inequality for the electric generator """
+    
+    if 'voltage' not in list(outputs.keys()):
+        outputs['voltage'] = {}
+        
+    voltage = options['generator']['pmsm']
+    
+    voltage_d_max = voltage['voltage_d_max']
+    voltage_d_min = voltage['voltage_d_min']
+    voltage_q_max = voltage['voltage_d_max']
+    voltage_q_min = voltage['voltage_d_min']
+    # vlt ist es auch besser q-d als Vektor aufzubauen
+
+    voltage_d = variables['u']['v_s'][0]
+    voltage_q = variables['u']['v_s'][1]
+
+    outputs['voltage']['voltage_d_max'] = voltage_d / voltage_d_max - 1
+    outputs['voltage']['voltage_d_min'] = -voltage_d / voltage_d_min + 1
+    outputs['voltage']['voltage_q_max'] = voltage_q / voltage_q_max - 1
+    outputs['voltage']['voltage_q_min'] = -voltage_q / voltage_q_min + 1
+        
+    return outputs
+
+
+
+
 def induction_equations(options, atmos, wind, variables, outputs, parameters, architecture):
     if 'induction' not in list(outputs.keys()):
         outputs['induction'] = {}
@@ -1019,6 +1204,7 @@ def induction_equations(options, atmos, wind, variables, outputs, parameters, ar
                                                                            outputs, architecture)
 
     return outputs
+
 
 
 def generate_scaled_variables(scaling_options, variables):

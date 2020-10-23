@@ -101,7 +101,13 @@ class Trial(object):
 
         architecture = archi.Architecture(self.__options['user_options']['system_model']['architecture'])
         self.__options.build(architecture)
-        self.__model.build(self.__options['model'], architecture)
+
+        self.__options['model']['generator']['type'] = self.__options['user_options']['generator']  #sehr schlechte Lösung
+        print(self.__options['model']['generator'])
+        self.__model.build(self.__options['model'], self.__options['user_options']['winch'], architecture)
+        """ ### [user_options][winch] und model generator type = """
+
+        
         self.__formulation.build(self.__options['formulation'], self.__model)
         self.__nlp.build(self.__options['nlp'], self.__model, self.__formulation)
         self.__optimization.build(self.__options['solver'], self.__nlp, self.__model, self.__formulation, self.__name)

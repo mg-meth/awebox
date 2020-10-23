@@ -42,9 +42,11 @@ class Model(object):
         self.__status = 'Model not yet built.'
         self.__outputs = None
         self.__type = 'Model'
+        self.__winch = None
+        """ ### self.__winch """
 
-    def build(self, options, architecture):
-
+    def build(self, options, winch, architecture):
+        """ ### winch """
         awelogger.logger.info('Building model...')
 
         if self.__status == 'I am a model.':
@@ -54,14 +56,19 @@ class Model(object):
             self.__timings = {}
             timer = time.time()
             self.__architecture = architecture
-            self.__generate_system_parameters(options)
+            self.__generate_system_parameters(options, winch)
+            """ ### winch """
             self.__generate_atmosphere(options['atmosphere'])
             self.__generate_wind(options['wind'])
-            self.__generate_system_dynamics(options)
+            self.__generate_system_dynamics(options, winch)
+            """ ### winch """
             self.__generate_variable_bounds(options)
             self.__generate_parameter_bounds(options)
             self.__generate_constraints(options)
             self.__options = options
+
+            self.__winch = winch
+            """ ### self.__winch """
 
             self.__timings['overall'] = time.time()-timer
 
@@ -70,7 +77,8 @@ class Model(object):
             awelogger.logger.info('Model construction time: %s', print_op.print_single_timing(self.__timings['overall']))
             awelogger.logger.info('')
 
-    def __generate_system_parameters(self, options):
+    def __generate_system_parameters(self, options, winch):
+        """ ### winch """
 
         self.__parameters, self.__parameters_dict = system.generate_system_parameters(options, self.__architecture)
 
@@ -94,10 +102,9 @@ class Model(object):
         return None
 
 
-    def __generate_system_dynamics(self,options):
-
+    def __generate_system_dynamics(self,options, winch):
+        """ winch ### """
         awelogger.logger.info('generate system dynamics...')
-
         [variables,
         variables_dict,
         scaling,
@@ -110,7 +117,8 @@ class Model(object):
         holonomic_fun,
         integral_outputs,
         integral_outputs_fun,
-        integral_scaling] = dyn.make_dynamics(options, self.__atmos, self.__wind, self.__parameters, self.__architecture)
+        integral_scaling] = dyn.make_dynamics(options, winch, self.__atmos, self.__wind, self.__parameters, self.__architecture)
+        """ ### winch """
 
         self.__kite_dof = options['kite_dof']
         self.__kite_geometry = {} #options['geometry']

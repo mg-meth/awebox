@@ -1,0 +1,8 @@
+-\mdl\dynamics.py: DGL, Ungleichung
+-\opt\winch_data: Seilrolle Daten
+-\mdl\model.py: Bau Model auf
+-\trial.py:
+-\init.py: Hinzufügen der Daten 
+-\opts\default.py: user_options
+-\mdl\system.py: control, state variables hinzufügen
+-\opti\scheduling: 

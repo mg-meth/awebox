@@ -64,6 +64,8 @@ def set_default_user_options(internal_access = False):
         ('user_options',    None,          None,        'tether_model',          'default',          ('possible options',['default']),'x'),
         ('user_options',    None,          None,        'tether_drag_model',     'split',            ('possible options: split drag equally between nodes, get equivalent forces from only one element, get equivalent forces from multiple elements, or apply drag only to tether segments with kite end-nodes', ['split', 'single', 'multi', 'kite_only', 'not_in_use']),'t'),
         ('user_options',    None,          None,        'internal_access',       internal_access,    ('Only set internal parameters/options if you know what you are doing', [True, False]),'x'),
+        ('user_options',    'generator',   None,        'type',                  'not_in_use',       ('possible options', ['not_in_use', 'pmsm', 'asynchronous_motor', 'experimentell']), 'x'),
+        """ user_options generator ### """ #sweep_type????
     ]
 
     default_user_options, help_options = funcs.assemble_options_tree(default_user_options_tree, {}, {})
@@ -239,8 +241,35 @@ def set_default_options(default_user_options, help_options):
         ('params', 'ground_station', None, 'r_gen',            0.25,   ('winch generator drum radius [m]',None),'x'),
         ('params', 'ground_station', None, 'm_gen',            50.,   ('effective mass of generator [kg], guessed',None),'x'),
         ('model', 'ground_station', None, 'ddl_t_max',        10.,    ('reel-in/out acceleration limit on the tether [m/s^2]', None),'x'),
-        ('model', 'ground_station', None, 'dddl_t_max',       100.,    ('reel-in/out jerk limit on the tether [m/s^2]', None), 'x'),
+        ('model', 'ground_station', None, 'dddl_t_max',       100.,    ('reel-in/out jerk limit on the tether [m/s^3]', None), 'x'),
 
+        
+        #### """ params von r_gen ändern und evtl m_gen, was ist mit ddl_t_max, dddl_t_max???
+        #### winch (to be loaded!) """ hier soll winch rein wie bei geometry ### """ vlt ground station auseinandernehmen  und vlt doch alles unter dem thema winch zusammenfassen
+        ('model', 'generator', 'experimentell', 'a_0',          None,       ('winch generator experimental equation, coefficient [W]', None), 'x'),
+        ('model', 'generator', 'experimentell', 'a_1',          None,       ('winch generator experimental equation, coefficient [Nm]', None), 'x'),
+        ('model', 'generator', 'experimentell', 'a_2',          None,       ('winch generator experimental equation, coefficient [Nm*s]', None), 'x'),
+        ('model', 'generator', 'experimentell', 'a_3',          None,       ('winch generator experimental equation, coefficient [1/s]', None), 'x'),
+        ('model', 'generator', 'experimentell', 'a_4',          None,       ('winch generator experimental equation, coefficient [1/(Nm*s)]', None), 'x'),
+        ('model', 'generator', 'experimentell', 'a_5',          None,       ('winch generator experimental equation, coefficient [-]', None), 'x'),
+        
+        ('model', 'generator', 'pmsm',          'voltage_d_max',  5000,       ('winch generator d-q model [V] guess!', None), 'x'),
+        ('model', 'generator', 'pmsm',          'voltage_d_min',   1,       ('winch generator d-q model [V] guess!', None), 'x'),
+        ('model', 'generator', 'pmsm',          'voltage_q_max',5000,       ('winch generator d-q model [V] guess!', None), 'x'),
+        ('model', 'generator', 'pmsm',          'voltage_q_min',   1,       ('winch generator d-q model [V] guess!', None), 'x'),
+        ('model', 'generator', 'pmsm',          'l_d',        0.001,       ('d-axis inductance', None), 'x'),
+        ('model', 'generator', 'pmsm',          'l_q',        0.001,       ('q-axis inductance', None), 'x'),
+        ('model', 'generator', 'pmsm',          'r_s',        0.02,       ('stator resistance', None), 'x'),
+        ('model', 'generator', 'pmsm',          'p_p',             4,       ('pole number', None), 'x'),
+        ('model', 'generator', 'pmsm',          'phi_f',     0.892,       ('generator flux', None), 'x'),
+
+        ('model', 'generator', None,            'j_winch',    1.57,       ('winch inertia [kg m^2] guess!', None), 'x'),
+        ('model', 'generator', None,            'f_c',             0,       ('winch friction coefficient [Nms/rad] guess!', None), 'x'),
+        ('model', 'generator', None,            'radius',       0.25,         ('winch radius [m] ', None), 'x'),
+        
+        
+
+        
         #### emergency landing
         ('formulation', 'nominal_landing', None, 'main_node_radius', 40.,   ('???', None), 'x'),
         ('formulation', 'nominal_landing', None, 'kite_node_radius', 80.,   ('???', None), 'x'),

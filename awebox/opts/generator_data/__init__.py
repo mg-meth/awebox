@@ -22,14 +22,3 @@
 #    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 #
-# Import main interface classes
-from .trial import Trial
-from .sweep import Sweep
-from .opts.options import Options
-from .opts.kite_data import ampyx_data, boeing747_data, bubbledancer_data
-
-from .opts.generator_data import pmsm_125_kw_gen, exp_nine_kw_gen, no_gen
-""" ### """
-
-# Visualization classes
-from .viz.visualization import Visualization

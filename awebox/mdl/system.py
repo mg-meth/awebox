@@ -158,11 +158,26 @@ def generate_structure(options, architecture):
     system_states.extend([('l_t', (1, 1)), ('dl_t', (1, 1))]) # main tether length and speed
 
     # _energy + main tether length and speed
+
+    
+    generator = options['generator']['type']['type']
+    if generator != 'not_in_use' and generator != 'experimentell':
+        tether_control_var = generator
+    """ ### änderung der controll var """
+    
     if tether_control_var == 'ddl_t':
         system_controls.extend([('ddl_t', (1, 1))])  # main tether acceleration
     elif tether_control_var == 'dddl_t':
         system_states.extend([('ddl_t', (1, 1))]) # main tether acceleration
         system_controls.extend([('dddl_t', (1, 1))])  # main tether jerk
+
+        
+    elif tether_control_var == 'pmsm':
+        system_states.extend([('ddl_t', (1, 1))])
+        system_states.extend([('i_s', (2, 1))])
+        system_controls.extend([('v_s', (2, 1))])
+        """ ###  """
+        
     else:
         raise ValueError('invalid tether control variable chosen')
 
