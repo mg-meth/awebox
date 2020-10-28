@@ -161,7 +161,7 @@ def set_default_options(default_user_options, help_options):
         ('params',  'tether', None,         'f_max',                5.,         ('max. reel-out factor [-]', None),'s'),
         ('params',  'tether', None,         'max_stress',           3.6e9,      ('maximum material tether stress [Pa]', None),'s'),
         ('params',  'tether', None,         'stress_safety_factor', 10.,        ('tether stress safety factor [-]', None),'x'),
-        ('model',   'tether', None,         'control_var',          'dddl_t',   ('tether control variable', ['ddl_t', 'dddl_t']),'x'),
+        ('model',   'tether', None,         'control_var',          'dddl_t',   ('tether control variable', ['ddl_t', 'dddl_t', 'pmsm']),'x'),
         ('model',   'tether', None,         'aero_elements',        10,         ('number of discretizations made in approximating the tether drag. int greater than 1. [-]', None),'x'),
         ('model',   'tether', None,         'reynolds_smoothing',   1e-1,       ('smoothing width of the heaviside approximation in the cd vs. reynolds polynomial [-]', None),'x'),
         ('model',   'tether', None,         'cd_model',             'constant', ('how to calculate the tether drag coefficient: piecewise interpolation, polyfit interpolation, constant', ['piecewise', 'polyfit', 'constant']),'x'),
@@ -253,10 +253,10 @@ def set_default_options(default_user_options, help_options):
         ('model', 'generator', 'experimentell', 'a_4',          None,       ('winch generator experimental equation, coefficient [1/(Nm*s)]', None), 'x'),
         ('model', 'generator', 'experimentell', 'a_5',          None,       ('winch generator experimental equation, coefficient [-]', None), 'x'),
         
-        ('model', 'generator', 'pmsm',          'voltage_d_max',  5000,       ('winch generator d-q model [V] guess!', None), 'x'),
-        ('model', 'generator', 'pmsm',          'voltage_d_min',   1,       ('winch generator d-q model [V] guess!', None), 'x'),
-        ('model', 'generator', 'pmsm',          'voltage_q_max',5000,       ('winch generator d-q model [V] guess!', None), 'x'),
-        ('model', 'generator', 'pmsm',          'voltage_q_min',   1,       ('winch generator d-q model [V] guess!', None), 'x'),
+        ('model', 'generator', 'pmsm',          'voltage_d_max',  20,       ('winch generator d-q model [V] guess!', None), 'x'),
+        ('model', 'generator', 'pmsm',          'voltage_d_min', -20,       ('winch generator d-q model [V] guess!', None), 'x'),
+        ('model', 'generator', 'pmsm',          'voltage_q_max',  20,       ('winch generator d-q model [V] guess!', None), 'x'),
+        ('model', 'generator', 'pmsm',          'voltage_q_min', -20,       ('winch generator d-q model [V] guess!', None), 'x'),
         ('model', 'generator', 'pmsm',          'l_d',        0.001,       ('d-axis inductance', None), 'x'),
         ('model', 'generator', 'pmsm',          'l_q',        0.001,       ('q-axis inductance', None), 'x'),
         ('model', 'generator', 'pmsm',          'r_s',        0.02,       ('stator resistance', None), 'x'),
@@ -264,8 +264,10 @@ def set_default_options(default_user_options, help_options):
         ('model', 'generator', 'pmsm',          'phi_f',     0.892,       ('generator flux', None), 'x'),
 
         ('model', 'generator', None,            'j_winch',    1.57,       ('winch inertia [kg m^2] guess!', None), 'x'),
-        ('model', 'generator', None,            'f_c',             0,       ('winch friction coefficient [Nms/rad] guess!', None), 'x'),
+        ('model', 'generator', None,            'f_c',           0,       ('winch friction coefficient [Nms/rad] guess!', None), 'x'),
         ('model', 'generator', None,            'radius',       0.25,         ('winch radius [m] ', None), 'x'),
+
+        ('model',   'model_bounds', 'voltage', 'include',           False,      ('include a cap on maximum current magnitude for generators in constraints', [True, False]), 'x'),
         
         
 

@@ -73,7 +73,6 @@ def make_dynamics(options, winch, atmos, wind, parameters, architecture):
     # -----------------------------------
     # generate structured SX.sym objects
     # -----------------------------------
-    
     system_variables = {}
     system_variables['scaled'], variables_dict = struct_op.generate_variable_struct(system_variable_list)
     system_variables['SI'], scaling = generate_scaled_variables(options['scaling'], system_variables['scaled'])
@@ -138,6 +137,8 @@ def make_dynamics(options, winch, atmos, wind, parameters, architecture):
         outputs = generator_inequality(options, system_variables['SI'], outputs, architecture, winch)
         """ ### generator dgl und einschränkungen holen, doppel type ??"""
 
+    #print(outputs['voltage'])
+
     # ---------------------------------
     # rotation second law
     # ---------------------------------
@@ -154,7 +155,6 @@ def make_dynamics(options, winch, atmos, wind, parameters, architecture):
     [out, out_fun, out_dict] = make_output_structure(outputs, system_variables, parameters)
     [constraint_out, constraint_out_fun] = make_output_constraint_structure(options, outputs, system_variables,
                                                                             parameters)
-    
     e_kinetic = sum(outputs['e_kinetic'][nodes] for nodes in list(outputs['e_kinetic'].keys()))
     e_potential = sum(outputs['e_potential'][nodes] for nodes in list(outputs['e_potential'].keys()))
 
@@ -224,9 +224,10 @@ def make_dynamics(options, winch, atmos, wind, parameters, architecture):
         rotation_dynamics,
         trivial_dynamics_controls,
         dynamics_constraints]
+    
 
     
-    #pdb.set_trace()
+    pdb.set_trace()
     """ ### """ 
 
 
@@ -265,10 +266,12 @@ def make_dynamics(options, winch, atmos, wind, parameters, architecture):
 
         dynamics_list += [induction_constraint]
 
+
     # system dynamics function (implicit form)
 
     # order of V is: q, dq, omega, R, delta, lt, dlt, e
     res = cas.vertcat(*dynamics_list)
+
 
     # dynamics function options
     if options['jit_code_gen']['include']:
@@ -339,8 +342,9 @@ def make_output_structure(outputs, system_variables, parameters):
     # generate "empty" structure
     out_struct = cas.struct_symMX(full_list)
     # generate structure with SX expressions
-    outputs_struct = out_struct(outputs_vec)
+    outputs_struct = out_struct(outputs_vec)    
     # generate outputs function
+    
     outputs_fun = cas.Function('outputs', [system_variables['scaled'], parameters], [outputs_struct.cat])
 
     return [out_struct, outputs_fun, outputs_dict]
@@ -350,7 +354,7 @@ def make_output_constraint_structure(options, outputs, system_variables, paramet
     constraint_vec = []
 
     represented_constraints = list(options['model_bounds'].keys())
-
+    
     full_list = []
     for output_type in list(outputs.keys()):
 
@@ -575,7 +579,7 @@ def power_el(options, variables_si, outputs, architecture, winch):  #vlt dann au
 
 def gen_experimentell(options, variables_si, winch):
     """ ### Problem da radius_drum kolleriert mit prams von ground station in default ### """
-    omega_mech = variables_si['xd']['dl_t'] / winch['winch_geometry']['radius_drum']    #etwas falsch 
+    omega_mech = variables_si['xd']['dl_t'] / winch['winch_geometry']['radius_drum']    #etwas falsch auch mit - ? und winch..
     T_mech = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * winch['winch_geometry']['radius_drum']
     # muss eigentlich zu sowas umgewandelt werden: winch = options['generator']['experimentell']
     winch = winch['winch_el']
@@ -591,7 +595,7 @@ def gen_pmsm(options, variables_si, outputs, architecture, winch):
     v_sq = variables_si['u']['v_s'][1]
     i_sd = variables_si['xd']['i_s'][0]
     i_sq = variables_si['xd']['i_s'][1]
-    P_el = 3/2 * (v_sd*i_sd + v_sq*i_sq)
+    P_el = 3/2 * (v_sd*i_sd + v_sq*i_sq)        #vlt doch "-"
     return P_el
 
 
@@ -949,16 +953,25 @@ def winch_ode(options, variables_si, outputs, parameters, architecture, winch):
     if options['generator']['type']['type'] == 'pmsm':
         ode += generator_ode(options, variables_si, outputs, parameters, architecture, winch)
     
-    radius = winch['winch_geometry']['radius_drum']
+    radius = options['generator']['radius']
     j_winch = options['generator']['j_winch']
     f_c = options['generator']['f_c']
+    phi = (options['system_bounds']['xd']['l_t'][1] - variables_si['xd']['l_t']) / radius
     omega = - variables_si['xd']['dl_t'] / radius
     domega = - variables_si['xd']['ddl_t'] / radius
-    t_tur = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius
+    
+    t_tether = -variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius
     t_frict = f_c * omega
-    rhs = t_tur - t_em - t_frict
-    lhs = j_winch * domega
+
+    t_inertia = j_winch * domega
+    t_inertia += options['scaling']['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius**3 * (omega*omega + domega*phi) #
+    #roh_tether*radius**3*(omega*omega + domega*phi) , phi = (l_komplett - l)/r
+    print(t_inertia)
+    
+    rhs = t_tether + t_em + t_frict
+    lhs = t_inertia
     torque = rhs - lhs
+    print(torque)
 
     ode += [torque]
     return ode
@@ -975,7 +988,7 @@ def t_em_ode(options, variables_si, outputs, parameters, architecture, winch):
         rs = opt['r_s']
         p_p = opt['p_p']
         phi_f = opt['phi_f']
-        t_em = 3/2 * p_p * ((ld - lq) * i_sd*i_sq + i_sq * phi_f)
+        t_em = 3/2 * p_p * ( i_sq * phi_f)  #(ld - lq) * i_sd*i_sq +    
         
     return t_em
 
@@ -984,7 +997,7 @@ def t_em_ode(options, variables_si, outputs, parameters, architecture, winch):
 def generator_ode(options, variables_si, outputs, parameters, architecture, winch):
     """ ### """
     ode = []
-    omega = variables_si['xd']['dl_t'] / options['generator']['radius']
+    omega = variables_si['xd']['dl_t'] / options['generator']['radius']     #normalerweise - müsst so aber sinn machen 
     if options['generator']['type']['type'] == 'pmsm':
         v_sd = variables_si['u']['v_s'][0]
         v_sq = variables_si['u']['v_s'][1]
@@ -996,10 +1009,11 @@ def generator_ode(options, variables_si, outputs, parameters, architecture, winc
         rs = opt['r_s']
         phi_f = opt['phi_f']
         p_p = opt['p_p']
-        rhs = v_sd - rs*i_sd + lq*i_sq * omega
+        
+        rhs = v_sd - rs*i_sd + lq * p_p * i_sq * omega
         lhs = ld * variables_si['xddot']['di_s'][0]
         i_sd_ode = rhs - lhs
-        rhs = v_sq - rs*i_sq + p_p * omega * ld * i_sd - p_p * omega * phi_f
+        rhs = v_sq - rs * i_sq - p_p * omega * ld * i_sd - p_p * omega * phi_f
         lhs = lq * variables_si['xddot']['di_s'][1]
         i_sq_ode = rhs - lhs
         ode += [i_sd_ode]
@@ -1007,7 +1021,7 @@ def generator_ode(options, variables_si, outputs, parameters, architecture, winc
 
     return ode
 
-    
+
 
 
 def airspeed_inequality(options, variables, outputs, parameters, architecture):
@@ -1169,6 +1183,8 @@ def generator_inequality(options, variables, outputs, parameters, architecture):
 
 def voltage_generator_pmsm_inequality(options, variables, outputs, parameters, architecture):
     """ ### Voltage inequality for the electric generator """
+
+    options['model_bounds']['voltage']['include'] = True
     
     if 'voltage' not in list(outputs.keys()):
         outputs['voltage'] = {}
@@ -1179,16 +1195,21 @@ def voltage_generator_pmsm_inequality(options, variables, outputs, parameters, a
     voltage_d_min = voltage['voltage_d_min']
     voltage_q_max = voltage['voltage_d_max']
     voltage_q_min = voltage['voltage_d_min']
-    # vlt ist es auch besser q-d als Vektor aufzubauen
+    # vlt ist es auch besser q-d als Vektor aufzubauen alles zu current und als model_bounds in default werte ändern sowie include
+    # zu p_el umändern also p_el < z.b. 125 kW
 
-    voltage_d = variables['u']['v_s'][0]
-    voltage_q = variables['u']['v_s'][1]
-
-    outputs['voltage']['voltage_d_max'] = voltage_d / voltage_d_max - 1
-    outputs['voltage']['voltage_d_min'] = -voltage_d / voltage_d_min + 1
-    outputs['voltage']['voltage_q_max'] = voltage_q / voltage_q_max - 1
-    outputs['voltage']['voltage_q_min'] = -voltage_q / voltage_q_min + 1
+    #options['model_bounds']['power_el']['include'] = True  in defaults.py reinpacken (dort: false) und wenn generator aktiviert ist -> True
+    #power_max = options['model_bounds']['power_el']['power_max']
+    #outputs['power'] = (v_sd*i_sd + v_sq*i_sq)**2 / power_max**2 - 1
         
+    voltage_d = variables['xd']['i_s'][0]
+    voltage_q = variables['xd']['i_s'][1]
+
+    outputs['voltage']['voltage_d_max'] = voltage_d**2 / voltage_d_max**2 - 1
+   # outputs['voltage']['voltage_d_min'] = -voltage_d / voltage_d_min + 1
+    outputs['voltage']['voltage_q_max'] = voltage_q**2 / voltage_q_max**2 - 1
+   # outputs['voltage']['voltage_q_min'] = -voltage_q / voltage_q_min + 1
+    
     return outputs
 
 

@@ -751,8 +751,25 @@ def build_tether_control_options(options, options_tree, fixed_params):
         elif options['model']['tether']['control_var'] == 'dddl_t':
             options_tree.append(('model', 'system_bounds', 'xd', 'ddl_t', [-1. * ddl_t_max, ddl_t_max],   ('main tether max acceleration [m/s^2]', None),'x'))
             options_tree.append(('model', 'system_bounds', 'u', 'dddl_t', [-1. * dddl_t_max, dddl_t_max],   ('main tether max jerk [m/s^3]', None),'x'))
+
+            
+        elif options['model']['tether']['control_var'] == 'pmsm':
+            voltage = options['model']['generator']['pmsm']
+            options_tree.append(('model', 'system_bounds', 'xd', 'ddl_t', [-1. * ddl_t_max, ddl_t_max],   ('main tether max acceleration [m/s^2]', None),'x'))
+            options_tree.append(('model', 'system_bounds', 'xd', 'dddl_t', [-1. * dddl_t_max, dddl_t_max],   ('main tether max jerk [m/s^3]', None),'x'))
+            
+            options_tree.append(('model', 'system_bounds', 'u', 'v_s', [voltage['voltage_d_min'], voltage['voltage_d_max']],   ('winch generator d-q model [V]', None),'x'))            
+            #options_tree.append(('model', 'system_bounds', 'u', 'v_sq', [voltage['voltage_q_min'], voltage['voltage_q_max']],   ('winch generator d-q model [V]', None),'x'))            
+
+            """ ### eigentlich fehtl noch bei drag mode und zwar bei allen"""
+        
+        
         else:
             raise ValueError('invalid tether control variable chosen')
+
+    print("options_tree, fixed_params")
+
+    print(options_tree, fixed_params)
 
     return options_tree, fixed_params
 

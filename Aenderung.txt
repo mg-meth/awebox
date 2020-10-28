@@ -6,3 +6,4 @@
 -\opts\default.py: user_options
 -\mdl\system.py: control, state variables hinzufügen
 -\opti\scheduling: 
+-\opts\model_funcs.py

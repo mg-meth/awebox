@@ -110,7 +110,7 @@ class Optimization(object):
             # reset timings / iteration counters
             self.reset_timings_and_counters()
 
-           # schedule the homotopy steps
+            # schedule the homotopy steps
             self.define_homotopy_update_schedule(model, formulation, nlp, options['cost'])
 
             # prepare problem

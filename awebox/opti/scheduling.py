@@ -465,6 +465,7 @@ def define_bound_update_schedule(model, nlp, formulation):
     elif 'v_s' in list(model.variables_dict['u'].keys()):
         bound_schedule['v_s'][1] = ['lb', 'u', 'final']
         bound_schedule['v_s'][2] = ['ub', 'u', 'final']
+        """ ### müssen hier zwei v_s hin??"""
 
 
 

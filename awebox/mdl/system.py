@@ -159,10 +159,11 @@ def generate_structure(options, architecture):
 
     # _energy + main tether length and speed
 
-    
+    """
     generator = options['generator']['type']['type']
     if generator != 'not_in_use' and generator != 'experimentell':
         tether_control_var = generator
+    """
     """ ### änderung der controll var """
     
     if tether_control_var == 'ddl_t':
