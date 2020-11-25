@@ -173,29 +173,19 @@ def define_bounds_to_update(model, bounds_schedule, formulation):
         tether_release_updates[0] = ['ddl_t', 'ddl_t']
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         tether_release_updates[0] = ['dddl_t', 'dddl_t']
-
-
     elif 'v_s' in list(model.variables_dict['u'].keys()):
         tether_release_updates[0] = ['v_s', 'v_s']
-        """ ### """
-
-
 
     power_updates = {}
     # check which tether length variable is a control variable
-
     if 'ddl_t' in list(model.variables_dict['u'].keys()):
         power_updates[0] = ['ddl_t', 'ddl_t', 'psi'] + struct_op.subkeys(model.variables, 'theta') * 2
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         power_updates[0] = ['dddl_t', 'dddl_t', 'psi'] + struct_op.subkeys(model.variables, 'theta') * 2
-    # check if phase fix
-
-
     elif 'v_s' in list(model.variables_dict['u'].keys()):
         """ ### psi, theta??? und bounds_schedule.keys()????"""
         power_updates[0] = ['v_s', 'v_s', 'psi'] + struct_op.subkeys(model.variables, 'theta') * 2
-
-    
+    # check if phase fix
     if 'dl_t' in list(bounds_schedule.keys()):
         power_updates[0] += ['dl_t']*2
     if 'l_t' in list(bounds_schedule.keys()):
@@ -209,13 +199,10 @@ def define_bounds_to_update(model, bounds_schedule, formulation):
         nominal_landing_updates[0] = ['ddl_t', 'ddl_t', 'eta'] + struct_op.subkeys(model.variables, 'theta') * 2
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         nominal_landing_updates[0] = ['dddl_t', 'dddl_t', 'eta'] + struct_op.subkeys(model.variables, 'theta') * 2
-    # check if phase fix
-    
     elif 'v_s' in list(model.variables_dict['u'].keys()):
         """ ### eta, theta??? und bounds_schedule.keys()????"""
         nominal_landing_updates[0] = ['v_s', 'v_s', 'eta'] + struct_op.subkeys(model.variables, 'theta') * 2
-
-        
+    # check if phase fix
     if 'dl_t' in list(bounds_schedule.keys()):
         nominal_landing_updates[0] += ['dl_t']*2
 
@@ -227,14 +214,9 @@ def define_bounds_to_update(model, bounds_schedule, formulation):
         transition_updates[0] = ['ddl_t', 'ddl_t', 'upsilon'] + struct_op.subkeys(model.variables, 'theta') * 2
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         transition_updates[0] = ['dddl_t', 'dddl_t', 'upsilon'] + struct_op.subkeys(model.variables, 'theta') * 2
-
-
     elif 'v_s' in list(model.variables_dict['u'].keys()):
         """ ### upsilon, theta??? und bounds_schedule.keys()????"""
         transition_updates[0] = ['v_s', 'v_s', 'upsilon'] + struct_op.subkeys(model.variables, 'theta') * 2
-
-    
-
     # check if phase fix
     if 'dl_t' in list(bounds_schedule.keys()):
         transition_updates[0] += ['dl_t']*2
@@ -332,6 +314,7 @@ def update_cost(schedule, step_name, counter, cost_update_counter, p_fix_num):
 
 def update_bounds(schedule, step_name, counter, bound_update_counter, V_bounds, model, nlp):
     bounds_to_update = schedule['bounds_to_update'][step_name][counter]
+
     for bound_name in bounds_to_update:
 
         count_of_this_update = bound_update_counter[bound_name] + 1
@@ -416,16 +399,8 @@ def create_empty_bound_update_schedule(model, nlp, formulation):
         bound_schedule['ddl_t'] = {}
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         bound_schedule['dddl_t'] = {}
-
-
-
     elif 'v_s' in list(model.variables_dict['u'].keys()):
         bound_schedule['v_s'] = {}
-        """ ### """
-
-
-
-        
     # check if phase fix
     if nlp.V['theta','t_f'].shape[0] > 1:
         bound_schedule['dl_t'] = {}
@@ -460,15 +435,9 @@ def define_bound_update_schedule(model, nlp, formulation):
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         bound_schedule['dddl_t'][1] = ['lb', 'u', 'final']
         bound_schedule['dddl_t'][2] = ['ub', 'u', 'final']
-
-
     elif 'v_s' in list(model.variables_dict['u'].keys()):
         bound_schedule['v_s'][1] = ['lb', 'u', 'final']
         bound_schedule['v_s'][2] = ['ub', 'u', 'final']
-        """ ### müssen hier zwei v_s hin??"""
-
-
-
     if 'dl_t' in list(bound_schedule.keys()):
         bound_schedule['dl_t'][1] = ['lb','xd','final']
         bound_schedule['dl_t'][2] = ['ub','xd','final']
@@ -508,14 +477,9 @@ def initialize_bound_update_counter(model, schedule, formulation):
         bound_update_counter['ddl_t'] = 0
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         bound_update_counter['dddl_t'] = 0
-
-        
     elif 'v_s' in list(model.variables_dict['u'].keys()):
         bound_update_counter['v_s'] = 0
-        """ ### """
-
-
-
+        
     if 'dl_t' in list(schedule['bounds'].keys()):
         bound_update_counter['dl_t'] = 0
 
@@ -523,4 +487,3 @@ def initialize_bound_update_counter(model, schedule, formulation):
         bound_update_counter['l_t'] = 0
 
     return bound_update_counter
-

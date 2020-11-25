@@ -51,9 +51,11 @@ def build_options_dict(options, help_options, architecture):
     options_tree = build_solver_options(options, help_options, user_options, options_tree, architecture, fixed_params, phase_fix)
     options_tree = build_formulation_options(options, help_options, user_options, options_tree, architecture)
 
+
     # assemble all of the options into a complete options tree
     options, help_options = assemble_options_tree(options_tree, options, help_options)
     options, help_options = assemble_system_parameter_dict(options, help_options)
+
 
     return options, help_options
 
@@ -189,7 +191,10 @@ def build_nlp_options(options, help_options, user_options, options_tree, archite
             # parallelization starts to become effective from two layers on
             parallelize = True
 
-    # integrator options
+    options_tree.append(('nlp', 'jit_code_gen', None, 'include', options['model']['jit_code_gen']['include'],  ('????', None),'x'))
+    options_tree.append(('nlp', 'jit_code_gen', None, 'compiler', options['model']['jit_code_gen']['compiler'], ('????', None), 'x'))
+
+     # integrator options
     if options['nlp']['integrator']['jit_overwrite'] is not None:
         options_tree.append(('nlp', 'integrator', None, 'jit', options['nlp']['integrator']['jit_overwrite'],  ('jit integrator', (True, False)),'x'))
     elif options['nlp']['integrator']['type'] == 'collocation':
@@ -340,4 +345,3 @@ def load_battery_parameters(kite_standard, coeff_max, coeff_min):
         battery = kite_standard['battery']
 
     return battery
-

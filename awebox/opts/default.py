@@ -40,7 +40,7 @@ def set_default_user_options(internal_access = False):
         ## user options
         ('user_options',    'trajectory',  None,        'type',                  'power_cycle',      ('possible options', ['power_cycle', 'transition','mpc']), 't'),
         ('user_options',    'trajectory',  None,        'system_type',           'lift_mode',        ('possible options', ['lift_mode','drag_mode']), 't'),
-        ('user_options',    'trajectory',  'lift_mode', 'windings',              5,                  ('number of windings [int]', None),'s'),
+        ('user_options',    'trajectory',  'lift_mode', 'windings',              3,                  ('number of windings [int]', None),'s'),
         ('user_options',    'trajectory',  'lift_mode', 'phase_fix',             True,               ('choose True or False', [True, False]),'x'),
         ('user_options',    'trajectory',  'lift_mode', 'max_l_t',               None,               ('set maximum main tether length', None),'s'),
         ('user_options',    'trajectory',  'lift_mode', 'pumping_range',         None,               ('set predefined pumping range (only in comb. w. phase-fix)', None),'x'),
@@ -64,8 +64,7 @@ def set_default_user_options(internal_access = False):
         ('user_options',    None,          None,        'tether_model',          'default',          ('possible options',['default']),'x'),
         ('user_options',    None,          None,        'tether_drag_model',     'split',            ('possible options: split drag equally between nodes, get equivalent forces from only one element, get equivalent forces from multiple elements, or apply drag only to tether segments with kite end-nodes', ['split', 'single', 'multi', 'kite_only', 'not_in_use']),'t'),
         ('user_options',    None,          None,        'internal_access',       internal_access,    ('Only set internal parameters/options if you know what you are doing', [True, False]),'x'),
-        ('user_options',    'generator',   None,        'type',                  'not_in_use',       ('possible options', ['not_in_use', 'pmsm', 'asynchronous_motor', 'experimentell']), 'x'),
-        """ user_options generator ### """ #sweep_type????
+        ('user_options',    None,          None,        'generator',            None,       ('possible options', ['not_in_use', 'pmsm', 'asyn_motor', 'experimental']), 'x'),
     ]
 
     default_user_options, help_options = funcs.assemble_options_tree(default_user_options_tree, {}, {})
@@ -99,6 +98,11 @@ def set_default_options(default_user_options, help_options):
         ('model', 'aero', None,         'aero_coeff_ref_velocity',     'eff',           ('specifies which velocity is used to define the stability derivatives: the APParent velocity (as for wind-tunnel or computer generated derivatives), or the EFFective velocity (as for free-flight measurements using a Pitot-tube)', ['app', 'eff']), 'x'),
         ('model', 'aero', 'three_dof',  'coeff_max',    [2., 80.0 * np.pi / 180.],      ('maximum coefficients in roll-control model', None),'x'),
         ('model', 'aero', 'three_dof',  'coeff_min',    [0., -80.0 * np.pi / 180.],     ('minimum coefficients in roll-control model', None),'x'),
+        ('model', 'aero', 'three_dof',  'dcoeff_max',   [5., 80. * np.pi / 180],        ('include a bound on dcoeff', None), 'x'),
+        ('model', 'aero', 'three_dof',  'dcoeff_min',   [-5., -80. * np.pi / 180],      ('include a bound on dcoeff', None), 'x'),
+        ('params', 'model_bounds', None, 'coeff_compromised_max', np.array([1.5, 60 * np.pi / 180.]), ('include a bound on dcoeff', None), 's'),
+        ('params', 'model_bounds', None, 'coeff_compromised_min', np.array([0., -60 * np.pi / 180.]), ('include a bound on dcoeff', None), 's'),
+        ('model', 'aero', 'three_dof', 'dcoeff_compromised_factor', 1., ('???', None), 's'),
 
         ('model', 'aero', None,         'induction_comparison',     [],     ('which induction models should we include for comparison', ['act', 'vor']), 'x'),
 
@@ -161,7 +165,7 @@ def set_default_options(default_user_options, help_options):
         ('params',  'tether', None,         'f_max',                5.,         ('max. reel-out factor [-]', None),'s'),
         ('params',  'tether', None,         'max_stress',           3.6e9,      ('maximum material tether stress [Pa]', None),'s'),
         ('params',  'tether', None,         'stress_safety_factor', 10.,        ('tether stress safety factor [-]', None),'x'),
-        ('model',   'tether', None,         'control_var',          'dddl_t',   ('tether control variable', ['ddl_t', 'dddl_t', 'pmsm']),'x'),
+        ('model',   'tether', None,         'control_var',          'ddl_t',    ('tether control variable', ['ddl_t', 'dddl_t']),'x'),
         ('model',   'tether', None,         'aero_elements',        10,         ('number of discretizations made in approximating the tether drag. int greater than 1. [-]', None),'x'),
         ('model',   'tether', None,         'reynolds_smoothing',   1e-1,       ('smoothing width of the heaviside approximation in the cd vs. reynolds polynomial [-]', None),'x'),
         ('model',   'tether', None,         'cd_model',             'constant', ('how to calculate the tether drag coefficient: piecewise interpolation, polyfit interpolation, constant', ['piecewise', 'polyfit', 'constant']),'x'),
@@ -192,29 +196,21 @@ def set_default_options(default_user_options, help_options):
         ('model',   'model_bounds', 'tether_force',  'include',              False,     ('include tether force inequality in constraints', [True, False]),'x'),
         ('params',  'model_bounds',  None,           'tether_force_limits',  np.array([1e0, 2e3]),  ('tether force limits [N]', None),'s'),
         ('model',   'model_bounds', 'airspeed',      'include',             False,      ('include airspeed inequality for kites in constraints', [True, False]),'x'),
-        ('params',  'model_bounds',  None,           'airspeed_limits',     np.array([1.,150.]),  ('airspeed limits [m/s]', None),'s'),
+        ('params',  'model_bounds',  None,           'airspeed_limits',     np.array([1., 150.]),  ('airspeed limits [m/s]', None),'s'),
         ('model',   'model_bounds', 'aero_validity', 'include',              True,       ('include orientation bounds on alpha and beta (not possible in 3dof mode)', [True, False]),'x'),
         ('model',   'model_bounds', 'aero_validity', 'scaling',              1.,         ('tightness scaling for aero_validity inequalities', None),'x'),
         ('model',   'model_bounds', 'anticollision', 'safety_factor',        5.,         ('safety margin for anticollision constraint [m]', None),'x'),
         ('model',   'model_bounds', 'anticollision', 'include',              True,       ('include a minimum distance anticollision inequality in constraints', [True, False]),'x'),
-        ('model',   'model_bounds', 'anticollision_radius', 'include',       False,      ('include a minimum radius anticollision inequality in constraints', [True, False]),'x'),
-        ('model',   'model_bounds', 'anticollision_radius', 'scaling',       1.,         ('tightness scaling for anticollision inequalities', None),'x'),
         ('model',   'model_bounds', 'acceleration',  'include',              True,       ('include a hardware limit on node acceleration', [True, False]),'x'),
         ('model',   'model_bounds', 'acceleration',  'acc_max',              12.,        ('maximum acceleration, as measured in multiples of g [-]', None),'x'),
         ('model',   'model_bounds', 'angular_velocity', 'include',           False,      ('include a cap on maximum angular velocity magnitude for kites in constraints', [True, False]), 'x'),
         ('params',  'model_bounds', None,            'angular_velocity_max', 50.,        ('maximum magnitude of angular velocity [deg/s]', None), 's'),
-
         ('model',   'model_bounds', 'rotation',     'include',               True,      ('include constraints on roll and pitch motion', None), 't'),
         ('model',   'model_bounds', 'rotation',     'type',                 'yaw',      ('rotation constraint type', ['yaw','roll_pitch']), 't'),
         ('params',  'model_bounds', None,           'rot_angles',            np.array([80.0*np.pi/180., 80.0*np.pi/180., 160.0*np.pi/180.0]), ('[roll, pitch, yaw] - [rad]', None), 's'),
         ('params',  'model_bounds', None,           'span_angle',            45.0*np.pi/180., ('[max. angle between span and wing-tip cross-tether] - [rad]', None), 's'),
-        ('model',   'model_bounds', 'dcoeff_actuation', 'include',      False,       ('include a bound on dcoeff', None), 'x'),
-        ('model',   'model_bounds', 'coeff_actuation', 'include',      False,       ('include a bound on coeff', None), 'x'),
-        ('model',   'model_bounds', None, 'dcoeff_max',      [5.,80.*np.pi/180],       ('include a bound on dcoeff', None), 'x'),
-        ('model',   'model_bounds', None, 'dcoeff_min',      [-5.,-80.*np.pi/180],       ('include a bound on dcoeff', None), 'x'),
-        ('params',   'model_bounds', None, 'coeff_compromised_max', np.array([1.5, 60*np.pi/180.]), ('include a bound on dcoeff', None), 's'),
-        ('params',   'model_bounds', None, 'coeff_compromised_min', np.array([0., -60*np.pi/180.]), ('include a bound on dcoeff', None), 's'),
-        ('model',   'model_bounds', None, 'dcoeff_compromised_factor', 1., ('???', None), 's'),
+        ('model',   'model_bounds', 'dcoeff_actuation', 'include',          True,       ('include a bound on dcoeff', None), 'x'),
+        ('model',   'model_bounds', 'coeff_actuation',  'include',          True,       ('include a bound on coeff', None), 'x'),
 
         #### scaling
         ('model',  'scaling', 'xd',     'l_t',      500.,     ('main tether natural length [m]', None),'x'),
@@ -238,40 +234,42 @@ def set_default_options(default_user_options, help_options):
         ('params',   None,       None,   'kappa_r',  1.,         ('baumgarte stabilization constant for dcm dynamics', None),'x'),
 
         #### ground_station
-        ('params', 'ground_station', None, 'r_gen',            0.25,   ('winch generator drum radius [m]',None),'x'),
+        ('params', 'ground_station', None, 'r_gen',            0.25,   ('winch generator drum radius [m], its possible to overwrite it with winch params',None),'x'),
         ('params', 'ground_station', None, 'm_gen',            50.,   ('effective mass of generator [kg], guessed',None),'x'),
         ('model', 'ground_station', None, 'ddl_t_max',        10.,    ('reel-in/out acceleration limit on the tether [m/s^2]', None),'x'),
-        ('model', 'ground_station', None, 'dddl_t_max',       100.,    ('reel-in/out jerk limit on the tether [m/s^3]', None), 'x'),
+        ('model', 'ground_station', None, 'dddl_t_max',       100.,    ('reel-in/out jerk limit on the tether [m/s^2]', None), 'x'),
 
-        
-        #### """ params von r_gen ändern und evtl m_gen, was ist mit ddl_t_max, dddl_t_max???
-        #### winch (to be loaded!) """ hier soll winch rein wie bei geometry ### """ vlt ground station auseinandernehmen  und vlt doch alles unter dem thema winch zusammenfassen
-        ('model', 'generator', 'experimentell', 'a_0',          None,       ('winch generator experimental equation, coefficient [W]', None), 'x'),
-        ('model', 'generator', 'experimentell', 'a_1',          None,       ('winch generator experimental equation, coefficient [Nm]', None), 'x'),
-        ('model', 'generator', 'experimentell', 'a_2',          None,       ('winch generator experimental equation, coefficient [Nm*s]', None), 'x'),
-        ('model', 'generator', 'experimentell', 'a_3',          None,       ('winch generator experimental equation, coefficient [1/s]', None), 'x'),
-        ('model', 'generator', 'experimentell', 'a_4',          None,       ('winch generator experimental equation, coefficient [1/(Nm*s)]', None), 'x'),
-        ('model', 'generator', 'experimentell', 'a_5',          None,       ('winch generator experimental equation, coefficient [-]', None), 'x'),
-        
-        ('model', 'generator', 'pmsm',          'voltage_d_max',  20,       ('winch generator d-q model [V] guess!', None), 'x'),
-        ('model', 'generator', 'pmsm',          'voltage_d_min', -20,       ('winch generator d-q model [V] guess!', None), 'x'),
-        ('model', 'generator', 'pmsm',          'voltage_q_max',  20,       ('winch generator d-q model [V] guess!', None), 'x'),
-        ('model', 'generator', 'pmsm',          'voltage_q_min', -20,       ('winch generator d-q model [V] guess!', None), 'x'),
-        ('model', 'generator', 'pmsm',          'l_d',        0.001,       ('d-axis inductance', None), 'x'),
-        ('model', 'generator', 'pmsm',          'l_q',        0.001,       ('q-axis inductance', None), 'x'),
-        ('model', 'generator', 'pmsm',          'r_s',        0.02,       ('stator resistance', None), 'x'),
-        ('model', 'generator', 'pmsm',          'p_p',             4,       ('pole number', None), 'x'),
-        ('model', 'generator', 'pmsm',          'phi_f',     0.892,       ('generator flux', None), 'x'),
+        ### winch + generator
+        ('model',  'generator', 'overwrite', 'type',                            None,     ('electrical machine', None), 's'),
+        ('model',  'generator', 'overwrite', 'name',                            None,     ('electrical machine', None), 's'),
+        ('params', 'generator', 'overwrite', 'empty',                           0,     ('electrical machine', None), 's'),
 
-        ('model', 'generator', None,            'j_winch',    1.57,       ('winch inertia [kg m^2] guess!', None), 'x'),
-        ('model', 'generator', None,            'f_c',           0,       ('winch friction coefficient [Nms/rad] guess!', None), 'x'),
-        ('model', 'generator', None,            'radius',       0.25,         ('winch radius [m] ', None), 'x'),
+        ('model',  'generator', 'overwrite', 'a_0',                             None,       ('winch generator experimental equation, coefficient [W]', None), 's'),
+        ('model',  'generator', 'overwrite', 'a_1',                             None,       ('winch generator experimental equation, coefficient [Nm]', None), 's'),
+        ('model',  'generator', 'overwrite', 'a_2',                             None,       ('winch generator experimental equation, coefficient [Nm*s]', None), 's'),
+        ('model',  'generator', 'overwrite', 'a_3',                             None,       ('winch generator experimental equation, coefficient [1/s]', None), 's'),
+        ('model',  'generator', 'overwrite', 'a_4',                             None,       ('winch generator experimental equation, coefficient [1/(Nm*s)]', None), 's'),
+        ('model',  'generator', 'overwrite', 'a_5',                             None,       ('winch generator experimental equation, coefficient [-]', None), 's'),
 
-        ('model',   'model_bounds', 'voltage', 'include',           False,      ('include a cap on maximum current magnitude for generators in constraints', [True, False]), 'x'),
-        
-        
+        ('model',  'generator', 'overwrite', 'voltage_d_max',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
+        ('model',  'generator', 'overwrite', 'voltage_d_min',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
+        ('model',  'generator', 'overwrite', 'voltage_q_max',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
+        ('model',  'generator', 'overwrite', 'voltage_q_min',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
+        ('model',  'generator', 'overwrite', 'l_d',                             None,       ('d-axis inductance [H]', None), 's'),
+        ('model',  'generator', 'overwrite', 'l_q',                             None,       ('q-axis inductance [H]', None), 's'),
+        ('model',  'generator', 'overwrite', 'r_s',                             None,       ('stator resistance [Ohm]', None), 's'),
+        ('model',  'generator', 'overwrite', 'p_p',                             None,       ('pole number [-]', None), 's'),
+        ('model',  'generator', 'overwrite', 'phi_f',                           None,       ('generator flux [Wb]', None), 's'),
 
-        
+        ('model', 'ground_station', 'overwrite',           'j_winch',           None,       ('winch inertia [kg m^2] guess!', None), 's'),
+        ('model', 'ground_station', 'overwrite',            'f_c',              None,       ('winch friction coefficient [Nms/rad] guess!', None), 's'),
+        ('model', 'ground_station', 'overwrite', 'name',                        None,       ('electrical machine', None), 's'),
+
+        ('model',   'model_bounds', 'current', 'include',                       None,       ('include a cap on maximum current magnitude for generators in constraints', [True, False]), 's'),
+
+        ('quality', 'test_param', None, 'generator_max_power',                  None,       ('maximum generated power', None), 'x'),
+
+
         #### emergency landing
         ('formulation', 'nominal_landing', None, 'main_node_radius', 40.,   ('???', None), 'x'),
         ('formulation', 'nominal_landing', None, 'kite_node_radius', 80.,   ('???', None), 'x'),
@@ -418,13 +416,16 @@ def set_default_options(default_user_options, help_options):
         ('solver',    None,          None,        'save_format',    'dict',     ('trial save format', ['awe', 'dict']), 'x'),
 
         ### problem health diagnostics options
-        ('solver',  'health',   'singular_values',      'ratio_min_tol',                1e5,    ('ill-conditioning test threshold - largest ratio between max/min singular values', None),'x'),
-        ('solver',  'health',   'singular_values',      'min_tol',                      1e-8,   ('tolerance of smallest accepted singular value', None),'x'),
-        ('solver',  'health',   None,                   'active_threshold',             1e0,    ('threshold for a constraint to be considered active (smallest ratio between lambda and g). should be larger than 1', None),'x'),
-        ('solver',  'health',   None,                   'autorun_check',                False,  ('run a health-check after every homotopy step', [True, False]),'x'),
-        ('solver',  'health',   None,                   'after_failure_check',          False,   ('run a health-check when a homotopy step fails', [True, False]),'x'),
-        ('solver',  'health',   'sosc',                 'reduced_hessian_null_tol',     1e-3,   ('tolerance of null-space test in reduced hessian', None),'x'),
-        ('solver',  'health',   None,                   'matrix_entry_zero_tol',        1e-6,   ('tolerance for a matrix entry to be considered zero', None),'x'),
+        ('solver',  'health_check',     'when',     'autorun',                  False,  ('run a health-check after every homotopy step. CAUTION: VERY SLOW!', [True, False]),'x'),
+        ('solver',  'health_check',     'when',     'failure',                  False,  ('run a health-check when a homotopy step fails. CAUTION: SLOW!', [True, False]),'x'),
+        ('solver',  'health_check',     'when',     'final',                    False,  ('run a health-check after final homotopy step. CAUTION: SLOW!', [True, False]), 'x'),
+        ('solver',  'health_check',     'thresh',   'active',                   1e0,    ('threshold for a constraint to be considered active (smallest ratio between lambda and g). should be larger than 1', None), 'x'),
+        ('solver',  'health_check',     'thresh',   'reduced_hessian_eig',      1e-6,   ('minimum value of eigenvalues of the reduced hessian, allowed for positive-definiteness', None), 'x'),
+        ('solver',  'health_check',     'thresh',   'condition_number',         1e7,    ('problem ill-conditioning test threshold - largest problem condition number (ratio between max/min singular values) [-]', None), 'x'),
+        ('solver',  'health_check',     'tol',      'reduced_hessian_null',     1e-8,   ('tolerance of null-space computation on reduced hessian', None), 'x'),
+        ('solver',  'health_check',     'tol',      'constraint_jacobian_rank', 1e-8,   ('tolerance of rank compution for constraint jacobian', None), 'x'),
+        ('solver',  'health_check',     'tol',      'linear_dependence_ratio',  1e-2,   ('tolerance of rough linear dependence identifier', None), 'x'),
+        ('solver',  'health_check',     None,       'spy_matrices',           False,    ('make spy plot of KKT matrix - requires manual closing', None), 'x'),
 
         ### simulation options
         ('sim', None,  None,    'number_of_finite_elements',  20,                 ('Integrator steps in one sampling interval', None), 'x'),

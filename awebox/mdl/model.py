@@ -36,17 +36,16 @@ import time
 from . import dae
 from awebox.logger.logger import Logger as awelogger
 
-
 class Model(object):
     def __init__(self):
         self.__status = 'Model not yet built.'
         self.__outputs = None
         self.__type = 'Model'
-        self.__winch = None
-        """ ### self.__winch """
 
-    def build(self, options, winch, architecture):
-        """ ### winch """
+    def build(self, options, architecture):
+        print("op")
+        print(options)
+        print("op")
         awelogger.logger.info('Building model...')
 
         if self.__status == 'I am a model.':
@@ -56,19 +55,13 @@ class Model(object):
             self.__timings = {}
             timer = time.time()
             self.__architecture = architecture
-            self.__generate_system_parameters(options, winch)
-            """ ### winch """
+            self.__generate_system_parameters(options)
             self.__generate_atmosphere(options['atmosphere'])
             self.__generate_wind(options['wind'])
-            self.__generate_system_dynamics(options, winch)
-            """ ### winch """
-            self.__generate_variable_bounds(options)
+            self.__generate_system_dynamics(options)
+            self.__generate_scaled_variable_bounds(options)
             self.__generate_parameter_bounds(options)
-            self.__generate_constraints(options)
             self.__options = options
-
-            self.__winch = winch
-            """ ### self.__winch """
 
             self.__timings['overall'] = time.time()-timer
 
@@ -77,8 +70,7 @@ class Model(object):
             awelogger.logger.info('Model construction time: %s', print_op.print_single_timing(self.__timings['overall']))
             awelogger.logger.info('')
 
-    def __generate_system_parameters(self, options, winch):
-        """ ### winch """
+    def __generate_system_parameters(self, options):
 
         self.__parameters, self.__parameters_dict = system.generate_system_parameters(options, self.__architecture)
 
@@ -102,23 +94,20 @@ class Model(object):
         return None
 
 
-    def __generate_system_dynamics(self,options, winch):
-        """ winch ### """
+    def __generate_system_dynamics(self,options):
+
         awelogger.logger.info('generate system dynamics...')
+
         [variables,
         variables_dict,
         scaling,
-        dynamics,
+        constraints_list,
         outputs,
         outputs_fun,
         outputs_dict,
-        constraint_out,
-        constraint_out_fun,
-        holonomic_fun,
         integral_outputs,
         integral_outputs_fun,
-        integral_scaling] = dyn.make_dynamics(options, winch, self.__atmos, self.__wind, self.__parameters, self.__architecture)
-        """ ### winch """
+        integral_scaling] = dyn.make_dynamics(options, self.__atmos, self.__wind, self.__parameters, self.__architecture)
 
         self.__kite_dof = options['kite_dof']
         self.__kite_geometry = {} #options['geometry']
@@ -126,18 +115,17 @@ class Model(object):
         self.__variables = variables
         self.__variables_dict = variables_dict
         self.__scaling = scaling
-        self.__dynamics = dynamics
+        self.__constraints_list = constraints_list
         self.__outputs = outputs
         self.__outputs_fun = outputs_fun
         self.__outputs_dict = outputs_dict
-        self.__constraint_out = constraint_out
-        self.__constraint_out_fun = constraint_out_fun
-        self.__holonomic_fun = holonomic_fun
         self.__integral_outputs = integral_outputs
         self.__integral_outputs_fun = integral_outputs_fun
         self.__integral_scaling = integral_scaling
 
         self.__output_components = [outputs_fun, outputs_dict]
+
+        self.__dynamics = self.__constraints_list.get_function(options, self.__variables, self.__parameters, 'eq')
 
         return None
 
@@ -151,7 +139,7 @@ class Model(object):
 
         return model_dae
 
-    def __generate_variable_bounds(self, options):
+    def __generate_scaled_variable_bounds(self, options):
 
         awelogger.logger.info('generate variable bounds...')
 
@@ -176,19 +164,6 @@ class Model(object):
             param_bounds[name]['ub'] = 1.
 
         self.__parameter_bounds = param_bounds
-        return None
-
-    def __generate_constraints(self, options):
-
-        awelogger.logger.info('generate constraints..')
-
-        constraints, constraints_fun, constraints_dict = dyn.generate_constraints(
-                           options, self.__variables,self.__parameters,self.__constraint_out(self.__constraint_out_fun(self.__variables, self.__parameters)))
-
-        self.__constraints = constraints
-        self.__constraints_fun = constraints_fun
-        self.__constraints_dict = constraints_dict
-
         return None
 
 
@@ -254,24 +229,12 @@ class Model(object):
         return self.__parameter_bounds
 
     @property
-    def constraints(self):
-        return self.__constraints
-
-    @property
-    def constraints_dict(self):
-        return self.__constraints_dict
-
-    @property
-    def constraints_fun(self):
-        return self.__constraints_fun
+    def constraints_list(self):
+        return self.__constraints_list
 
     @property
     def scaling(self):
         return self.__scaling
-
-    @property
-    def dynamics(self):
-        return self.__dynamics
 
     @property
     def architecture(self):
@@ -350,14 +313,6 @@ class Model(object):
         awelogger.logger.warning('Cannot set timings object.')
 
     @property
-    def holonomic_fun(self):
-        return self.__holonomic_fun
-
-    @holonomic_fun.setter
-    def holonomic_fun(self, value):
-        awelogger.logger.warning('Cannot set holonomic_fun object.')
-
-    @property
     def type(self):
         return self.__type
 
@@ -372,3 +327,19 @@ class Model(object):
     @options.setter
     def options(self, value):
         awelogger.logger.warning('Cannot set options object.')
+
+    @property
+    def dynamics(self):
+        return self.__dynamics
+
+    @property
+    def constraints(self):
+        return self.__constraints_list.get_expression_list('ineq')
+
+    @property
+    def constraints_dict(self):
+        return self.__constraints_list.get_dict()
+
+    @property
+    def constraints_fun(self):
+        return self.__constraints_list.get_function(self.__options, self.__variables, self.__parameters, 'ineq')

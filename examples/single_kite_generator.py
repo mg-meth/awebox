@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3options['scaling']
 
 import awebox as awe
 import matplotlib.pyplot as plt
@@ -14,9 +14,7 @@ options = awe.Options(True)
 options['user_options']['system_model']['architecture'] = {1:0}
 options['user_options']['system_model']['kite_dof'] = 3
 options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
-options['user_options']['type'] = 'not_in_use'
-options['user_options']['winch'] = awe.no_gen.data_dict()   #problem: wenn deaktiviert kann das programm winch nicht in das programm hinzufügen
-
+options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
 
 # trajectory should be a single pumping cycle with initial number of five windings
 options['user_options']['trajectory']['type'] = 'power_cycle'
@@ -27,9 +25,13 @@ options['user_options']['trajectory']['lift_mode']['windings'] = 5
 options['user_options']['induction_model'] = 'not_in_use'
 options['user_options']['tether_drag_model'] = 'split'
 
+options['solver']['max_iter'] = 4000
+options['nlp']['n_k'] = 40
+
 ##################
 # OPTIMIZE TRIAL #
 ##################
+options['solver']['linear_solver'] = 'mumps'
 
 # initialize and optimize trial
 trial = awe.Trial(options, 'single_kite_lift_mode')

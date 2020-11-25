@@ -43,6 +43,8 @@ import awebox.tools.struct_operations as struct_op
 from awebox.logger.logger import Logger as awelogger
 import copy
 
+import pdb
+
 class Trial(object):
     __isfrozen = False
     def __setattr__(self, key, value):
@@ -67,7 +69,6 @@ class Trial(object):
 
         # check if constructed with options
         elif type(seed) == options.Options:
-
             self.__options        = seed
             self.__model          = model.Model()
             self.__formulation    = formulation.Formulation()
@@ -101,13 +102,7 @@ class Trial(object):
 
         architecture = archi.Architecture(self.__options['user_options']['system_model']['architecture'])
         self.__options.build(architecture)
-
-        self.__options['model']['generator']['type'] = self.__options['user_options']['generator']  #sehr schlechte Lösung
-        print(self.__options['model']['generator'])
-        self.__model.build(self.__options['model'], self.__options['user_options']['winch'], architecture)
-        """ ### [user_options][winch] und model generator type = """
-
-        
+        self.__model.build(self.__options['model'], architecture)
         self.__formulation.build(self.__options['formulation'], self.__model)
         self.__nlp.build(self.__options['nlp'], self.__model, self.__formulation)
         self.__optimization.build(self.__options['solver'], self.__nlp, self.__model, self.__formulation, self.__name)
@@ -272,7 +267,7 @@ class Trial(object):
         # warmstart data
         solution_dict['final_homotopy_step'] = self.__optimization.final_homotopy_step
         solution_dict['Xdot_opt'] = self.__nlp.Xdot(self.__nlp.Xdot_fun(self.__optimization.V_opt))
-        solution_dict['g_opt'] = self.__nlp.g(self.__nlp.g_fun(self.__optimization.V_opt, self.__optimization.p_fix_num))
+        solution_dict['g_opt'] = self.__nlp.g_fun(self.__optimization.V_opt, self.__optimization.p_fix_num)
         solution_dict['opt_arg'] = self.__optimization.arg
 
         return solution_dict

@@ -33,6 +33,7 @@ import numpy as np
 from awebox.logger.logger import Logger as awelogger
 import casadi.tools as cas
 
+
 def test_opti_success(trial, test_param_dict, results):
     """
     Test whether optimization was successful
@@ -91,14 +92,18 @@ def test_invariants(trial, test_param_dict, results):
     for node in range(1,number_of_nodes):
         for i in [0, 1]:
             parent = parent_map[node]
+            out_local = trial.visualization.plot_dict['output_vals'][i]
+
             if discretization == 'direct_collocation':
-                c_list = trial.visualization.plot_dict['output_vals'][i]['coll_outputs', :, :, 'tether_length', 'c' + str(node) + str(parent)]
-                dc_list = trial.visualization.plot_dict['output_vals'][i]['coll_outputs', :, :, 'tether_length', 'dc' + str(node) + str(parent)]
-                ddc_list = trial.visualization.plot_dict['output_vals'][i]['coll_outputs', :, :, 'tether_length','ddc' + str(node) + str(parent)]
+                c_list = out_local['coll_outputs', :, :, 'tether_length', 'c' + str(node) + str(parent)]
+                dc_list = out_local['coll_outputs', :, :, 'tether_length', 'dc' + str(node) + str(parent)]
+                ddc_list = out_local['coll_outputs', :, :, 'tether_length','ddc' + str(node) + str(parent)]
+
             elif discretization == 'multiple_shooting':
-                c_list = trial.visualization.plot_dict['output_vals'][i]['outputs', :, 'tether_length', 'c' + str(node) + str(parent)]
-                dc_list = trial.visualization.plot_dict['output_vals'][i]['outputs', :, 'tether_length', 'dc' + str(node) + str(parent)]
-                ddc_list = trial.visualization.plot_dict['output_vals'][i]['outputs', :, 'tether_length', 'ddc' + str(node) + str(parent)]
+                c_list = out_local['outputs', :, 'tether_length', 'c' + str(node) + str(parent)]
+                dc_list = out_local['outputs', :, 'tether_length', 'dc' + str(node) + str(parent)]
+                ddc_list = out_local['outputs', :, 'tether_length', 'ddc' + str(node) + str(parent)]
+
             c_avg = np.average(abs(np.array(c_list)))
             dc_avg = np.average(abs(np.array(dc_list)))
             ddc_avg = np.average(abs(np.array(ddc_list)))
@@ -417,6 +422,75 @@ def test_aero_force_frame_conversion(trial, test_param_dict, results):
 
     return results
 
+def test_generator_energy_logic(trial, test_param_dict, results):
+    """ ### """
+    print(test_param_dict['generator'])
+    plot_dict = trial.visualization.plot_dict
+
+    if test_param_dict['generator']:
+        lambda10 = trial.visualization.plot_dict['xa']['lambda10']
+        l_t = trial.visualization.plot_dict['xd']['l_t']
+        dl_t = trial.visualization.plot_dict['xd']['dl_t']
+        main_power = dl_t[0] * l_t[0] * lambda10[0]
+        power = np.max(main_power)
+
+        max_power = test_param_dict['generator']
+
+        if power > max_power:
+            awelogger.logger.warning('Max main electrical power > ' + str(main_power))
+            results['max_electrial_power'] = False
+        else:
+            results['max_electrial_power'] = True
+
+        if 'i_s' in plot_dict['xd'].keys():
+            i_sd = trial.visualization.plot_dict['xd']['i_s'][0]
+            i_sq = trial.visualization.plot_dict['xd']['i_s'][1]
+            v_sd = trial.visualization.plot_dict['u']['v_s'][0]
+            v_sq = trial.visualization.plot_dict['u']['v_s'][1]
+
+        lamb = trial.visualization.plot_dict['xa']['lambda10']
+        l_t = trial.visualization.plot_dict['xd']['l_t']
+        dl_t = trial.visualization.plot_dict['xd']['dl_t']
+
+        results['Electrical energy < Mechanical energy'] = True
+        mechanical_energy = 0
+        electrical_energy = 0
+
+        mech_en_ernte = 0
+        el_en_ernte = 0
+        mech_en_verlust = 0
+        el_en_verlust = 0
+
+        for n, mechanical_power in enumerate(np.array(main_power)):
+            if 'i_s' in plot_dict['xd'].keys():
+                electrical_power = 3/2 * (v_sd[n]*i_sd[n] + v_sq[n]*i_sq[n])
+            else:
+                electrical_power = 0
+            electrical_energy += electrical_power
+            mechanical_energy += mechanical_power[0]
+
+            if mechanical_energy < electrical_energy:
+                results['Electrical energy < Mechanical energy'] = False
+
+            if dl_t[0][n] > 0:
+                mech_en_ernte += mechanical_power[0]
+                el_en_ernte += electrical_power
+
+            if dl_t[0][n] < 0:
+                mech_en_verlust += mechanical_power[0]
+                el_en_verlust += electrical_power
+
+            awelogger.logger.warning('Electrical energy > Mechanical energy CHECK' + str(electrical_energy) + '<' + str(mechanical_energy)\
+                                     + 'reel_out: ' \
+                                     + 'el_energy: ' + str(el_en_ernte) + 'mech_energy: ' + str(mech_en_ernte) \
+                                     + 'reel_in: ' + 'el_energy: ' + str(el_en_verlust) + 'mech_energy: ' + str(mech_en_verlust))
+
+        if not results['Electrical energy < Mechanical energy']:
+            awelogger.logger.warning('Electrical energy < Mechanical energy' + str(electrical_energy) + '<' + str(mechanical_energy) + 'reel_out: ' \
+                                     + 'el_energy: ' + str(el_en_ernte) + 'mech_energy: ' + str(mech_en_ernte) +\
+                                      'reel_in: ' + 'el_energy: ' + str(el_en_verlust) + 'mech_energy: ' + str(mech_en_verlust))
+    return results
+
 def generate_test_param_dict(options):
     """
     Set parameters relevant for testing
@@ -439,5 +513,6 @@ def generate_test_param_dict(options):
     test_param_dict['check_energy_summation'] = options['test_param']['check_energy_summation']
     test_param_dict['energy_summation_thresh'] = options['test_param']['energy_summation_thresh']
     test_param_dict['aero_conversion_thresh'] = options['test_param']['aero_conversion_thresh']
+    test_param_dict['generator'] = options['test_param']['generator_max_power']
 
     return test_param_dict

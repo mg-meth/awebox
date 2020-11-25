@@ -41,6 +41,8 @@ def generate_structure(options, architecture):
     kite_dof = options['kite_dof']
     surface_control = options['surface_control']
     tether_control_var = options['tether']['control_var']
+    print("generate_structure")
+    print(tether_control_var)
 
     # _system architecture (see _zanon2013a)
     number_of_nodes = architecture.number_of_nodes
@@ -158,27 +160,15 @@ def generate_structure(options, architecture):
     system_states.extend([('l_t', (1, 1)), ('dl_t', (1, 1))]) # main tether length and speed
 
     # _energy + main tether length and speed
-
-    """
-    generator = options['generator']['type']['type']
-    if generator != 'not_in_use' and generator != 'experimentell':
-        tether_control_var = generator
-    """
-    """ ### änderung der controll var """
-    
     if tether_control_var == 'ddl_t':
         system_controls.extend([('ddl_t', (1, 1))])  # main tether acceleration
     elif tether_control_var == 'dddl_t':
         system_states.extend([('ddl_t', (1, 1))]) # main tether acceleration
         system_controls.extend([('dddl_t', (1, 1))])  # main tether jerk
-
-        
     elif tether_control_var == 'pmsm':
         system_states.extend([('ddl_t', (1, 1))])
         system_states.extend([('i_s', (2, 1))])
         system_controls.extend([('v_s', (2, 1))])
-        """ ###  """
-        
     else:
         raise ValueError('invalid tether control variable chosen')
 
@@ -290,7 +280,6 @@ def extend_actuator_induction(options, system_lifted, system_states, architectur
         system_states.extend([('bar_varrho' + str(layer_node), (1, 1))])
 
         system_lifted.extend([('rot_matr' + str(layer_node), (9, 1))])
-        system_lifted.extend([('n_hat_slack' + str(layer_node), (6, 1))])
         system_lifted.extend([('n_vec_length' + str(layer_node), (1, 1))])
 
         system_lifted.extend([('uzero_matr' + str(layer_node), (9, 1))])
@@ -305,6 +294,10 @@ def extend_actuator_induction(options, system_lifted, system_states, architectur
     return system_lifted, system_states
 
 def extend_aerodynamics(options, system_lifted, system_states, architecture):
+
+    for node in range(1, architecture.number_of_nodes):
+        parent = architecture.parent_map[node]
+        system_lifted.extend([('f_tether' + str(node) + str(parent), (3, 1))])
 
     # create the lifted force and moment vars. so that the implicit
     # aerodynamic constraints (with induction correction) can be enforced
@@ -339,7 +332,7 @@ def define_bounds(options, variables):
 
             variable_bounds[variable_type][name] = {}
             if variable_type in list(options.keys()):
-                var_name = struct_op.get_node_variable_name(name) # omit node numbers
+                var_name, _ = struct_op.split_name_and_node_identifier(name) # omit node numbers
                 if name in list(options[variable_type].keys()): # check if variable has node bounds
                     variable_bounds[variable_type][name]['lb'] = options[variable_type][name][0]
                     variable_bounds[variable_type][name]['ub'] = options[variable_type][name][1]
@@ -361,7 +354,8 @@ def scale_variable(variables, var_si, scaling):
     for variable_type in list(variables.keys()):
         subkeys = struct_op.subkeys(variables, variable_type)
         for name in subkeys:
-            var_scaled[variable_type, name] = var_scaled[variable_type, name]/scaling[variable_type][name]
+            local_si = var_scaled[variable_type, name]
+            var_scaled[variable_type, name] = struct_op.var_si_to_scaled(variable_type, name, local_si, scaling)
 
     return var_scaled
 
@@ -369,8 +363,9 @@ def scale_variable(variables, var_si, scaling):
 def scale_bounds(variable_bounds, scaling):
     for variable_type in list(variable_bounds.keys()):
         for name in list(variable_bounds[variable_type].keys()):
-            variable_bounds[variable_type][name]['lb'] = variable_bounds[variable_type][name]['lb']/scaling[variable_type][name]
-            variable_bounds[variable_type][name]['ub'] = variable_bounds[variable_type][name]['ub']/scaling[variable_type][name]
+            for bound_type in ['lb', 'ub']:
+                local_si = variable_bounds[variable_type][name][bound_type]
+                variable_bounds[variable_type][name][bound_type] = struct_op.var_si_to_scaled(variable_type, name, local_si, scaling)
 
     return variable_bounds
 
@@ -428,4 +423,3 @@ def generate_optimization_parameters():
     optimization_parameters = p_dec
 
     return optimization_parameters
-

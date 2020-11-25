@@ -1,14 +1,16 @@
 import numpy as np
 
-
 def data_dict():
 
     data_dict = {}
-    data_dict['winch_name'] = 'pmsm_125_kw_gen'
 
-    data_dict['winch_el'] = winch_el()
-    data_dict['winch_geometry'] = winch_geometry()
-    data_dict['winch_tether'] = winch_tether()
+    data_dict['name'] = 'pmsm_125_kw_gen'
+    data_dict['type'] = 'pmsm'
+    data_dict['control_var'] = 'pmsm'
+    data_dict['generator_max_power'] = 1.25*10**5
+    data_dict['model_bounds'] = True                                             #'model_bounds' -> 'power_el' -> 'include'
+    data_dict['generator'] = winch_el()
+    data_dict['ground_station'] = winch_mech()
 
     return data_dict
 
@@ -17,113 +19,25 @@ def winch_el():
 
     winch_el = {}
 
-    winch_el['a_0'] = 293.5816
-    winch_el['a_1'] = 0
-    winch_el['a_2'] = 3.5852 * 10**-2          #0.0004 * (2*np.pi / 60) ** 2
-    winch_el['a_3'] = 0
-    winch_el['a_4'] = 6.6592 * 10**-2          #0.0666
-    winch_el['a_5'] = 1.03                     #0.1079 * 2*np.pi / 60
+    winch_el['voltage_d_max'] = 433
+    winch_el['voltage_d_min'] = -433
+    winch_el['voltage_q_max'] = 433
+    winch_el['voltage_q_min'] = -433
+    winch_el['l_d'] = 0.001
+    winch_el['l_q'] = 0.001
+    winch_el['r_s'] = 0.02
+    winch_el['p_p'] = 4
+    winch_el['phi_f'] = 0.892
 
     return winch_el
 
 
+def winch_mech():
 
-def winch_geometry():
+    winch_mech = {}
 
-    winch_geometry = {}
+    winch_mech['r_gen'] = 0.25
+    winch_mech['j_winch'] = 1.57
+    winch_mech['f_c'] = 0
 
-    winch_geometry['radius_drum'] = 0.53 / 2
-
-    return winch_geometry
-
-
-
-
-def winch_tether():
-
-    winch_tether = {}
-
-    return winch_tether
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+    return winch_mech

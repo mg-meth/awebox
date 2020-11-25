@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def data_dict():
+def data_dict(options):
 
     data_dict = {}
     data_dict['winch_name'] = '9_kw_gen'
