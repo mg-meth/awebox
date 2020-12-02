@@ -9,10 +9,10 @@ import pdb
 # SET-UP TRIAL OPTIONS #
 ########################
 
-wind_ref = [2]
+wind_ref = [2,3,4,5,6,7]
 name = []
 for w in wind_ref:
-    name = 'single_no_gen_wind_ref_' + str(w) + '_log_wind'
+    name = 'TEST_awebox_RACHEL' + str(w) + '_log_wind'
 
     print(name)
 
@@ -69,12 +69,13 @@ for w in wind_ref:
     trial.optimize()
     trial.quality.print_results()
     trial.plot('level_3')
+    trial.write_to_csv()
+    #pdb.set_trace()
+
     V_final = trial.optimization.V_final
     V_solution_scaled = trial.nlp.V(trial.optimization.solution['x'])
     print(V_final['xd', :, 'i_sd'],V_final['xd', :, 'i_sq'])
     print(V_solution_scaled['xd', :, 'i_sd'],V_solution_scaled['xd', :, 'i_sq'])
-    pdb.set_trace()
-    trial.write_to_csv()
 
 
     plt.show()
