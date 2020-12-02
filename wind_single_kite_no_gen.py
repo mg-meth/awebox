@@ -33,7 +33,7 @@ for w in wind_ref:
     options['solver']['max_iter'] = 50
     options['solver']['max_cpu_time'] = 2.e4
     """ ### """
-    options['model']['ground_station']['ddl_t_max'] = 95.04
+    #options['model']['ground_station']['ddl_t_max'] = 95.04
 
     # trajectory should be a single pumping cycle with initial number of five windings
     options['user_options']['trajectory']['type'] = 'power_cycle'
