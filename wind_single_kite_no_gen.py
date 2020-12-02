@@ -60,7 +60,7 @@ for w in wind_ref:
     # OPTIMIZE TRIAL #
     ##################
 
-    options['solver']['linear_solver'] = 'mumps'
+    options['solver']['linear_solver'] = 'ma57'
     #options['solver']['initialization']['fix_tether_length'] = True
 
     # initialize and optimize trial
