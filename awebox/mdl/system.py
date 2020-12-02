@@ -167,8 +167,10 @@ def generate_structure(options, architecture):
         system_controls.extend([('dddl_t', (1, 1))])  # main tether jerk
     elif tether_control_var == 'pmsm':
         system_states.extend([('ddl_t', (1, 1))])
-        system_states.extend([('i_s', (2, 1))])
-        system_controls.extend([('v_s', (2, 1))])
+        system_states.extend([('i_sq', (1, 1))])
+        system_states.extend([('i_sd', (1, 1))])
+        system_controls.extend([('v_sd', (1, 1))])
+        system_controls.extend([('v_sq', (1, 1))])
     else:
         raise ValueError('invalid tether control variable chosen')
 

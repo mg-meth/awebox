@@ -38,8 +38,8 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
         lhs = t_inertia
 
 
-        i_sd = variables_si['xd']['i_s'][0]
-        i_sq = variables_si['xd']['i_s'][1]
+        i_sd = variables_si['xd']['i_sd']
+        i_sq = variables_si['xd']['i_sq']
         torque = (((6*(0.892*i_sq))-(0.25*((variables_si['xa']['lambda10'])*(variables_si['xd']['l_t']))))+(1.57*((variables_si['xddot']['ddl_t'] )/0.25)))
 
         print("torque")
@@ -58,8 +58,8 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
 def t_em_ode(options, variables_si, outputs, parameters, architecture):
 
     if options['generator']['type'] == 'pmsm':
-        i_sd = variables_si['xd']['i_s'][0]
-        i_sq = variables_si['xd']['i_s'][1]
+        i_sd = variables_si['xd']['i_sd']
+        i_sq = variables_si['xd']['i_sq']
         ld = parameters['theta0','generator','l_d']
         lq = parameters['theta0','generator','l_q']
         rs = parameters['theta0','generator','r_s']
@@ -75,12 +75,12 @@ def generator_ode(options, variables_si, outputs, parameters, architecture):
 
     omega = -variables_si['xd']['dl_t'] / parameters['theta0','ground_station','r_gen']
     if options['generator']['type'] == 'pmsm':
-        v_sd = variables_si['u']['v_s'][0]
-        v_sq = variables_si['u']['v_s'][1]
-        i_sd = variables_si['xd']['i_s'][0]
-        i_sq = variables_si['xd']['i_s'][1]
-        di_sd = variables_si['xddot']['di_s'][0]
-        di_sq = variables_si['xddot']['di_s'][1]
+        v_sd = variables_si['u']['v_sd']
+        v_sq = variables_si['u']['v_sq']
+        i_sd = variables_si['xd']['i_sd']
+        i_sq = variables_si['xd']['i_sq']
+        di_sd = variables_si['xddot']['di_sd']
+        di_sq = variables_si['xddot']['di_sq']
         ld = parameters['theta0','generator','l_d']
         lq =parameters['theta0','generator','l_q']
         rs = parameters['theta0','generator','r_s']

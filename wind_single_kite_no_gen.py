@@ -1,14 +1,15 @@
 #!/usr/bin/python3
 from awebox.logger.logger import Logger as awelogger
-awelogger.logger.setLevel(10)
+#awelogger.logger.setLevel(10)
 import awebox as awe
 import matplotlib.pyplot as plt
+import pdb
 
 ########################
 # SET-UP TRIAL OPTIONS #
 ########################
 
-wind_ref = [2,3,4,5,6,7]
+wind_ref = [2]
 name = []
 for w in wind_ref:
     name = 'single_no_gen_wind_ref_' + str(w) + '_log_wind'
@@ -30,7 +31,7 @@ for w in wind_ref:
     options['user_options']['trajectory']['type'] = 'power_cycle'
     options['user_options']['trajectory']['system_type'] = 'lift_mode'
     options['user_options']['trajectory']['lift_mode']['windings'] = 3
-    options['solver']['max_iter'] = 50
+    options['solver']['max_iter'] = 80000
     options['solver']['max_cpu_time'] = 2.e4
     """ ### """
     #options['model']['ground_station']['ddl_t_max'] = 95.04
@@ -42,7 +43,7 @@ for w in wind_ref:
 
     options['user_options']['wind']['u_ref'] = w
 
-    options['nlp']['n_k'] = 60
+    options['nlp']['n_k'] = 40
     #options['model']['system_bounds']['u']['dkappa'] = [-1.0, 1.0]
 
     #options['model']['system_bounds']['xd']['l_t'] = [1.0e-2, 1.0e3]
@@ -59,7 +60,7 @@ for w in wind_ref:
     # OPTIMIZE TRIAL #
     ##################
 
-    options['solver']['linear_solver'] = 'ma57'
+    options['solver']['linear_solver'] = 'mumps'
     #options['solver']['initialization']['fix_tether_length'] = True
 
     # initialize and optimize trial
@@ -68,9 +69,11 @@ for w in wind_ref:
     trial.optimize()
     trial.quality.print_results()
     trial.plot('level_3')
-    pdb.set_trace()
-    print(V_final['xd', :, 'i_s'])
+    V_final = trial.optimization.V_final
     V_solution_scaled = trial.nlp.V(trial.optimization.solution['x'])
+    print(V_final['xd', :, 'i_sd'],V_final['xd', :, 'i_sq'])
+    print(V_solution_scaled['xd', :, 'i_sd'],V_solution_scaled['xd', :, 'i_sq'])
+    pdb.set_trace()
     trial.write_to_csv()
 
 

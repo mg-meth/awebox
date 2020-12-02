@@ -236,6 +236,15 @@ def divide_options(options, options_tree, help_options):
     options_tree.append(('quality', 'test_param', None, 'generator_max_power', options['generator_max_power'], ('???', None),'x'))
     options_tree.append(('model', 'model_bounds', 'current', 'include', options['model_bounds'], ('???', None),'x'))
 
+    options_tree.append(('model', 'scaling', 'xd', 'i_sd', 1, ('descript', None), 'x'))
+    options_tree.append(('model', 'scaling', 'xd', 'i_sq', 40., ('descript', None), 'x'))
+
+
+#    options_tree.append(('model', 'scaling', 'xd', 'v_sd', 1, ('descript', None), 'x'))
+#    options_tree.append(('model', 'scaling', 'xd', 'v_sq', 5., ('descript', None), 'x'))
+
+    #XXXXX = V_final['xd', :, 'i_s'] "average" werte
+
     for name in list(options.keys()):
         if name == 'ground_station':
             ground_station = options[name]
@@ -840,7 +849,8 @@ def build_tether_control_options(options, options_tree, fixed_params):
 
         elif control_name == 'pmsm':
             voltage = options['user_options']['generator']['generator']
-            options_tree.append(('model', 'system_bounds', 'u', 'v_s', [voltage['voltage_q_min'], voltage['voltage_q_max']],   ('winch generator d-q model [V]', None),'x'))
+            options_tree.append(('model', 'system_bounds', 'u', 'v_sd', [voltage['voltage_d_min'], voltage['voltage_d_max']],   ('winch generator d-q model [V]', None),'x'))
+            options_tree.append(('model', 'system_bounds', 'u', 'v_sq', [voltage['voltage_q_min'], voltage['voltage_q_max']],   ('winch generator d-q model [V]', None),'x'))
 
         else:
             raise ValueError('invalid tether control variable chosen')

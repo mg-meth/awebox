@@ -356,10 +356,10 @@ def gen_experimental(options, variables_si, parameters):
 
 def gen_pmsm(options, variables_si, outputs, architecture):
     """ electrically power of a pmsm generator """
-    v_sd = variables_si['u']['v_s'][0]
-    v_sq = variables_si['u']['v_s'][1]
-    i_sd = variables_si['xd']['i_s'][0]
-    i_sq = variables_si['xd']['i_s'][1]
+    v_sd = variables_si['u']['v_sd']
+    v_sq = variables_si['u']['v_sq']
+    i_sd = variables_si['xd']['i_sd']
+    i_sq = variables_si['xd']['i_sq']
     p_el = (1.5*((v_sd*i_sd)+(v_sq*i_sq)))
 
     print("p_el")

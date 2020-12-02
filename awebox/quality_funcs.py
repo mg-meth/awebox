@@ -445,8 +445,8 @@ def test_generator_energy_logic(trial, test_param_dict, results):
         if 'i_s' in plot_dict['xd'].keys():
             i_sd = trial.visualization.plot_dict['xd']['i_s'][0]
             i_sq = trial.visualization.plot_dict['xd']['i_s'][1]
-            v_sd = trial.visualization.plot_dict['u']['v_s'][0]
-            v_sq = trial.visualization.plot_dict['u']['v_s'][1]
+            v_sd = trial.visualization.plot_dict['u']['v_sd']
+            v_sq = trial.visualization.plot_dict['u']['v_sq']
 
         lamb = trial.visualization.plot_dict['xa']['lambda10']
         l_t = trial.visualization.plot_dict['xd']['l_t']
