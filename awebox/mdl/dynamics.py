@@ -340,25 +340,27 @@ def power_el(options, variables_si, outputs, architecture):  #vlt dann auch in e
     elif gen_type == 'asynchronous_motor':
         return gen_asynchron(options, variables_si, outputs, architecture)
     elif gen_type == 'experimental':
-        return gen_experimentell(options, variables_si)
+        return gen_experimental(options, variables_si)
 
 
-def gen_experimentell(options, variables_si):
-    omega_mech = variables_si['xd']['dl_t'] / options['ground_station']['r_gen']
-    T_mech = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * options['ground_station']['r_gen']
-    P_el = winch['a_0'] + winch['a_1'] * omega_mech + winch['a_2'] * omega_mech ** 2 + \
-           winch['a_3'] * T_mech + winch['a_4'] * T_mech ** 2 + \
-           winch['a_5'] * omega_mech * T_mech
-    return P_el
+def gen_experimental(options, variables_si, parameters):
+    """ electrically power with an approximation function """
+    o = -variables_si['xd']['dl_t'] / options['ground_station']['r_gen']
+    t = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * options['ground_station']['r_gen'] #evtl aauch -
+    w = parameters['user_options']['generator']['generator']
+    p_el = w['a_0'] + w['a_1']*o + w['a_2']*t + w['a_3']*o**2 + w['a_4']*t**2 +\
+           w['a_5']*o*t + w['a_6']*o**3 + w['a_7']*t**3 + w['a_8']*o**2*t + \
+           w['a_9']*t**2*o + w['a_10']*o**2*t**2
+    return p_el
 
 
 def gen_pmsm(options, variables_si, outputs, architecture):
-    """ ### leistung """
+    """ electrically power of a pmsm generator """
     v_sd = variables_si['u']['v_s'][0]
     v_sq = variables_si['u']['v_s'][1]
     i_sd = variables_si['xd']['i_s'][0]
     i_sq = variables_si['xd']['i_s'][1]
-    p_el = 3/2 * (v_sd*i_sd + v_sq*i_sq)
+    p_el = (1.5*((v_sd*i_sd)+(v_sq*i_sq)))
 
     print("p_el")
     print(p_el)
@@ -513,6 +515,11 @@ def current_inequality(options, variables_si, parameters, architecture, outputs)
 
             i_d_ineq = -i_d + 30
             i_q_ineq = -i_q + 30
+
+
+
+            i_d_ineq = (30-i_d)
+            i_q_ineq = (30-i_q)
 
             print("i_sd_ineq")
             print(i_d_ineq)

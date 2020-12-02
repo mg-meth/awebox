@@ -17,7 +17,7 @@ from awebox.logger.logger import Logger as awelogger
 def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, architecture):
 
     cstr_list = mdl_constraint.MdlConstraintList()
-    
+
     if options['generator']['type'] != None and options['generator']['type'] != 'experimental':
 
         t_em = t_em_ode(options, variables_si, outputs, parameters, architecture)
@@ -36,10 +36,15 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
 
         rhs = t_tether + t_em + t_frict
         lhs = t_inertia
-        torque = rhs - lhs
+
+
+        i_sd = variables_si['xd']['i_s'][0]
+        i_sq = variables_si['xd']['i_s'][1]
+        torque = (((6*(0.892*i_sq))-(0.25*((variables_si['xa']['lambda10'])*(variables_si['xd']['l_t']))))+(1.57*((variables_si['xddot']['ddl_t'] )/0.25)))
 
         print("torque")
         print(torque)
+        torque = rhs - lhs
 
         winch_cstr = cstr_op.Constraint(expr=torque, name='winch', cstr_type='eq')
         cstr_list.append(winch_cstr)
@@ -82,13 +87,16 @@ def generator_ode(options, variables_si, outputs, parameters, architecture):
         phi_f = parameters['theta0','generator','phi_f']
         p_p = parameters['theta0','generator','p_p']
 
-        i_sq_ode = v_sq + rs*i_sq + lq*di_sq + p_p*omega*phi_f + p_p*omega*ld*i_sd
-        i_sd_ode = v_sd + rs*i_sd + ld*di_sd - p_p*omega*lq*i_sq
+        i_sq_ode = ((((v_sq+(0.02*i_sq))+(0.001*di_sq))-(0.892*(4*((variables_si['xd']['dl_t'])/0.25))))-((0.001*(4*((variables_si['xd']['dl_t'])/0.25)))*i_sd))
+        i_sd_ode = (((v_sd+(0.02*i_sd))+(0.001*di_sd))+((0.001*(4*((variables_si['xd']['dl_t'])/0.25)))*i_sq))
 
         print("i_sq_ode")
         print(i_sq_ode)
         print("i_sd_ode")
         print(i_sd_ode)
+
+        i_sq_ode = v_sq + rs*i_sq + lq*di_sq + p_p*omega*phi_f + p_p*omega*ld*i_sd
+        i_sd_ode = v_sd + rs*i_sd + ld*di_sd - p_p*omega*lq*i_sq
 
         i_sd_cstr = cstr_op.Constraint(expr=i_sd_ode, name='gen0', cstr_type='eq')
         cstr_list.append(i_sd_cstr)
@@ -97,3 +105,35 @@ def generator_ode(options, variables_si, outputs, parameters, architecture):
         cstr_list.append(i_sq_cstr)
 
     return cstr_list
+
+
+
+"""
+i_sd_cstr
+(30-xd_i_s_0)
+i_sq_cstr
+(30-xd_i_s_1)
+i_sd_ode
+@1=0.001, (((u_v_s_0+(0.02*xd_i_s_0))+(@1*xddot_di_s_0))+((@1*(4*((500*xd_dl_t)/0.25)))*xd_i_s_1))
+i_sq_ode
+@1=0.001, @2=4, @3=((500*xd_dl_t)/0.25), ((((u_v_s_1+(0.02*xd_i_s_1))+(@1*xddot_di_s_1))-(0.892*(@2*@3)))-((@1*(@2*@3))*xd_i_s_0))
+(500*theta_l_t_full)
+phi
+@1=500, (((@1*theta_l_t_full)-(@1*xd_l_t))/0.25)
+lambda10
+(8322.91*xa_lambda10)
+t_inertia
+(-(1.57*((500*xddot_ddl_t)/0.25)))
+torque
+@1=0.25, @2=500, (((6*(0.892*xd_i_s_1))-(@1*((8322.91*xa_lambda10)*(@2*xd_l_t))))+(1.57*((@2*xddot_ddl_t)/@1)))
+p_el
+(1.5*((u_v_s_0*xd_i_s_0)+(u_v_s_1*xd_i_s_1)))
+
+
+
+@1=0.25, @2=500, (((6*(0.892*xd_i_s_1))-(@1*((261.094*xa_lambda10)*(@2*xd_l_t))))+(1.57*((@2*xddot_ddl_t)/@1)))
+i_sq_ode
+@1=0.001, @2=4, @3=((500*xd_dl_t)/0.25), ((((u_v_s_1+(0.02*xd_i_s_1))+(@1*xddot_di_s_1))-(0.892*(@2*@3)))-((@1*(@2*@3)*xd_i_s_0))
+i_sd_ode
+@1=0.001, (((u_v_s_0+(0.02*xd_i_s_0))+(@1*xddot_di_s_0))+((@1*(4*((500*xd_dl_t)/0.25)))*xd_i_s_1))
+"""

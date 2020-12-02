@@ -230,7 +230,8 @@ def build_generator_options(options, help_options, options_tree, fixed_params):
 
 def divide_options(options, options_tree, help_options):
     options_tree.append(('model', 'generator', None, 'name', options['name'], ('???', None),'x'))
-    options_tree.append(('model', 'tether', None, 'control_var', options['control_var'], ('???', None),'x'))
+    if 'control_var' in list(options.keys()):
+        options_tree.append(('model', 'tether', None, 'control_var', options['control_var'], ('???', None),'x'))
     options_tree.append(('model', 'generator', None, 'type', options['type'], ('???', None),'x'))
     options_tree.append(('quality', 'test_param', None, 'generator_max_power', options['generator_max_power'], ('???', None),'x'))
     options_tree.append(('model', 'model_bounds', 'current', 'include', options['model_bounds'], ('???', None),'x'))
@@ -827,7 +828,8 @@ def build_tether_control_options(options, options_tree, fixed_params):
     else:
 
         if user_options['generator']:
-            control_name = user_options['generator']['control_var']
+            if user_options['generator']['control_var']:
+                control_name = user_options['generator']['control_var']
 
         if control_name == 'ddl_t':
             options_tree.append(('model', 'system_bounds', 'u', 'ddl_t', [-1. * ddl_t_max, ddl_t_max],   ('main tether max acceleration [m/s^2]', None),'x'))

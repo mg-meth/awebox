@@ -1,25 +1,22 @@
 import numpy as np
 
 
-def data_dict(options):
+def data_dict():
 
     data_dict = {}
 
-    options['user_options']['generator']['type'] = 'asyn'
-    options['model']['tether']['control_var'] = 'asyn'
-    options['model']['model_bounds']['voltage']['include'] = True
-    options['quality']['test_param']['generator_max_power'] = 25*10**3
-    
-    data_dict['winch_name'] = 'asyn_25_kw_gen'
-    data_dict['asyn'] = winch_el(options)
-    data_dict['winch_geometry'] = winch_geometry(options)
-
-
+    data_dict['name'] = 'asyn_25_kw_gen'
+    data_dict['type'] = 'asyn'
+    data_dict['control_var'] = 'asyn'
+    data_dict['generator_max_power'] = 25*10**3
+    data_dict['model_bounds'] = True
+    data_dict['generator'] = winch_el()
+    data_dict['ground_station'] = winch_mech()
 
     return data_dict
 
 
-def winch_el(options):
+def winch_el():
 
     winch_el = {}
 
@@ -28,108 +25,19 @@ def winch_el(options):
     winch_el['v_n'] = 4.09
     winch_el['u_n'] = 231
     winch_el['j_winch'] = 0.328
-    winch_el['f_c'] = 0
-    
+
     return winch_el
 
 
 
-def winch_geometry(options):
+def winch_mech():
 
-    winch_geometry = {}
+    winch_mech = {}
 
-    winch_geometry['n'] = 6
-    winch_geometry['radius'] = 0.1615
-    
-    options['params']['ground_station']['r_gen'] = winch_geometry['radius']
-    options['params']['ground_station']['m_gen'] = 50
+    winch_mech['n'] = 6
+    winch_mech['r_gen'] = 0.1615
+    winch_mech['m_gen'] = 50
+    winch_mech['f_c'] = 0
 
-    #kein ddl_t_max und dddl_t_max
 
-
-    return winch_geometry
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+    return winch_mech
