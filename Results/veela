@@ -253,8 +253,8 @@ for w in wind_ref:
 
     V_final = trial.optimization.V_final
     V_solution_scaled = trial.nlp.V(trial.optimization.solution['x'])
-    print(V_final['xd', :, 'i_sd'],V_final['xd', :, 'i_sq'])
-    print(V_solution_scaled['xd', :, 'i_sd'],V_solution_scaled['xd', :, 'i_sq'])
+    #print(V_final['xd', :, 'i_sd'],V_final['xd', :, 'i_sq'])
+    #print(V_solution_scaled['xd', :, 'i_sd'],V_solution_scaled['xd', :, 'i_sq'])
 
 
 
@@ -504,8 +504,8 @@ for w in wind_ref:
 
     V_final = trial.optimization.V_final
     V_solution_scaled = trial.nlp.V(trial.optimization.solution['x'])
-    print(V_final['xd', :, 'i_sd'],V_final['xd', :, 'i_sq'])
-    print(V_solution_scaled['xd', :, 'i_sd'],V_solution_scaled['xd', :, 'i_sq'])
+    #print(V_final['xd', :, 'i_sd'],V_final['xd', :, 'i_sq'])
+    #print(V_solution_scaled['xd', :, 'i_sd'],V_solution_scaled['xd', :, 'i_sq'])
 
 
 w_ref = [5]
