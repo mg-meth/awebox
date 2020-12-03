@@ -9,6 +9,23 @@ import pdb
 # SET-UP TRIAL OPTIONS #
 ########################
 
+def solve_succed(quality_print_results, name):
+    filename = 'solve_succed.txt'
+    print(quality_print_results)
+    with open(filename) as f:
+        n_neu = 0
+        line_lst = []
+        for n, line in enumerate(f):
+            n_neu = n+1
+            line_lst += [line]
+    with open(filename, 'w') as f:
+        string = ''
+        for l in line_lst:
+            if l != '\n':
+                string += l + '\n'
+        string += '\n' + name + ' : ' + quality_print_results
+        f.write(string)
+
 
 
 name = 'TEST'
@@ -34,7 +51,7 @@ options['solver']['max_cpu_time'] = 2.e4
 
 options['user_options']['wind']['u_ref'] = 5
 
-options['nlp']['n_k'] = 40
+options['nlp']['n_k'] = 5
     #options['model']['system_bounds']['u']['dkappa'] = [-1.0, 1.0]
 
     #options['model']['system_bounds']['xd']['l_t'] = [1.0e-2, 1.0e3]
@@ -51,7 +68,7 @@ options['user_options']['tether_drag_model'] = 'split'
     # OPTIMIZE TRIAL #
     ##################
 
-options['solver']['linear_solver'] = 'ma57'
+options['solver']['linear_solver'] = 'mumps'
     #options['solver']['initialization']['fix_tether_length'] = True
 
     # initialize and optimize trial
@@ -59,6 +76,7 @@ trial = awe.Trial(options, name)
 trial.build()
 trial.optimize()
 trial.quality.print_results()
+quality_print_results=trial.quality.return_results()
 trial.plot('level_3')
 trial.write_to_csv()
     #pdb.set_trace()
@@ -66,6 +84,9 @@ V_final = trial.optimization.V_final
 V_solution_scaled = trial.nlp.V(trial.optimization.solution['x'])
 print(V_final['xd', :, 'i_sd'],V_final['xd', :, 'i_sq'])
 print(V_solution_scaled['xd', :, 'i_sd'],V_solution_scaled['xd', :, 'i_sq'])
+
+solve_succed(quality_print_results, name)
+
 
 
 wind_ref = [2,3,4,5,6,7]

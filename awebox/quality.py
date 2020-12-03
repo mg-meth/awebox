@@ -30,6 +30,7 @@
 
 from awebox.logger.logger import Logger as awelogger
 import awebox.quality_funcs as quality_funcs
+import pdb
 
 class Quality(object):
 
@@ -99,6 +100,20 @@ class Quality(object):
                 result = 'FAILED'
             print((key + ':  ' + result))
         print('#######################################')
+
+    def return_results(self):
+
+        retur = ''
+        results = self.__results
+        for key in list(results.keys()):
+            if results[key]:
+                result = 'PASSED'
+            else:
+                result = 'FAILED'
+            pdb.set_trace()
+            retur += str(key) + ':  ' + result +'\n'
+        return retur
+
 
     @property
     def results(self):
