@@ -68,10 +68,10 @@ print(V_final['xd', :, 'i_sd'],V_final['xd', :, 'i_sq'])
 print(V_solution_scaled['xd', :, 'i_sd'],V_solution_scaled['xd', :, 'i_sq'])
 
 
-
-"""
 wind_ref = [2,3,4,5,6,7]
 name = []
+"""
+
 for w in wind_ref:
     name = 'single_kite_25_kw\single_kite_' + str(w) + '_log_wind'
 
