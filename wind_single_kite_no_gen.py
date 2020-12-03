@@ -12,7 +12,7 @@ import pdb
 wind_ref = [2,3,4,5,6,7]
 name = []
 for w in wind_ref:
-    name = 'TEST_awebox_RACHEL' + str(w) + '_log_wind'
+    name = 'single_kite_gen' + str(w) + '_log_wind'
 
     print(name)
 
@@ -22,9 +22,9 @@ for w in wind_ref:
 
     # single kite with point-mass model
     options['user_options']['system_model']['architecture'] = {1:0}
-    options['user_options']['system_model']['kite_dof'] = 3
+    options['user_options']['system_model']['kite_dof'] = 6
     options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
-    options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
+    options['user_options']['generator'] = awe.pmsm_25_kw_gen.data_dict()
 
 
     # trajectory should be a single pumping cycle with initial number of five windings
@@ -36,14 +36,9 @@ for w in wind_ref:
     """ ### """
     #options['model']['ground_station']['ddl_t_max'] = 95.04
 
-    # trajectory should be a single pumping cycle with initial number of five windings
-    options['user_options']['trajectory']['type'] = 'power_cycle'
-    options['user_options']['trajectory']['system_type'] = 'lift_mode'
-    options['user_options']['trajectory']['lift_mode']['windings'] = 3
-
     options['user_options']['wind']['u_ref'] = w
 
-    options['nlp']['n_k'] = 40
+    options['nlp']['n_k'] = 60
     #options['model']['system_bounds']['u']['dkappa'] = [-1.0, 1.0]
 
     #options['model']['system_bounds']['xd']['l_t'] = [1.0e-2, 1.0e3]
@@ -76,9 +71,6 @@ for w in wind_ref:
     V_solution_scaled = trial.nlp.V(trial.optimization.solution['x'])
     print(V_final['xd', :, 'i_sd'],V_final['xd', :, 'i_sq'])
     print(V_solution_scaled['xd', :, 'i_sd'],V_solution_scaled['xd', :, 'i_sq'])
-
-
-    plt.show()
 
 
 input("HIER ABBRECHEN: 380.15rad/s")

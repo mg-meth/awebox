@@ -20,10 +20,10 @@ def winch_el():
 
     winch_el = {}
 
-    winch_el['voltage_d_max'] = 433
-    winch_el['voltage_d_min'] = -433
-    winch_el['voltage_q_max'] = 433
-    winch_el['voltage_q_min'] = -433
+    winch_el['voltage_d_max'] = 1000
+    winch_el['voltage_d_min'] = -1000
+    winch_el['voltage_q_max'] = 1000
+    winch_el['voltage_q_min'] = -1000
     winch_el['l_d'] = 3.56e-4
     winch_el['l_q'] = 3.56e-4
     winch_el['r_s'] = 1.25e-3
