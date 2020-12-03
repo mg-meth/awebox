@@ -11,7 +11,7 @@ import pdb
 
 
 
-name = TEST
+name = 'TEST'
 
     # make default options object
 options = awe.Options(True)
