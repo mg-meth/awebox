@@ -22,7 +22,6 @@ def solve_succed(quality_print_results, name):
         for l in line_lst:
             if l != '\n':
                 string += l + '\n'
-        print(string)
         string += '\n' + name + ' : ' + quality_print_results
         f.write(string)
 
