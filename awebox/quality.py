@@ -110,7 +110,6 @@ class Quality(object):
                 result = 'PASSED'
             else:
                 result = 'FAILED'
-            pdb.set_trace()
             retur += str(key) + ':  ' + result +'\n'
         return retur
 
