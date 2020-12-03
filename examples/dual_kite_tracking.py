@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
 import awebox as awe
-import logging
 import matplotlib.pyplot as plt
-logging.basicConfig(filemode='w',format='%(levelname)s:    %(message)s', level=logging.DEBUG)
 
 
 ########################
@@ -20,11 +18,12 @@ options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
 
 # trajectory should be a single looping
 options['user_options']['trajectory']['type'] = 'tracking'
+options['user_options']['trajectory']['system_type'] = 'lift_mode'
 options['user_options']['trajectory']['lift_mode']['windings'] = 1
 
 # don't include induction effects, use simple tether drag
 options['user_options']['induction_model'] = 'not_in_use'
-options['user_options']['tether_drag_model'] = 'trivial'
+options['user_options']['tether_drag_model'] = 'split'
 
 # keep main tether length constant
 options['user_options']['trajectory']['tracking']['fix_tether_length'] = True

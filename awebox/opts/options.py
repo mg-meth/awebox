@@ -115,5 +115,3 @@ def get_keys(item):
         help_flag = True
 
     return category_key, sub_category_key, sub_sub_category_key, option_key, help_flag
-
-

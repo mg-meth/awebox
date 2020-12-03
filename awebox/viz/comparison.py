@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 from . import trajectory
 import numpy as np
 from . import tools
-import logging
+from awebox.logger.logger import Logger as awelogger
 
 def comparison_plot(plot_dict, cosmetics, fig_name, interesting_stats):
 
@@ -53,7 +53,7 @@ def comparison_plot(plot_dict, cosmetics, fig_name, interesting_stats):
         plot_bar_x(ax, values, labels, stat_name, rgb_tuple_colors)
 
 def compare_tracking_cost(plot_dict, cosmetics, fig_name):
-    
+
     interesting_stats = ['tracking_cost']
     comparison_plot(plot_dict, cosmetics, fig_name, interesting_stats)
 
@@ -69,7 +69,7 @@ def compare_convergence(plot_dict, cosmetics, fig_name):
 
 def compare_stats(sweep_dict, cosmetics, fig_name):
 
-    interesting_stats = ['power_output', 'zeta', 'power_per_surface_area', 'loyd_factor']
+    interesting_stats = ['power_output_kw', 'zeta', 'power_per_surface_area', 'loyd_factor']
     comparison_plot(sweep_dict, cosmetics, fig_name, interesting_stats)
 
 def compare_parameters(plot_dict, cosmetics, fig_name):
@@ -125,6 +125,9 @@ def get_stats_values_from_trial(plot_dict, stat_name):
     if stat_name == 'timings_construction':
         return plot_dict['timings']['construction']
 
+    elif stat_name == 'timings_setup':
+        return plot_dict['timings']['setup']
+
     elif stat_name == 'timings_optimization':
         return plot_dict['timings']['optimization']
 
@@ -136,13 +139,13 @@ def get_stats_values_from_trial(plot_dict, stat_name):
 
     elif stat_name == 'loyd_factor':
         return np.mean(plot_dict['outputs']['performance']['loyd_factor'][0])
-        logging.warning('loyd factor calculation should be revisited!')
+        awelogger.logger.warning('loyd factor calculation should be revisited!')
         #todo: loyd power factor calculation?
 
     elif stat_name == 'zeta':
         return float(plot_dict['power_and_performance']['zeta'])
 
-    elif stat_name == 'power_output':
+    elif stat_name == 'power_output_kw':
         return plot_dict['power_and_performance']['avg_power'].full()*1e-3
 
     elif stat_name == 'power_per_surface_area':

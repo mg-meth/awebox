@@ -2,7 +2,7 @@
 #    This file is part of awebox.
 #
 #    awebox -- A modeling and optimization framework for multi-kite AWE systems.
-#    Copyright (C) 2017-2019 Jochem De Schutter, Rachel Leuthold, Moritz Diehl,
+#    Copyright (C) 2017-2020 Jochem De Schutter, Rachel Leuthold, Moritz Diehl,
 #                            ALU Freiburg.
 #    Copyright (C) 2018-2019 Thilo Bronnenmeyer, Kiteswarms Ltd.
 #    Copyright (C) 2016      Elena Malz, Sebastien Gros, Chalmers UT.
@@ -25,7 +25,7 @@
 '''
 file to provide structure operations to the awebox,
 _python-3.5 / casadi-3.4.5
-- author: thilo bronnenmeyer, jochem de schutter, rachel leuthold, 2017-18
+- author: thilo bronnenmeyer, jochem de schutter, rachel leuthold, 2017-20
 '''
 
 import casadi.tools as cas
@@ -35,251 +35,313 @@ import operator
 
 import copy
 from functools import reduce
+from awebox.logger.logger import Logger as awelogger
+import awebox.tools.print_operations as print_op
+import awebox.tools.performance_operations as perf_op
+
 
 def subkeys(casadi_struct, key):
 
-    indices = np.array(casadi_struct.f[key])
-    number_index = indices.shape[0]
+    if key in casadi_struct.keys():
+        indices = np.array(casadi_struct.f[key])
+        number_index = indices.shape[0]
 
-    subkeys = set()
-    for idx in range(number_index):
-        canonical = casadi_struct.getCanonicalIndex(indices[idx])
-        new_key = canonical[1]
-        subkeys.add(new_key)
+        subkeys = set()
+        for idx in range(number_index):
+            canonical = casadi_struct.getCanonicalIndex(indices[idx])
+            new_key = canonical[1]
+            subkeys.add(new_key)
 
-    subkey_list = sorted(subkeys)
+        subkey_list = sorted(subkeys)
+    else:
+        subkey_list = []
 
     return subkey_list
 
-def get_variables_at_time(nlp_options, V, Xdot, model, kdx, ddx=None):
+def get_coll_vars(nlp_options, V, P, Xdot, model):
 
-    var_list = []
+    n_k = nlp_options['n_k']
+    d = nlp_options['collocation']['d']
+
+    # construct list of all collocation node variables and parameters
+    coll_vars = []
+    for kdx in range(n_k):
+        for ddx in range(d):
+            var_at_time = get_variables_at_time(nlp_options, V, Xdot, model.variables, kdx, ddx)
+            coll_vars = cas.horzcat(coll_vars, var_at_time)
+
+    return coll_vars
 
 
-    # extract discretization type
-    if nlp_options['discretization'] == 'direct_collocation':
-        direct_collocation = True
-        scheme = nlp_options['collocation']['scheme']
-    else:
-        direct_collocation = False
+def get_coll_params(nlp_options, V, P, model):
 
-    nk = nlp_options['n_k']
-
-    # extract variables
-    variables = model.variables
-
-    # make list of variables at specific time
-    for var_type in list(variables.keys()):
-
-        # algebraic variables
-        if var_type in {'xl', 'xa'}:
-
-            if direct_collocation and (scheme == 'radau'):
-                # note that this shifting pattern is not strictly true,
-                # but is requried to prevent licq errors for simple xl = 0 constraints
-                # at nodes (d+1) and (d) from equivalence
-                if ddx == None:
-                    var_list.append(V['coll_var', kdx, 0, var_type])
-                else:
-                    var_list.append(V['coll_var', kdx, ddx, var_type])
-
-            elif direct_collocation and (scheme != 'radau'):
-                if ddx == None:
-                    if var_type in list(V.keys()): # check if alg vars are lifted
-                        var_list.append(V[var_type, kdx])
-                    else: # not lifted
-                        var_list.append(np.zeros(variables[var_type].shape)) # implicit function of other states
-                else:
-                    var_list.append(V['coll_var', kdx, ddx, var_type])
-            else:
-                if var_type in list(V.keys()): # check if lifted
-                    var_list.append(V[var_type, kdx])
-                else:
-                    var_list.append(np.zeros(variables[var_type].shape)) # implicit function of other states
-
-        # differential states
-        elif var_type == 'xd':
-            if ddx == None:
-                var_list.append(V[var_type, kdx])
-            else:
-                var_list.append(V['coll_var', kdx, ddx, var_type])
-
-        # controls
-        elif var_type == 'u':
-            var_list.append(V[var_type, kdx])
-
-        # parameters
-        elif var_type == 'theta':
-            var_list.append(get_V_theta(V, nlp_options, kdx))
-
-        # state derivatives
-        elif var_type == 'xddot':
-            if ddx == None:
-                if var_type in list(V.keys()): #  check if xddot is lifted
-                    var_list.append(V[var_type, kdx])
-                else: # not lifted
-                    var_list.append(np.zeros(variables[var_type].shape)) # implicit function of other states
-
-            else:
-                var_list.append(Xdot['coll_xd', kdx, ddx])
-
-        else:
-            raise ValueError("iterating over non-supported model variable type")
-
-    var_at_time = variables(cas.vertcat(*var_list))
-
-    return var_at_time
-
-def get_variables_at_final_time(nlp_options, V, Xdot, model):
-
-    var_list = []
-    nk = nlp_options['n_k']
-
-    # extract variables
-    variables = model.variables
-
-    # make list of variables at specific time
-    for var_type in list(variables.keys()):
-
-        # algebraic variables
-        if var_type in {'xa','xl','xddot','u'}:
-
-            var_list.append(np.zeros(variables[var_type].shape))
-
-        # differential states
-        elif var_type == 'xd':
-
-            var_list.append(V['xd', nk])
-
-        # parameters
-        elif var_type == 'theta':
-            var_list.append(get_V_theta(V, nlp_options, nk))
-
-        else:
-            raise ValueError("iterating over non-supported model variable type")
-
-    var_at_time = variables(cas.vertcat(*var_list))
-
-    return var_at_time
-
-def get_parameters_at_time(V, model):
-    param_list = []
+    n_k = nlp_options['n_k']
+    d = nlp_options['collocation']['d']
+    N_coll = n_k * d # collocation points
 
     parameters = model.parameters
 
+    use_vortex_linearization = 'lin' in parameters.keys()
+    if use_vortex_linearization:
+        Xdot = construct_Xdot_struct(nlp_options, model.variables_dict)(0.)
+
+        coll_params = []
+        for kdx in range(n_k):
+            for ddx in range(d):
+                loc_params = get_parameters_at_time(nlp_options, P, V, Xdot, model.variables, model.parameters, kdx, ddx)
+                coll_params = cas.horzcat(coll_params, loc_params)
+
+    else:
+        coll_params = cas.repmat(parameters(cas.vertcat(P['theta0'], V['phi'])), 1, N_coll)
+
+    return coll_params
+
+
+def get_ms_vars(nlp_options, V, P, Xdot, model):
+
+    n_k = nlp_options['n_k']
+
+    # construct list of all multiple-shooting node variables and parameters
+    ms_vars = []
+    for kdx in range(n_k):
+        var_at_time = get_variables_at_time(nlp_options, V, Xdot, model.variables, kdx)
+        ms_vars = cas.horzcat(ms_vars, var_at_time)
+
+    return ms_vars
+
+
+def get_ms_params(nlp_options, V, P, Xdot, model):
+    n_k = nlp_options['n_k']
+    N_ms = n_k  # collocation points
+
+    parameters = model.parameters
+
+    use_vortex_linearization = 'lin' in parameters.keys()
+    if use_vortex_linearization:
+        message = 'vortex induction model not yet supported for multiple shooting problems.'
+        awelogger.logger.error(message)
+
+    ms_params = cas.repmat(parameters(cas.vertcat(P['theta0'], V['phi'])), 1, N_ms)
+
+    return ms_params
+
+def no_available_var_info(variables, var_type):
+    message = var_type + ' variable not at expected location in variables. proceeding with zeros.'
+    awelogger.logger.warning(message)
+    return np.zeros(variables[var_type].shape)
+
+
+def get_algebraics_at_time(nlp_options, V, model_variables, var_type, kdx, ddx=None):
+
+    multiple_shooting = (nlp_options['discretization'] == 'multiple_shooting')
+
+    direct_collocation = (nlp_options['discretization'] == 'direct_collocation')
+    scheme = nlp_options['collocation']['scheme']
+
+    radau_collocation = (direct_collocation and scheme == 'radau')
+    other_collocation = (direct_collocation and not scheme == 'radau')
+
+    traj_is_periodic = perf_op.determine_if_periodic(nlp_options)
+    at_control_node = (ddx is None)
+    at_initial = (kdx == 0) and at_control_node
+
+    if radau_collocation:
+
+        if traj_is_periodic and at_initial:
+            return V['coll_var', -1, -1, var_type]
+        elif (not traj_is_periodic) and at_initial:
+
+            # note that this shifting pattern is not strictly true,
+            # but is required to prevent licq errors for simple xl = 0 constraints
+            # at nodes (d+1) and (d) from equivalence
+            return V['coll_var', kdx, 0, var_type]
+
+        elif at_control_node:
+            return V['coll_var', kdx - 1, -1, var_type]
+        else:
+            return V['coll_var', kdx, ddx, var_type]
+
+    elif other_collocation:
+
+        standardly_available = False
+        hopeful_name = '[coll_var,' + str(kdx) + ',' + str(ddx)
+        length_hopeful_name = len(hopeful_name)
+        for label in V.labels():
+            if (label[:length_hopeful_name] == hopeful_name):
+                standardly_available = True
+
+        lifted_alg_variables = (var_type in list(V.keys()))
+
+        if standardly_available:
+            return V['coll_var', kdx, ddx, var_type]
+        elif at_control_node and lifted_alg_variables:
+            return V[var_type, kdx]
+        else:
+            return no_available_var_info(model_variables, var_type)
+
+    elif multiple_shooting:
+        lifted_alg_variables = (var_type in list(V.keys()))
+        if lifted_alg_variables:
+            return V[var_type, kdx]
+        else:
+            return no_available_var_info(model_variables, var_type)
+
+    else:
+        return no_available_var_info(model_variables, var_type)
+
+
+def get_states_at_time(nlp_options, V, model_variables, kdx, ddx=None):
+
+    var_type = 'xd'
+
+    direct_collocation = (nlp_options['discretization'] == 'direct_collocation')
+    at_control_node = (ddx is None)
+
+    if at_control_node:
+        return V[var_type, kdx]
+    elif direct_collocation:
+        return V['coll_var', kdx, ddx, var_type]
+    else:
+        return no_available_var_info(model_variables, var_type)
+
+
+def get_controls_at_time(nlp_options, V, model_variables, kdx, ddx=None):
+
+    var_type = 'u'
+
+    multiple_shooting = (nlp_options['discretization'] == 'multiple_shooting')
+    direct_collocation = (nlp_options['discretization'] == 'direct_collocation')
+
+    piecewise_constant_controls = not (nlp_options['collocation']['u_param'] == 'poly')
+    at_control_node = (ddx is None)
+    before_last_node = kdx < nlp_options['n_k']
+
+    if direct_collocation and piecewise_constant_controls and before_last_node:
+        return V[var_type, kdx]
+
+    elif direct_collocation and piecewise_constant_controls and (not before_last_node):
+        return V[var_type, -1]
+
+    elif direct_collocation and (not piecewise_constant_controls) and at_control_node:
+        return V['coll_var', kdx, 0, var_type]
+
+    elif direct_collocation and (not piecewise_constant_controls):
+        return V['coll_var', kdx, ddx, var_type]
+
+    elif multiple_shooting:
+        return V[var_type, kdx]
+
+    else:
+        return no_available_var_info(model_variables, var_type)
+
+
+def get_derivs_at_time(nlp_options, V, Xdot, model_variables, kdx, ddx=None):
+
+    var_type = 'xddot'
+
+    at_control_node = (ddx is None)
+    lifted_derivs = (var_type in list(V.keys()))
+
+    if Xdot is not None:
+        empty_Xdot = Xdot(0.)
+        passed_Xdot_is_meaningful = not (Xdot == empty_Xdot)
+    else:
+        passed_Xdot_is_meaningful = False
+
+
+    if passed_Xdot_is_meaningful and at_control_node:
+        return Xdot['xd', kdx]
+    elif passed_Xdot_is_meaningful and (not at_control_node):
+        return Xdot['coll_xd', kdx, ddx]
+    elif lifted_derivs:
+        return V[var_type, kdx]
+    else:
+        return no_available_var_info(model_variables, var_type)
+
+
+def get_variables_at_time(nlp_options, V, Xdot, model_variables, kdx, ddx=None):
+
+    var_list = []
+    # make list of variables at specific time
+    for var_type in model_variables.keys():
+
+        if var_type in {'xl', 'xa'}:
+            local_var = get_algebraics_at_time(nlp_options, V, model_variables, var_type, kdx, ddx)
+
+        elif var_type == 'xd':
+            local_var = get_states_at_time(nlp_options, V, model_variables, kdx, ddx)
+
+        elif var_type == 'u':
+            local_var = get_controls_at_time(nlp_options, V, model_variables, kdx, ddx)
+
+        elif var_type == 'theta':
+            local_var = get_V_theta(V, nlp_options, kdx)
+
+        elif var_type == 'xddot':
+            local_var = get_derivs_at_time(nlp_options, V, Xdot, model_variables, kdx, ddx)
+
+        else:
+            local_var = no_available_var_info(model_variables, var_type)
+
+        var_list.append(local_var)
+
+    var_at_time = model_variables(cas.vertcat(*var_list))
+
+    return var_at_time
+
+
+
+def get_variables_at_final_time(nlp_options, V, Xdot, model):
+
+    multiple_shooting = (nlp_options['discretization'] == 'multiple_shooting')
+
+    scheme = nlp_options['collocation']['scheme']
+    direct_collocation = (nlp_options['discretization'] == 'direct_collocation')
+    radau_collocation = (direct_collocation and scheme == 'radau')
+    other_collocation = (direct_collocation and (not scheme == 'radau'))
+
+    if radau_collocation:
+        var_at_time = get_variables_at_time(nlp_options, V, Xdot, model.variables, -1, -1)
+    elif other_collocation or multiple_shooting:
+        var_at_time = get_variables_at_time(nlp_options, V, Xdot, model.variables, -1)
+    else:
+        message = 'unfamiliar discretization option chosen: ' + nlp_options['discretization']
+        awelogger.logger.error(message)
+        raise Exception(message)
+
+    return var_at_time
+
+def get_parameters_at_time(nlp_options, P, V, Xdot, model_variables, model_parameters, kdx=None, ddx=None):
+    param_list = []
+
+    parameters = model_parameters
+
     for var_type in list(parameters.keys()):
-        param_list.append(V['phi', var_type])
+        if var_type == 'phi':
+            param_list.append(V[var_type])
+        if var_type == 'theta0':
+            param_list.append(P[var_type])
+        if var_type == 'lin':
+            linearized_vars = get_variables_at_time(nlp_options, V(P['lin']), Xdot, model_variables, kdx, ddx)
+            param_list.append(linearized_vars)
 
     param_at_time = parameters(cas.vertcat(*param_list))
 
     return param_at_time
 
 def get_var_ref_at_time(nlp_options, P, V, Xdot, model, kdx, ddx=None):
-
-    var_list = []
-
-    # extract discretization type
-    if nlp_options['discretization'] == 'direct_collocation':
-        direct_collocation = True
-        scheme = nlp_options['collocation']['scheme']
-    else:
-        direct_collocation = False
-
-    variables = model.variables
-    for var_type in list(variables.keys()):
-
-        # algebraic variables
-        if var_type in {'xl', 'xa'}:
-
-            if direct_collocation and (scheme == 'radau'):
-                # note that this shifting pattern is not strictly true,
-                # but is requried to prevent licq errors for simple xl = 0 constraints
-                # at nodes (d+1) and (d) from equivalence
-                if ddx == None:
-                    var_list.append(np.zeros(variables[var_type].shape))
-                else:
-                    var_list.append(P['p', 'ref','coll_var', kdx, ddx, var_type])
-
-            elif direct_collocation and (scheme != 'radau'):
-                if ddx == None: # interval node
-                    if var_type in list(V.keys()): # check if alg vars are lifted
-                        var_list.append(P['p', 'ref',var_type, kdx])
-                    else: # not lifted
-                        var_list.append(np.zeros(variables[var_type].shape)) # will not be used
-                else:
-                    var_list.append(P['p', 'ref','coll_var', kdx, ddx, var_type])
-            else: # multiple shooting
-                if var_type in list(V.keys()): # check if lifted
-                    var_list.append(P['p', 'ref',var_type, kdx])
-                else: # not lifted
-                    var_list.append(np.zeros(variables[var_type].shape)) # will not be used
-        # differential states
-        elif var_type == 'xd':
-            if ddx == None:
-                var_list.append(P['p', 'ref',var_type, kdx])
-            else:
-                var_list.append(P['p', 'ref','coll_var', kdx, ddx, var_type])
-
-        # controls
-        elif var_type == 'u':
-            var_list.append(P['p', 'ref', var_type, kdx])
-
-        # parameters
-        elif var_type == 'theta':
-            var_list.append(get_P_theta(P, nlp_options, kdx))
-
-        # state derivatives
-        elif var_type == 'xddot':
-            if ddx == None: # interval node
-                if var_type in list(V.keys()): # check if xddot is lifted
-                    var_list.append(V[var_type, kdx])
-                else: # not lifted
-                    var_list.append(np.zeros(variables[var_type].shape)) # will not be used
-            else:
-                var_list.append(Xdot['coll_xd', kdx, ddx])
-
-        else:
-            raise ValueError("iterating over non-supported model variable type")
-
-    var_at_time = variables(cas.vertcat(*var_list))
-
+    V_from_P = V(P['p', 'ref'])
+    var_at_time = get_variables_at_time(nlp_options, V_from_P, Xdot, model.variables, kdx, ddx)
     return var_at_time
 
-def get_var_ref_at_final_time(nlp_options, P, Xdot, model):
-
-    var_list = []
-    nk = nlp_options['n_k']
-
-    # extract variables
-    variables = model.variables
-
-    # make list of variables at specific time
-    for var_type in list(variables.keys()):
-
-        # algebraic variables
-        if var_type in {'xa','xl','xddot','u'}:
-
-            var_list.append(np.zeros(variables[var_type].shape))
-
-        # differential states
-        elif var_type == 'xd':
-
-            var_list.append(P['p','ref','xd', nk])
-
-        # parameters
-        elif var_type == 'theta':
-            var_list.append(get_P_theta(P, nlp_options, nk))
-
-        else:
-            raise ValueError("iterating over non-supported model variable type")
-
-    var_at_time = variables(cas.vertcat(*var_list))
-
+def get_var_ref_at_final_time(nlp_options, P, V, Xdot, model):
+    V_from_P = V(P['p', 'ref'])
+    var_at_time = get_variables_at_final_time(nlp_options, V_from_P, Xdot, model)
     return var_at_time
 
-def get_V_theta(V, params, k):
+def get_V_theta(V, nlp_numerics_options, k):
 
-    nk = params['n_k']
+    nk = nlp_numerics_options['n_k']
     k = list(range(nk+1))[k]
 
     if V['theta','t_f'].shape[0] == 1:
@@ -289,9 +351,9 @@ def get_V_theta(V, params, k):
         tf_index = V.f['theta','t_f']
         theta_index = V.f['theta']
         for idx in theta_index:
-            if idx == tf_index[0] and k < round(nk * params['phase_fix_reelout']):
+            if idx == tf_index[0] and k < round(nk * nlp_numerics_options['phase_fix_reelout']):
                 theta.append(V.cat[idx])
-            elif idx == tf_index[1] and k >= round(nk * params['phase_fix_reelout']) :
+            elif idx == tf_index[1] and k >= round(nk * nlp_numerics_options['phase_fix_reelout']) :
                 theta.append(V.cat[idx])
             elif idx not in tf_index:
                 theta.append(V.cat[idx])
@@ -299,27 +361,6 @@ def get_V_theta(V, params, k):
 
     return theta
 
-def get_P_theta(P, params, k):
-
-    nk = params['n_k']
-    k = list(range(nk+1))[k]
-
-    if P['p','ref','theta','t_f'].shape[0] == 1:
-        theta = P['p','ref','theta']
-    else:
-        tf_index = P.f['p','ref','theta','t_f']
-        theta_index = P.f['p','ref','theta']
-        theta = []
-        for idx in theta_index:
-            if idx == tf_index[0] and k < round(nk * params['phase_fix_reelout']):
-                theta.append(P.cat[idx])
-            elif idx == tf_index[1] and k >= round(nk * params['phase_fix_reelout']) :
-                theta.append(P.cat[idx])
-            elif idx not in tf_index:
-                theta.append(P.cat[idx])
-        theta = cas.vertcat(*theta)
-
-    return theta
 
 def calculate_tf(params, V, k):
 
@@ -358,77 +399,127 @@ def calculate_kdx(params, V, t):
 
     return kdx, tau
 
-def si_to_scaled(model, V_ori):
+def var_si_to_scaled(var_type, var_name, var_si, scaling):
+
+    scaling_defined_for_variable = (var_type in scaling.keys()) and (var_name in scaling[var_type].keys())
+    if scaling_defined_for_variable:
+
+        scale = scaling[var_type][var_name]
+
+        if scale.shape == (1, 1):
+
+            use_unit_scaling = (scale == cas.DM(1.)) or (scale == 1.)
+            if use_unit_scaling:
+                return var_si
+            else:
+                return var_si / scale
+
+        else:
+            matrix_factor = cas.inv(cas.diag(scale))
+            return cas.mtimes(matrix_factor, var_si)
+
+    else:
+        return var_si
+
+
+def var_scaled_to_si(var_type, var_name, var_scaled, scaling):
+
+    scaling_defined_for_variable = (var_type in scaling.keys()) and (var_name in scaling[var_type].keys())
+    if scaling_defined_for_variable:
+
+        scale = scaling[var_type][var_name]
+
+        if scale.shape == (1, 1):
+
+            use_unit_scaling = (scale == cas.DM(1.)) or (scale == 1.)
+            if use_unit_scaling:
+                return var_scaled
+            else:
+                return var_scaled * scale
+        else:
+            matrix_factor = cas.diag(scale)
+            return cas.mtimes(matrix_factor, var_scaled)
+
+    else:
+        return var_scaled
+
+
+def get_distinct_V_indices(V):
+
+    distinct_indices = set([])
+
+    number_V_entries = V.shape[0]
+    for edx in range(number_V_entries):
+        index = V.getCanonicalIndex(edx)
+
+        distinct_indices.add(index[:-1])
+
+    return distinct_indices
+
+def si_to_scaled(V_ori, scaling):
     V = copy.deepcopy(V_ori)
 
+    distinct_V_indices = get_distinct_V_indices(V)
+    for index in distinct_V_indices:
 
-    n_k = len(V_ori['xd']) - 1
-    if 'coll_var' in list(V.keys()):
-        d = len(V_ori['coll_var',0,:,'xd'])
-        direct_collocation = True
-    else:
-        direct_collocation = False
+        if len(index) == 2:
+            var_type = index[0]
+            var_name = index[1]
+            var_si = V[var_type, var_name]
+            V[var_type, var_name] = var_si_to_scaled(var_type, var_name, var_si, scaling)
 
-    for variable_type in list(model.variables.keys()):
+        elif len(index) == 3:
+            var_type = index[0]
+            kdx = index[1]
+            var_name = index[2]
+            var_si = V[var_type, kdx, var_name]
+            V[var_type, kdx, var_name] = var_si_to_scaled(var_type, var_name, var_si, scaling)
 
-        for name in subkeys(model.variables, variable_type):
-
-            if variable_type == 'theta':
-                V[variable_type, name] = V[variable_type, name] / model.scaling[variable_type][name]
-
-            elif variable_type == 'u':
-                for kdx in range(n_k):
-                    V[variable_type, kdx, name] = V[variable_type, kdx, name] / model.scaling[variable_type][name]
-
-            elif variable_type in set(['xa', 'xl','xd','xddot']):
-                if variable_type in list(V.keys()):
-                    if variable_type == 'xd':
-                        for kdx in range(n_k+1):
-                            V[variable_type, kdx, name] = V[variable_type, kdx, name] / model.scaling[variable_type][name]
-                    else:
-                        for kdx in range(n_k):
-                            V[variable_type, kdx, name] = V[variable_type, kdx, name] / model.scaling[variable_type][name]
-
-                if (direct_collocation and variable_type != 'xddot'):
-                    for kdx in range(n_k):
-                        for ddx in range(d):
-                            V['coll_var', kdx, ddx, variable_type, name] = V['coll_var', kdx, ddx, variable_type, name] / model.scaling[variable_type][name]
+        elif (len(index) == 5) and (index[0] == 'coll_var'):
+            kdx = index[1]
+            ddx = index[2]
+            var_type = index[3]
+            var_name = index[4]
+            var_si = V['coll_var', kdx, ddx, var_type, var_name]
+            V['coll_var', kdx, ddx, var_type, var_name] = var_si_to_scaled(var_type, var_name, var_si, scaling)
+        else:
+            message = 'unexpected variable found at canonical index: ' + str(index) + ' while scaling variables from si'
+            awelogger.logger.error(message)
+            raise Exception(message)
 
     return V
 
 
-def scaled_to_si(variables, scaling, n_k, d, V_ori):
+def scaled_to_si(V_ori, scaling):
     V = copy.deepcopy(V_ori)
 
-    if 'coll_var' in list(V.keys()):
-        direct_collocation = True
-    else:
-        direct_collocation = False
+    distinct_V_indices = get_distinct_V_indices(V)
+    for index in distinct_V_indices:
 
-    for variable_type in list(variables.keys()):
+        if len(index) == 2:
+            var_type = index[0]
+            var_name = index[1]
+            var_scaled = V[var_type, var_name]
+            V[var_type, var_name] = var_scaled_to_si(var_type, var_name, var_scaled, scaling)
 
-        for name in subkeys(variables, variable_type):
+        elif len(index) == 3:
+            var_type = index[0]
+            kdx = index[1]
+            var_name = index[2]
+            var_scaled = V[var_type, kdx, var_name]
+            V[var_type, kdx, var_name] = var_scaled_to_si(var_type, var_name, var_scaled, scaling)
 
-            if variable_type == 'theta':
-                V[variable_type, name] = V[variable_type, name] * scaling[variable_type][name]
-
-            elif variable_type == 'u':
-                for kdx in range(n_k):
-                    V[variable_type, kdx, name] = V[variable_type, kdx, name] * scaling[variable_type][name]
-
-            elif variable_type in set(['xa', 'xl','xd','xddot']):
-                if variable_type in list(V.keys()):
-                    if variable_type == 'xd':
-                        for kdx in range(n_k+1):
-                            V[variable_type, kdx, name] = V[variable_type, kdx, name] * scaling[variable_type][name]
-                    else:
-                        for kdx in range(n_k):
-                            V[variable_type, kdx, name] = V[variable_type, kdx, name] * scaling[variable_type][name]
-
-                if (direct_collocation and variable_type != 'xddot'):
-                    for kdx in range(n_k):
-                        for ddx in range(d):
-                            V['coll_var', kdx, ddx, variable_type, name] = V['coll_var', kdx, ddx, variable_type, name] * scaling[variable_type][name]
+        elif (len(index) == 5) and (index[0] == 'coll_var'):
+            kdx = index[1]
+            ddx = index[2]
+            var_type = index[3]
+            var_name = index[4]
+            var_scaled = V['coll_var', kdx, ddx, var_type, var_name]
+            V['coll_var', kdx, ddx, var_type, var_name] = var_scaled_to_si(var_type, var_name, var_scaled, scaling)
+        else:
+            message = 'unexpected variable found at canonical index: ' + str(index) + ' while scaling variables to si'
+            awelogger.logger.error(message)
+            raise Exception(message)
 
     return V
 
@@ -468,25 +559,18 @@ def get_variable_type(model, name):
 
     for variable_type in set(variables_dict.keys()) - set(['xddot']):
         if name in list(variables_dict[variable_type].keys()):
-            var_type = variable_type
+            return variable_type
 
-    return var_type
+    if name in list(variables_dict['xddot'].keys()):
+        return 'xddot'
 
-def get_node_variable_name(name):
+    message = 'variable ' + name + ' not found in variables dictionary'
+    awelogger.logger.error(message)
+    raise Exception(message)
 
-    var_name = name
-    while var_name[-1].isdigit():
-        var_name = var_name[:-1]
+    return None
 
-    return var_name
 
-def get_scaling_name(scaling_options, variable_type, name):
-
-    scaling_name = name
-    while not scaling_name in list(scaling_options[variable_type].keys()) and len(scaling_name) > 0:
-        scaling_name = scaling_name[1:]
-
-    return scaling_name
 
 def convert_return_status_string_to_number(return_string):
 
@@ -534,13 +618,23 @@ def get_return_status_dictionary():
 
 def get_V_index(canonical):
 
+    var_is_coll_var = (canonical[0] == 'coll_var')
+    var_is_us_var = (canonical[0] == 'us')
 
-    if canonical[0] == 'coll_var':
-        coll_flag = True
-        canonical = (canonical[3],) + canonical[1:3] + canonical[4:]
+    length = len(canonical)
 
-    elif canonical[0] == 'us':
-        coll_flag = None
+    if var_is_coll_var:
+        # coll_var, kdx, ddx, type, name
+
+        var_type = canonical[3]
+        kdx = canonical[1]
+        ddx = canonical[2]
+        name = canonical[4]
+        dim = None
+
+    elif var_is_us_var:
+        # todo: what is this? is it useful for anything?
+
         var_type = None
         kdx = None
         ddx = None
@@ -548,34 +642,31 @@ def get_V_index(canonical):
         dim = None
 
     else:
-        coll_flag = False
-
-    if coll_flag is not None:
-        length = len(canonical)
-
         var_type = canonical[0]
+        dim = None
         kdx = None
         ddx = None
 
-        if length == 5:
+        if length == 4:
             kdx = canonical[1]
             ddx = canonical[2]
             name = canonical[3]
-            dim = canonical[4]
-
-        elif length == 4:
-            kdx = canonical[1]
-            name = canonical[2]
-            dim = canonical[3]
 
         elif length == 3:
+            kdx = canonical[1]
+            name = canonical[2]
+
+        elif length == 2:
             name = canonical[1]
-            dim = canonical[2]
 
+        else:
+            message = 'unexpected (distinct) canonical_index handing'
+            awelogger.logger.error(message)
+            raise Exception(message)
 
-    return [coll_flag, var_type, kdx, ddx, name, dim]
+    return [var_is_coll_var, var_is_us_var, var_type, kdx, ddx, name, dim]
 
-def construct_Xdot_struct(nlp_options, model):
+def construct_Xdot_struct(nlp_options, variables_dict):
     ''' Construct a symbolic structure for the
         discretized state derivatives.
 
@@ -586,7 +677,7 @@ def construct_Xdot_struct(nlp_options, model):
 
     # extract information
     nk = nlp_options['n_k']
-    xd = model.variables_dict['xd']
+    xd = variables_dict['xd']
 
     # derivatives at interval nodes
     entry_tuple = (cas.entry('xd', repeat=[nk], struct=xd),)
@@ -665,9 +756,13 @@ def initialize_nested_dict(d,keys):
 
     return d
 
-def setup_warmstart_data(nlp, warmstart_trial):
+def setup_warmstart_data(nlp, warmstart_solution_dict):
 
-    if nlp.discretization != warmstart_trial['options']['nlp']['discretization']:
+    options_in_keys = 'options' in warmstart_solution_dict.keys()
+    if options_in_keys:
+        nlp_discretization = warmstart_solution_dict['options']['nlp']['discretization']
+
+    if options_in_keys and not (nlp.discretization == nlp_discretization):
 
         if nlp.discretization == 'multiple_shooting':
 
@@ -676,20 +771,29 @@ def setup_warmstart_data(nlp, warmstart_trial):
 
             # initialize and extract
             V_init_proposed = nlp.V(0.0)
-            V_coll = warmstart_trial['V_opt']
-            Xdot_coll = warmstart_trial['Xdot_opt']
+            V_coll = warmstart_solution_dict['V_opt']
+            Xdot_coll = warmstart_solution_dict['Xdot_opt']
 
             lam_x_proposed  = nlp.V_bounds['ub'](0.0)
-            lam_x_coll = V_coll(warmstart_trial['opt_arg']['lam_x0'])
+            lam_x_coll = V_coll(warmstart_solution_dict['opt_arg']['lam_x0'])
 
             lam_g_proposed  = nlp.g(0.0)
-            lam_g_coll = warmstart_trial['g_opt'](warmstart_trial['opt_arg']['lam_g0'])
-            g_coll = warmstart_trial['g_opt']
+            lam_g_coll = warmstart_solution_dict['g_opt'](warmstart_solution_dict['opt_arg']['lam_g0'])
+            g_coll = warmstart_solution_dict['g_opt']
 
             # initialize regular variables
-            for var_type in set(['xd','u','theta','phi','xi']):
+            for var_type in set(['xd','theta','phi','xi']):
                 V_init_proposed[var_type] = V_coll[var_type]
                 lam_x_proposed[var_type]  = lam_x_coll[var_type]
+
+            if 'u' in list(V_coll.keys()):
+                V_init_proposed['u'] = V_coll['u']
+                lam_x_proposed['u']  = lam_x_coll['u']
+            else:
+                for i in range(n_k):
+                    # note: this does not give the actual mean, implement with quadrature weights instead
+                    V_init_proposed['u',i] = np.mean(cas.horzcat(*V_coll['coll_var',i,:,'u']))
+                    lam_x_proposed['u',i]  = np.mean(cas.horzcat(*lam_x_coll['coll_var',i,:,'u']))
 
             if 'xddot' in list(V_init_proposed.keys()):
                 V_init_proposed['xddot'] = Xdot_coll['xd']
@@ -738,9 +842,9 @@ def setup_warmstart_data(nlp, warmstart_trial):
 
     else:
 
-        V_init_proposed = warmstart_trial['V_opt']
-        lam_x_proposed  = warmstart_trial['opt_arg']['lam_x0']
-        lam_g_proposed  = warmstart_trial['opt_arg']['lam_g0']
+        V_init_proposed = warmstart_solution_dict['V_opt']
+        lam_x_proposed  = warmstart_solution_dict['opt_arg']['lam_x0']
+        lam_g_proposed  = warmstart_solution_dict['opt_arg']['lam_g0']
 
 
     V_shape_matches = (V_init_proposed.cat.shape == nlp.V.cat.shape)
@@ -792,3 +896,64 @@ def evaluate_cost_dict(cost_fun, V_plot, p_fix_num):
             cost[name[:-4]] = cost_fun[name](V_plot, p_fix_num)
 
     return cost
+
+def split_name_and_node_identifier(name):
+
+    var_name = name
+    kiteparent = ''
+
+    while var_name[-1].isdigit():
+
+        kiteparent = var_name[-1] + kiteparent
+        var_name = var_name[:-1]
+
+    return var_name, kiteparent
+
+
+def split_kite_and_parent(kiteparent, architecture):
+
+    for idx in range(1, len(kiteparent)):
+
+        kite_try = int(kiteparent[:idx])
+        parent_try = int(kiteparent[idx:])
+
+        parent_of_kite_try = int(architecture.parent_map[kite_try])
+
+        if parent_of_kite_try == parent_try:
+            return kite_try, parent_try
+
+    return None, None
+
+def generate_variable_struct(variable_list):
+
+    structs = {}
+    for name in list(variable_list.keys()):
+        structs[name] = cas.struct_symSX([cas.entry(variable_list[name][i][0], shape=variable_list[name][i][1])
+                        for i in range(len(variable_list[name]))])
+
+    variable_struct = cas.struct_symSX([cas.entry(name, struct=structs[name])
+                        for name in list(variable_list.keys())])
+
+    return variable_struct, structs
+
+def get_variable_from_model_or_reconstruction(variables, var_type, name):
+
+    if var_type in variables.keys():
+        sub_variables = variables[var_type]
+
+    try:
+        if isinstance(sub_variables, cas.DM):
+            local_var = variables[var_type, name]
+        elif isinstance(sub_variables, cas.MX):
+            local_var = variables[var_type, name]
+        elif isinstance(sub_variables, cas.structure3.SXStruct):
+            local_var = variables[var_type][name]
+        else:
+            local_var = variables[var_type, name]
+    except:
+
+        message = 'variable ' + name + ' is not in expected position (' + var_type + ') wrt variables.'
+        awelogger.logger.error(message)
+        raise Exception(message)
+
+    return local_var

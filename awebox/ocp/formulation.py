@@ -30,15 +30,17 @@ import casadi.tools as cas
 
 import time
 import pickle
-import logging
+from awebox.logger.logger import Logger as awelogger
 
 import awebox.tools.print_operations as print_op
 
 import awebox.tools.struct_operations as struct_op
+from . import var_struct
 
 import awebox as awe
 
 from . import operation
+
 
 class Formulation(object):
     def __init__(self):
@@ -48,11 +50,11 @@ class Formulation(object):
 
     def build(self, options, model):
 
-        logging.info('Building formulation...')
+        awelogger.logger.info('Building formulation...')
 
         if self.__status == 'I am a formulation.':
 
-            logging.info('Formulation already built.')
+            awelogger.logger.info('Formulation already built.')
             return None
 
         elif model.status == 'I am a model.':
@@ -64,14 +66,14 @@ class Formulation(object):
             self.generate_variable_bounds(options)
             self.generate_parameter_bounds(options)
             self.generate_parameterization_settings(options)
-            self.generate_constraints(options, model)
+            self.generate_integral_constraints(options, model)
             self.generate_outputs(options)
 
             self.__status = 'I am a formulation.'
             self.__timings['overall'] = time.time() - timer
-            logging.info('Formulation built.')
-            logging.info('Formulation construction time: %s', print_op.print_single_timing(self.__timings['overall']))
-            logging.info('')
+            awelogger.logger.info('Formulation built.')
+            awelogger.logger.info('Formulation construction time: %s', print_op.print_single_timing(self.__timings['overall']))
+            awelogger.logger.info('')
 
         else:
             raise ValueError('Cannot build formulation without building model.')
@@ -80,7 +82,7 @@ class Formulation(object):
 
         [periodic, initial_conditions, param_initial_conditions, param_terminal_conditions, terminal_inequalities, integral_constraints] = operation.get_operation_conditions(options)
 
-        self.__induction_model = options['induction_model']
+        self.__induction_model = options['induction']['induction_model']
         self.__traj_type = options['trajectory']['type']
         self.__tether_drag_model = options['tether_drag_model']
         self.__fix_tether_length = options['trajectory']['tracking']['fix_tether_length']
@@ -94,13 +96,13 @@ class Formulation(object):
 
     def generate_parameters(self, options):
 
-        logging.info('generate parameters...')
+        awelogger.logger.info('generate parameters...')
 
         self.__parameters = None
 
     def generate_variables(self, options):
 
-        logging.info('generate variables...')
+        awelogger.logger.info('generate variables...')
 
         self.__variables = None
 
@@ -108,7 +110,7 @@ class Formulation(object):
 
     def generate_variable_bounds(self, options):
 
-        logging.info('generate variable bounds...')
+        awelogger.logger.info('generate variable bounds...')
 
         self.__variable_bounds = None
 
@@ -116,7 +118,7 @@ class Formulation(object):
 
     def generate_parameter_bounds(self,options):
 
-        logging.info('generate parameter bounds...')
+        awelogger.logger.info('generate parameter bounds...')
 
         self.__parameter_bounds = None
 
@@ -137,7 +139,7 @@ class Formulation(object):
                 V_pickle = parameterized_trial.optimization.V_final
                 plot_dict_pickle = parameterized_trial.visualization.plot_dict
             elif relative_path[-2:] == '.p':
-                logging.error('Error: reading in of pickled trajectories as .p files not supported anymore. Please use .awe files.')
+                awelogger.logger.error('Error: reading in of pickled trajectories as .p files not supported anymore. Please use .awe files.')
             elif relative_path[-5:] == '.dict':
                 parameterized_trial_seed = pickle.load(open(relative_path, 'rb'))
                 V_pickle = parameterized_trial_seed['solution_dict']['V_final']
@@ -151,7 +153,7 @@ class Formulation(object):
 
         [periodic, initial_conditions, param_initial_conditions, param_terminal_conditions, terminal_inequalities, integral_constraints] = operation.get_operation_conditions(options)
 
-        xi = cas.struct_symMX([(cas.entry('xi_0'), cas.entry('xi_f'))])
+        xi = var_struct.get_xi_struct()
         xi_bounds = {}
 
         xi_bounds['xi_0'] = [0.0, 0.0]
@@ -193,7 +195,7 @@ class Formulation(object):
 
     def generate_outputs(self, options):
 
-        logging.info('generate outputs...')
+        awelogger.logger.info('generate outputs...')
         self.__outputs = {}
         if self.__traj_type == 'compromised_landing':
             self.__outputs['compromised_landing'] = {'emergency_scenario':options['compromised_landing']['emergency_scenario']}
@@ -202,44 +204,18 @@ class Formulation(object):
 
         return None
 
-    def generate_constraints(self, options, model):
+    def generate_integral_constraints(self, options, model):
 
-        logging.info('generate constraints..')
+        awelogger.logger.info('generate integral constraints..')
 
         variables = model.variables(cas.MX.sym('variables', model.variables.cat.shape))
         parameters = model.parameters(cas.MX.sym('parameters', model.parameters.cat.shape))
-        ref_variables = model.variables(cas.MX.sym('variables', model.variables.cat.shape)) #todo: deepcopy necessary?
 
+        integral_constraints, integral_constraint_fun, integral_constants = operation.generate_integral_constraints(
+            options, variables, parameters, model)
 
-        initial_constraints, initial_constraints_fun = operation.generate_initial_constraints(options,
-                            variables,
-                            ref_variables,
-                            model,
-                            self.__xi_dict)
-
-        terminal_constraints, terminal_constraints_fun = operation.generate_terminal_constraints(options,
-                            variables,
-                            ref_variables,
-                            model,
-                            self.__xi_dict)
-
-        periodic_constraints, periodic_constraints_fun = operation.generate_periodic_constraints(options,
-                            variables,
-                            ref_variables)
-
-        integral_constraints, integral_constraint_fun, integral_constants = operation.generate_integral_constraints(options, variables, parameters, model)
-
-
-        self.__constraints = {'initial': initial_constraints,
-                              'terminal': terminal_constraints,
-                              'periodic': periodic_constraints,
-                              'integral': integral_constraints}
-
-        self.__constraints_fun = {'initial': initial_constraints_fun,
-                                  'terminal': terminal_constraints_fun,
-                                  'periodic': periodic_constraints_fun,
-                                  'integral': integral_constraint_fun}
-
+        self.__constraints = {'integral': integral_constraints}
+        self.__constraints_fun = {'integral': integral_constraint_fun}
         self.__integral_constants = integral_constants
 
         return None
@@ -250,7 +226,7 @@ class Formulation(object):
 
     @status.setter
     def status(self, value):
-        logging.warning('Cannot set status object.')
+        awelogger.logger.warning('Cannot set status object.')
 
     @property
     def outputs(self):
@@ -258,7 +234,7 @@ class Formulation(object):
 
     @outputs.setter
     def outputs(self, value):
-        logging.warning('Cannot set outputs object.')
+        awelogger.logger.warning('Cannot set outputs object.')
 
     @property
     def variables(self):
@@ -270,7 +246,7 @@ class Formulation(object):
 
     @variable_bounds.setter
     def variable_bounds(self, value):
-        logging.warning('Cannot set variable_bounds object.')
+        awelogger.logger.warning('Cannot set variable_bounds object.')
 
     def parameters(self):
         return self.__parameters
@@ -278,10 +254,6 @@ class Formulation(object):
     @property
     def parameter_bounds(self):
         return self.__parameter_bounds
-
-    # @property
-    # def dynamics(self):
-    #     return self.__parameter_bounds
 
     @property
     def constraints(self):
@@ -297,7 +269,7 @@ class Formulation(object):
 
     @induction_model.setter
     def induction_model(self):
-        logging.warning('Cannot set induction_model object.')
+        awelogger.logger.warning('Cannot set induction_model object.')
 
     @property
     def traj_type(self):
@@ -305,7 +277,7 @@ class Formulation(object):
 
     @traj_type.setter
     def traj_type(self):
-        logging.warning('Cannot set traj_type object.')
+        awelogger.logger.warning('Cannot set traj_type object.')
 
     @property
     def tether_drag_model(self):
@@ -313,7 +285,7 @@ class Formulation(object):
 
     @tether_drag_model.setter
     def tether_drag_model(self):
-        logging.warning('Cannot set tether_drag_model object.')
+        awelogger.logger.warning('Cannot set tether_drag_model object.')
 
     @property
     def xi_dict(self):
@@ -321,7 +293,7 @@ class Formulation(object):
 
     @xi_dict.setter
     def xi_dict(self):
-        logging.warning('Cannot set xi_dict object.')
+        awelogger.logger.warning('Cannot set xi_dict object.')
 
     @property
     def timings(self):
@@ -329,7 +301,7 @@ class Formulation(object):
 
     @timings.setter
     def timings(self):
-        logging.warning('Cannot set timings object.')
+        awelogger.logger.warning('Cannot set timings object.')
 
     @property
     def integral_constants(self):
@@ -337,12 +309,12 @@ class Formulation(object):
 
     @integral_constants.setter
     def integral_constants(self):
-        logging.warning('Cannot set integral_constants object.')
-        
+        awelogger.logger.warning('Cannot set integral_constants object.')
+
     @property
     def fix_tether_length(self):
         return self.__fix_tether_length
 
     @fix_tether_length.setter
     def fix_tether_length(self):
-        logging.warning('Cannot set fix_tether_length object.')
+        awelogger.logger.warning('Cannot set fix_tether_length object.')

@@ -26,19 +26,20 @@
 Class sweep contains functions to manipulate multiple trials at once
 
 @author: jochem de schutter alu-freiburg 2018
+edit: rachel leuthold, alu-fr, 2020
 """
 
-import logging
+from awebox.logger.logger import Logger as awelogger
 import awebox.tools.print_operations as print_op
 import awebox.sweep_funcs as sweep_funcs
 import copy
 from collections import OrderedDict
 import awebox.trial as trial
-import awebox.tools.data_saving as data_tools
+import awebox.tools.save_operations as save_op
 import matplotlib.pyplot as plt
 import awebox.viz.comparison as comparison
 import awebox.viz.tools as tools
-import awebox.tools.struct_operations as struct_op
+
 
 class Sweep:
     def __init__(self, seed, options = None, name = 'sweep'):
@@ -70,10 +71,12 @@ class Sweep:
 
         else:
             error_str = 'Sweep initialized with variables of wrong type. Must be either [list, options] or [dict].'
-            logging.error(error_str)
+            awelogger.logger.error(error_str)
             raise TypeError(error_str)
 
     def build(self):
+
+        awelogger.logger.info('Building sweep (' + self.__name + ')' )
 
         self._build_trial_dict()
         self._build_param_dict()
@@ -84,13 +87,15 @@ class Sweep:
     def __getitem__(self, key):
         return self.__trial_dict[key]
 
-    def run(self, final_homotopy_step = 'final', warmstart_file = None, debug_flags = [],
+
+
+
+    def run(self, final_homotopy_step = 'final', warmstart_file = None, apply_sweeping_warmstart = False, debug_flags = [],
             debug_locations = []):
 
-        # build sweep in order to run it
-        self.build()
+        awelogger.logger.info('Running sweep (' + self.__name + ') containing ' + str(len(list(self.__trial_dict.keys()))) + ' trials...')
 
-        logging.info('Running sweep (' + self.__name +  ') containing ' + str(len(list(self.__trial_dict.keys()))) + ' trials...')
+        have_already_saved_prev_trial = False
 
         # for all trials, run a parametric sweep
         for trial_to_run in list(self.__trial_dict.keys()):
@@ -105,7 +110,7 @@ class Sweep:
             # run parametric sweep
             for param in list(self.__param_dict.keys()):
 
-                logging.info('Optimize trial (%s) with parametric setting (%s)',trial_to_run, param)
+                awelogger.logger.info('Optimize trial (%s) with parametric setting (%s)',trial_to_run, param)
 
                 if param == 'base_options':
                     # take the existing trial options for optimizing
@@ -118,26 +123,22 @@ class Sweep:
                     self.__trial_dict[trial_to_run].formulation.generate_parameterization_settings(param_options['formulation'])
 
                 # optimize trial
+                warmstart_file, prev_trial_save_name = sweep_funcs.make_warmstarting_decisions(self.__name,
+                                                                                               user_defined_warmstarting_file=warmstart_file,
+                                                                                               apply_sweeping_warmstart=apply_sweeping_warmstart,
+                                                                                               have_already_saved_prev_trial=have_already_saved_prev_trial)
+
                 single_trial.optimize(options = param_options,
                                       final_homotopy_step =
                                       final_homotopy_step, debug_flags =
                                       debug_flags, debug_locations =
                                       debug_locations, warmstart_file = warmstart_file)
 
-                # recalibrate visualization
-                V_plot = single_trial.optimization.V_opt
-                p_fix_num = single_trial.optimization.p_fix_num
-                output_vals = single_trial.optimization.output_vals
-                time_grids = single_trial.optimization.time_grids
-                integral_outputs_final = single_trial.optimization.integral_outputs_final
-                name = single_trial.name
-                parametric_options = single_trial.options
-                iterations = single_trial.optimization.iterations
-                return_status_numeric = single_trial.optimization.return_status_numeric
-                timings = single_trial.optimization.timings
-                cost_fun = single_trial.nlp.cost_components[0]
-                cost = struct_op.evaluate_cost_dict(cost_fun, V_plot, p_fix_num)
-                recalibrated_plot_dict = tools.recalibrate_visualization(V_plot, single_trial.visualization.plot_dict, output_vals, integral_outputs_final, parametric_options, time_grids, cost, name, iterations=iterations, return_status_numeric=return_status_numeric, timings=timings)
+                if apply_sweeping_warmstart and single_trial.return_status_numeric < 3:
+                    single_trial.save(fn=prev_trial_save_name)
+                    have_already_saved_prev_trial = True
+
+                recalibrated_plot_dict = sweep_funcs.recalibrate_visualization(single_trial)
                 self.__plot_dict[trial_to_run][param] = copy.deepcopy(recalibrated_plot_dict)
 
                 # overwrite outputs to work around pickle bug
@@ -153,7 +154,7 @@ class Sweep:
                     self.__sweep_dict[trial_to_run][param]['output_vals'][i] = copy.deepcopy(single_trial_solution_dict['output_vals'][i])
                 self.__sweep_labels[trial_to_run][param] = trial_to_run + '_' + param
 
-        logging.info('Sweep (' + self.__name +  ') completed.')
+        awelogger.logger.info('Sweep (' + self.__name +  ') completed.')
 
     def plot(self, flags):
 
@@ -280,7 +281,7 @@ class Sweep:
     def save(self, saving_method = 'dict'):
 
         # log saving method
-        logging.info('Saving sweep ' + self.__name + ' using ' + saving_method)
+        awelogger.logger.info('Saving sweep ' + self.__name + ' using ' + saving_method)
 
         # choose correct function for saving method
         if saving_method == 'awe':
@@ -288,18 +289,21 @@ class Sweep:
         elif saving_method == 'dict':
             self.save_to_dict()
         else:
-            logging.error(saving_method + ' is not a supported saving method. Sweep ' + self.__name + ' could not be saved!')
+            awelogger.logger.error(saving_method + ' is not a supported saving method. Sweep ' + self.__name + ' could not be saved!')
 
-        logging.info('Sweep (%s) saved.', self.__name)
-        logging.info('')
+        awelogger.logger.info('Sweep (%s) saved.', self.__name)
+        awelogger.logger.info('')
+
+        return None
 
     def save_to_awes(self):
 
-        # pickle data
-        data_tools.pickle_data(self, self.__name, 'awes')
+        save_op.save(self, self.__name, 'awes')
+
+        return None
 
     def save_to_dict(self):
-        
+
         # create dict to be saved
         data_to_save = {}
 
@@ -311,7 +315,9 @@ class Sweep:
         data_to_save['param_dict'] = self.__param_dict
 
         # pickle data
-        data_tools.pickle_data(data_to_save, self.__name, 'dict')
+        save_op.save(data_to_save, self.__name, 'dict')
+
+        return None
 
     @property
     def name(self):
@@ -319,7 +325,7 @@ class Sweep:
 
     @name.setter
     def name(self, value):
-        logging.critical('Cannot set name object.')
+        awelogger.logger.critical('Cannot set name object.')
 
     @property
     def trial_dict(self):
@@ -327,7 +333,7 @@ class Sweep:
 
     @trial_dict.setter
     def trial_dict(self, value):
-        logging.critical('Cannot set trial_dict object.')
+        awelogger.logger.critical('Cannot set trial_dict object.')
 
     @property
     def sweep_dict(self):
@@ -335,7 +341,7 @@ class Sweep:
 
     @sweep_dict.setter
     def sweep_dict(self, value):
-        logging.critical('Cannot set sweep_dict object.')
+        awelogger.logger.critical('Cannot set sweep_dict object.')
 
     @property
     def param_dict(self):
@@ -352,6 +358,15 @@ class Sweep:
     @sweep_labels.setter
     def sweep_labels(self, value):
         print('Cannot set sweep_labels object.')
+
+
+    @property
+    def plot_dict(self):
+        return self.__plot_dict
+
+    @plot_dict.setter
+    def plot_dict(self, value):
+        print('Cannot set plot_dict object.')
 
     @property
     def plot_logic_dict(self):

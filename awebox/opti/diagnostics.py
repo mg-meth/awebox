@@ -34,43 +34,50 @@ import awebox.tools.struct_operations as struct_op
 import awebox.tools.debug_operations as debug_op
 import numpy as np
 
-import logging
-import pdb
+from awebox.logger.logger import Logger as awelogger
 import casadi as cas
+
 
 def print_homotopy_values(nlp, solution, p_fix_num):
     V = nlp.V
 
     # print the phi values:
-    logging.debug("{0:.<30}:".format('homotopy parameter values'))
+    awelogger.logger.debug("{0:.<30}:".format('homotopy parameter values'))
     for phi_val in struct_op.subkeys(V, 'phi'):
-        logging.debug(" {0:>20} = {1:5}".format(phi_val, str(V(solution['x'])['phi', phi_val])))
-    logging.debug('')
+        awelogger.logger.debug(" {0:>20} = {1:5}".format(phi_val, str(V(solution['x'])['phi', phi_val])))
+    awelogger.logger.debug('')
 
     # print the cost components
     [cost_fun, cost_struct] = nlp.cost_components
-    logging.debug("{0:.<30}:".format('objective components'))
+    awelogger.logger.debug("{0:.<30}:".format('objective components'))
     for name in list(cost_fun.keys()):
         if 'problem' not in name and 'objective' not in name:
-            logging.debug(" {0:>20} = {1:5}".format(name[0:-9], str(cost_fun[name](V(solution['x']), p_fix_num))))
-    logging.debug('')
+            awelogger.logger.debug(" {0:>20} = {1:5}".format(name[0:-9], str(cost_fun[name](V(solution['x']), p_fix_num))))
+    awelogger.logger.debug('')
 
 def print_runtime_values(stats):
-    logging.debug('')
+    awelogger.logger.debug('')
 
-    logging.info("{0:.<30}: {1:<30}".format('solver return status', stats['return_status']))
-    logging.info("{0:.<30}: {1:<30}".format('number of iterations', stats['iter_count']))
-    logging.info("{0:.<30}: {1:<30}".format('main loop wall time', stats['t_wall_solver']))
-    logging.info('')
+    awelogger.logger.info("{0:.<30}: {1:<30}".format('solver return status', stats['return_status']))
+    awelogger.logger.info("{0:.<30}: {1:<30}".format('number of iterations', stats['iter_count']))
+    try:
+        awelogger.logger.info("{0:.<30}: {1:<30}".format('total wall time', stats['t_wall_total']))
+    except:
+        32.0 # do nothing!
+
+    awelogger.logger.info('')
 
     return None
 
-def health_check(nlp, solution, arg, options, solve_succeeded):
-    check_after_failure = (not solve_succeeded) and options['health']['after_failure_check']
-    check_in_general = options['health']['autorun_check']
+def health_check(step_name, final_homotopy_step, nlp, solution, arg, options, solve_succeeded, stats, iterations):
+    should_make_autorun_check = (options['health_check']['when']['autorun'])
+    should_make_failure_check = (not solve_succeeded) and (options['health_check']['when']['failure'])
+    should_make_final_check = (options['health_check']['when']['final']) and (step_name == final_homotopy_step)
 
-    if check_after_failure or check_in_general:
-        debug_op.health_check(options['health'], nlp, solution, arg)
+    should_make_check = should_make_autorun_check or should_make_failure_check or should_make_final_check
+
+    if should_make_check:
+        debug_op.health_check(options['health_check'], nlp, solution, arg, stats, iterations)
 
     return None
 
@@ -79,8 +86,8 @@ def print_constraint_violations(nlp, V_vals, p_fix_num):
     g = nlp.g
     g_opt = g(g_fun(V_vals, p_fix_num))
     for name in list(g_opt.keys()):
-        logging.debug(name)
-        logging.debug(g_opt[name])
+        awelogger.logger.debug(name)
+        awelogger.logger.debug(g_opt[name])
 
     return None
 
@@ -128,6 +135,7 @@ def compute_efficiency_measures(power_and_performance, plot_dict):
     P_drag_total = np.zeros((N))
     P_side_total = np.zeros((N))
     P_moment_total = np.zeros((N))
+    P_gen_total = np.zeros((N))
 
     for name in list(power_outputs.keys()):
 
@@ -146,13 +154,17 @@ def compute_efficiency_measures(power_and_performance, plot_dict):
         elif name[:] == 'P_moment':
             P_moment_total += power_outputs[name][0]
 
+        elif name[:5] == 'P_gen':
+            P_gen_total += power_outputs[name][0]
+
+    epsilon = 1.e-6 # use this to decrease chance of div-by-zero errors at start of optimization
     if np.mean(P_side_total) > 0.0:
-        P_in = np.mean(P_lift_total) + np.mean(P_side_total)
+        P_in = np.mean(P_lift_total) + np.mean(P_side_total) + epsilon
     else:
-        P_in = np.mean(P_lift_total)
+        P_in = np.mean(P_lift_total) + epsilon
         power_and_performance['eff_sideforce_loss'] = -np.mean(P_side_total)/ P_in
 
-    power_and_performance['eff_overall'] = - np.mean(power_outputs['P_tether1'][0])/P_in
+    power_and_performance['eff_overall'] = - np.mean((power_outputs['P_tether1'][0]+P_gen_total))/P_in
     power_and_performance['eff_tether_drag_loss'] = -np.mean(P_tetherdrag_total)/P_in
     power_and_performance['eff_drag_loss'] =  -np.mean(P_drag_total)/P_in
 
@@ -227,10 +239,8 @@ def compute_power_and_performance(plot_dict):
 
     power_and_performance = compute_tether_constraint_dissatisfaction(power_and_performance, plot_dict)
 
-    power_and_performance =compute_tether_tension_indicators(power_and_performance, plot_dict)
+    power_and_performance = compute_tether_tension_indicators(power_and_performance, plot_dict)
 
     power_and_performance = compute_efficiency_measures(power_and_performance, plot_dict)
 
     return power_and_performance
-
-

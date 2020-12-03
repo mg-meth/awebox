@@ -27,6 +27,7 @@ update model that generates the
 cost update and bounds update to be used in the homotopy process
 python-3.5 / casadi-3.4.5
 - authors: rachel leuthold, alu-fr 2018
+- edited: jochem de schutter, alu-fr 2018-2019
 '''
 
 import awebox.tools.struct_operations as struct_op
@@ -63,15 +64,10 @@ def define_homotopy_schedule(formulation):
     homotopy_schedule = ()
     homotopy_schedule = homotopy_schedule + initial_schedule
 
-
-
-    if induction_model == 'actuator':
-        homotopy_schedule = homotopy_schedule + induction_schedule
-
     if traj_type == 'tracking' and fix_tether_length == False:
         homotopy_schedule = homotopy_schedule + tether_release_schedule
 
-    if traj_type == 'lift_mode':
+    if traj_type == 'power_cycle':
         homotopy_schedule = homotopy_schedule + power_schedule
 
     if traj_type == 'nominal_landing':
@@ -84,12 +80,12 @@ def define_homotopy_schedule(formulation):
         homotopy_schedule = homotopy_schedule + nominal_landing_schedule
         homotopy_schedule = homotopy_schedule + compromised_landing_schedule
 
-
-
-
-
-    if tether_drag_model in set(['equivalence', 'simple']):
+    if tether_drag_model in set(['single', 'multi']):
         homotopy_schedule = homotopy_schedule + tether_schedule
+
+    make_induction_step = not (induction_model == 'not_in_use')
+    if make_induction_step:
+        homotopy_schedule = homotopy_schedule + induction_schedule
 
     homotopy_schedule = homotopy_schedule + final_schedule
 
@@ -100,7 +96,7 @@ def define_costs_to_update(P, formulation):
     updates = {}
 
     initial_updates = {}
-    initial_updates[0] = struct_op.subkeys(P, 'cost')
+    initial_updates[0] = set(struct_op.subkeys(P, 'cost'))
 
     fictitious_updates = {}
     fictitious_updates[0] = ['gamma', 'fictitious']
@@ -177,6 +173,8 @@ def define_bounds_to_update(model, bounds_schedule, formulation):
         tether_release_updates[0] = ['ddl_t', 'ddl_t']
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         tether_release_updates[0] = ['dddl_t', 'dddl_t']
+    elif 'v_sq' in list(model.variables_dict['u'].keys()):
+        tether_release_updates[0] = ['v_sq', 'v_sq']
 
     power_updates = {}
     # check which tether length variable is a control variable
@@ -184,6 +182,9 @@ def define_bounds_to_update(model, bounds_schedule, formulation):
         power_updates[0] = ['ddl_t', 'ddl_t', 'psi'] + struct_op.subkeys(model.variables, 'theta') * 2
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         power_updates[0] = ['dddl_t', 'dddl_t', 'psi'] + struct_op.subkeys(model.variables, 'theta') * 2
+    elif 'v_sq' in list(model.variables_dict['u'].keys()):
+        """ ### psi, theta??? und bounds_schedule.keys()????"""
+        power_updates[0] = ['v_sq', 'v_sq', 'psi'] + struct_op.subkeys(model.variables, 'theta') * 2
     # check if phase fix
     if 'dl_t' in list(bounds_schedule.keys()):
         power_updates[0] += ['dl_t']*2
@@ -198,6 +199,9 @@ def define_bounds_to_update(model, bounds_schedule, formulation):
         nominal_landing_updates[0] = ['ddl_t', 'ddl_t', 'eta'] + struct_op.subkeys(model.variables, 'theta') * 2
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         nominal_landing_updates[0] = ['dddl_t', 'dddl_t', 'eta'] + struct_op.subkeys(model.variables, 'theta') * 2
+    elif 'v_sq' in list(model.variables_dict['u'].keys()):
+        """ ### eta, theta??? und bounds_schedule.keys()????"""
+        nominal_landing_updates[0] = ['v_sq', 'v_sq', 'eta'] + struct_op.subkeys(model.variables, 'theta') * 2
     # check if phase fix
     if 'dl_t' in list(bounds_schedule.keys()):
         nominal_landing_updates[0] += ['dl_t']*2
@@ -210,6 +214,9 @@ def define_bounds_to_update(model, bounds_schedule, formulation):
         transition_updates[0] = ['ddl_t', 'ddl_t', 'upsilon'] + struct_op.subkeys(model.variables, 'theta') * 2
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         transition_updates[0] = ['dddl_t', 'dddl_t', 'upsilon'] + struct_op.subkeys(model.variables, 'theta') * 2
+    elif 'v_sq' in list(model.variables_dict['u'].keys()):
+        """ ### upsilon, theta??? und bounds_schedule.keys()????"""
+        transition_updates[0] = ['v_sq', 'v_sq', 'upsilon'] + struct_op.subkeys(model.variables, 'theta') * 2
     # check if phase fix
     if 'dl_t' in list(bounds_schedule.keys()):
         transition_updates[0] += ['dl_t']*2
@@ -335,7 +342,10 @@ def update_final_bounds(bound_name, V_bounds, nlp, update):
         V_bounds[bound_type][var_type, bound_name] = nlp.V_bounds[bound_type][var_type, bound_name]
 
     if var_type == 'u':
-        V_bounds[bound_type][var_type, :, bound_name] = nlp.V_bounds[bound_type][var_type, :, bound_name]
+        if 'u' in list(V_bounds[bound_type].keys()):
+            V_bounds[bound_type][var_type, :, bound_name] = nlp.V_bounds[bound_type][var_type, :, bound_name]
+        else:
+            V_bounds[bound_type]['coll_var', :, :, var_type, bound_name] = nlp.V_bounds[bound_type]['coll_var', :, :, var_type, bound_name]
 
     if var_type in {'xl', 'xa', 'xd'}:
 
@@ -362,7 +372,10 @@ def update_nonfinal_bounds(bound_name, V_bounds, model, nlp, update):
             V_bounds[bound_type][var_type, bound_name] = scaled_value
 
         if var_type == 'u':
-            V_bounds[bound_type][var_type, :, bound_name] = scaled_value
+            if 'u' in list(V_bounds[bound_type].keys()):
+                V_bounds[bound_type][var_type, :, bound_name] = scaled_value
+            else:
+                V_bounds[bound_type]['coll_var', :, :, var_type, bound_name] = scaled_value
 
         if var_type in {'xl', 'xa', 'xd'}:
             if var_type in list(nlp.V.keys()): # not the case for xa and xl in radau collocation
@@ -386,6 +399,8 @@ def create_empty_bound_update_schedule(model, nlp, formulation):
         bound_schedule['ddl_t'] = {}
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         bound_schedule['dddl_t'] = {}
+    elif 'v_sq' in list(model.variables_dict['u'].keys()):
+        bound_schedule['v_sq'] = {}
     # check if phase fix
     if nlp.V['theta','t_f'].shape[0] > 1:
         bound_schedule['dl_t'] = {}
@@ -420,6 +435,9 @@ def define_bound_update_schedule(model, nlp, formulation):
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         bound_schedule['dddl_t'][1] = ['lb', 'u', 'final']
         bound_schedule['dddl_t'][2] = ['ub', 'u', 'final']
+    elif 'v_sq' in list(model.variables_dict['u'].keys()):
+        bound_schedule['v_sq'][1] = ['lb', 'u', 'final']
+        bound_schedule['v_sq'][2] = ['ub', 'u', 'final']
     if 'dl_t' in list(bound_schedule.keys()):
         bound_schedule['dl_t'][1] = ['lb','xd','final']
         bound_schedule['dl_t'][2] = ['ub','xd','final']
@@ -436,7 +454,7 @@ def define_cost_update_schedule(cost_solver_options):
 def initialize_cost_update_counter(P):
 
     cost_update_counter = {}
-    for name in struct_op.subkeys(P, 'cost'):
+    for name in set(struct_op.subkeys(P, 'cost')):
 
         cost_update_counter[name] = -1
 
@@ -459,6 +477,8 @@ def initialize_bound_update_counter(model, schedule, formulation):
         bound_update_counter['ddl_t'] = 0
     elif 'dddl_t' in list(model.variables_dict['u'].keys()):
         bound_update_counter['dddl_t'] = 0
+    elif 'v_sq' in list(model.variables_dict['u'].keys()):
+        bound_update_counter['v_sq'] = 0
 
     if 'dl_t' in list(schedule['bounds'].keys()):
         bound_update_counter['dl_t'] = 0
@@ -467,4 +487,3 @@ def initialize_bound_update_counter(model, schedule, formulation):
         bound_update_counter['l_t'] = 0
 
     return bound_update_counter
-

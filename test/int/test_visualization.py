@@ -23,9 +23,10 @@ def test_visualization():
     options['user_options']['trajectory']['type'] = 'lift_mode'
     options['user_options']['system_model']['kite_dof'] = 3
     options['user_options']['induction_model'] = 'not_in_use'
-    options['user_options']['tether_drag_model'] = 'trivial'
+    options['user_options']['tether_drag_model'] = 'split'
     options['nlp']['n_k'] = 2
     options['solver']['max_iter'] = 0
+    options['visualization']['cosmetics']['plot_ref'] = True
 
     # build trial and optimize
     trial = awe.Trial(options, 'trial1')
@@ -39,6 +40,7 @@ def test_visualization():
     # build sweep and run
     sweep_opts = [(['user_options','wind','u_ref'], [5.,5.5])]
     sweep = awe.Sweep(name = 'sweep_viz_test', options = options, seed = sweep_opts)
+    sweep.build()
     sweep.run(final_homotopy_step='initial', debug_flags='all')
 
     # set flags and plot
@@ -53,10 +55,11 @@ def test_animation():
     options['user_options']['system_model']['architecture'] = {1:0}
     options['user_options']['trajectory']['lift_mode']['windings'] = 1
     options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
-    options['user_options']['trajectory']['type'] = 'lift_mode'
+    options['user_options']['trajectory']['type'] = 'power_cycle'
+    options['user_options']['trajectory']['system_type'] = 'lift_mode'
     options['user_options']['system_model']['kite_dof'] = 3
     options['user_options']['induction_model'] = 'not_in_use'
-    options['user_options']['tether_drag_model'] = 'trivial'
+    options['user_options']['tether_drag_model'] = 'split'
     options['nlp']['n_k'] = 2
     options['solver']['max_iter'] = 0
 

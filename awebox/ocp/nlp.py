@@ -27,16 +27,14 @@ Class NLP generates an NLP from the model of the tree-structure multi-kite syste
 _python-3.5 / casadi-3.4.5
 - authors: rachel leuthold, jochem de schutter, thilo bronnenmeyer alu-fr 2017-2018
 '''
+
+import casadi.tools as cas
+
+from awebox.logger.logger import Logger as awelogger
 import awebox.tools.print_operations as print_op
-
 from . import discretization
-
 from . import objective
-
-import logging
-
 from . import var_bounds
-
 import time
 
 class NLP(object):
@@ -48,11 +46,11 @@ class NLP(object):
 
     def build(self, nlp_options, model, formulation):
 
-        logging.info('Building NLP...')
+        awelogger.logger.info('Building NLP...')
 
         if self.__status == 'I am an NLP.':
 
-            logging.info('NLP already built.')
+            awelogger.logger.info('NLP already built.')
             return None
 
         elif model.status == 'I am a model.' and formulation.status == 'I am a formulation.':
@@ -64,44 +62,38 @@ class NLP(object):
 
             self.__status = 'I am an NLP.'
 
-            logging.info('NLP built.')
+            awelogger.logger.info('NLP built.')
             self.__timings['overall'] = time.time()-timer
-            logging.info('NLP construction time: %s', print_op.print_single_timing(self.__timings['overall']))
-            logging.info('')
+            awelogger.logger.info('NLP construction time: %s', print_op.print_single_timing(self.__timings['overall']))
+            awelogger.logger.info('')
         else:
 
             raise ValueError('Cannot build NLP without first building model and formulation.')
 
     def __generate_discretization(self, nlp_options, model, formulation):
 
-        logging.info('discretize problem... ')
+        awelogger.logger.info('discretize problem... ')
 
         timer = time.time()
         [V,
         P,
         Xdot,
         Xdot_fun,
-        g,
-        g_fun,
-        g_jacobian_fun,
-        g_bounds,
+        ocp_cstr_list,
         Outputs,
         Outputs_fun,
         Integral_outputs,
         Integral_outputs_fun,
         time_grids,
         Collocation,
-        Multiple_shooting] =  discretization.discretize(nlp_options,model,formulation)
+        Multiple_shooting] = discretization.discretize(nlp_options,model,formulation)
         self.__timings['discretization'] = time.time()-timer
 
         self.__V = V
         self.__P = P
         self.__Xdot = Xdot
         self.__Xdot_fun = Xdot_fun
-        self.__g = g
-        self.__g_fun = g_fun
-        self.__g_jacobian_fun = g_jacobian_fun
-        self.__g_bounds = g_bounds
+        self.__ocp_cstr_list = ocp_cstr_list
         self.__Outputs = Outputs
         self.__Outputs_fun = Outputs_fun
         self.__Integral_outputs = Integral_outputs
@@ -114,12 +106,19 @@ class NLP(object):
         self.__Collocation = Collocation
         self.__Multiple_shooting = Multiple_shooting
 
+        self.__g = ocp_cstr_list.get_expression_list('all')
+        self.__g_fun = ocp_cstr_list.get_function(nlp_options, V, P, 'all')
+        self.__g_jacobian_fun = cas.jacobian(self.__g, V)
+        self.__g_bounds = {'lb': ocp_cstr_list.get_lb('all'), 'ub': ocp_cstr_list.get_ub('all')}
+
         return None
 
     def __generate_variable_bounds(self, nlp_options, model):
 
-        logging.info('generate variable bounds...')
-        [vars_lb, vars_ub] = var_bounds.get_variable_bounds(nlp_options, self.__V, model)
+        awelogger.logger.info('generate variable bounds...')
+
+        # notice that these must be in scaled units.
+        [vars_lb, vars_ub] = var_bounds.get_scaled_variable_bounds(nlp_options, self.__V, model)
 
         self.__V_bounds = {'lb': vars_lb, 'ub': vars_ub}
 
@@ -127,18 +126,16 @@ class NLP(object):
 
     def __generate_objective(self, nlp_options, model):
 
-        logging.info('generate objective... ')
+        awelogger.logger.info('generate objective... ')
         timer = time.time()
 
-        [component_cost_function, component_cost_structure, f_fun, f_jacobian_fun, f_hessian_fun] = objective.get_cost_function_and_structure(nlp_options, self.__V, self.__P, model.variables, model.parameters, self.__Xdot(self.__Xdot_fun(self.__V)), model.outputs, model, self.__Integral_outputs(self.__Integral_outputs_fun(self.__V, self.__P)))
+        [component_cost_function, component_cost_structure, f_fun] = objective.get_cost_function_and_structure(nlp_options, self.__V, self.__P, model.variables, model.parameters, self.__Xdot(self.__Xdot_fun(self.__V)), model.outputs, model, self.__Integral_outputs(self.__Integral_outputs_fun(self.__V, self.__P)))
 
         self.__timings['objective'] = time.time()-timer
 
         self.__component_cost_fun = component_cost_function
         self.__component_cost_struct = component_cost_structure
         self.__f_fun = f_fun
-        self.__f_jacobian_fun = f_jacobian_fun
-        self.__f_hessian_fun = f_hessian_fun
 
         return None
 
@@ -153,13 +150,17 @@ class NLP(object):
 
         return nlp
 
+    def get_f_jacobian_fun(self):
+        return objective.get_cost_derivatives(self.__V, self.__P, self.__f_fun)
+
+
     @property
     def status(self):
         return self.__status
 
     @status.setter
     def status(self, value):
-        logging.warning('Cannot set status object.')
+        awelogger.logger.warning('Cannot set status object.')
 
     @property
     def output_components(self):
@@ -167,7 +168,7 @@ class NLP(object):
 
     @output_components.setter
     def output_components(self, value):
-        logging.warning('Cannot set outputs object.')
+        awelogger.logger.warning('Cannot set outputs object.')
 
     @property
     def integral_output_components(self):
@@ -175,7 +176,7 @@ class NLP(object):
 
     @integral_output_components.setter
     def integral_output_components(self, value):
-        logging.warning('Cannot set integral outputs object.')
+        awelogger.logger.warning('Cannot set integral outputs object.')
 
     @property
     def V_bounds(self):
@@ -183,7 +184,7 @@ class NLP(object):
 
     @V_bounds.setter
     def V_bounds(self, value):
-        logging.warning('Cannot set V_bounds object')
+        awelogger.logger.warning('Cannot set V_bounds object')
 
     @property
     def g_bounds(self):
@@ -191,7 +192,7 @@ class NLP(object):
 
     @g_bounds.setter
     def g_bounds(self, value):
-        logging.warning('Cannont set g_bounds object')
+        awelogger.logger.warning('Cannont set g_bounds object')
 
     @property
     def cost_components(self):
@@ -199,7 +200,7 @@ class NLP(object):
 
     @cost_components.setter
     def cost_components(self, value):
-        logging.warning('Cannot set cost_components object.')
+        awelogger.logger.warning('Cannot set cost_components object.')
 
     @property
     def g(self):
@@ -207,7 +208,7 @@ class NLP(object):
 
     @g.setter
     def g(self, value):
-        logging.warning('Cannot set g object.')
+        awelogger.logger.warning('Cannot set g object.')
 
     @property
     def g_fun(self):
@@ -215,7 +216,16 @@ class NLP(object):
 
     @g_fun.setter
     def g_fun(self, value):
-        logging.warning('Cannot set g_fun object.')
+        awelogger.logger.warning('Cannot set g_fun object.')
+
+    @property
+    def f_fun(self):
+        return self.__f_fun
+
+    @f_fun.setter
+    def f_fun(self, value):
+        awelogger.logger.warning('Cannot set f_fun object.')
+
 
     @property
     def g_jacobian_fun(self):
@@ -223,15 +233,7 @@ class NLP(object):
 
     @g_jacobian_fun.setter
     def g_jacobian_fun(self, value):
-        logging.warning('Cannot set g_jacobian_fun object.')
-
-    @property
-    def f_jacobian_fun(self):
-        return self.__f_fun, self.__f_jacobian_fun, self.__f_hessian_fun
-
-    @f_jacobian_fun.setter
-    def f_jacobian_fun(self, value):
-        logging.warning('Cannot set f_jacobian_fun object.')
+        awelogger.logger.warning('Cannot set g_jacobian_fun object.')
 
     @property
     def n_k(self):
@@ -239,7 +241,7 @@ class NLP(object):
 
     @n_k.setter
     def n_k(self, value):
-        logging.warning('Cannot set n_k object.')
+        awelogger.logger.warning('Cannot set n_k object.')
 
     @property
     def d(self):
@@ -247,7 +249,7 @@ class NLP(object):
 
     @d.setter
     def d(self, value):
-        logging.warning('Cannot set d object.')
+        awelogger.logger.warning('Cannot set d object.')
 
     @property
     def V(self):
@@ -255,7 +257,7 @@ class NLP(object):
 
     @V.setter
     def V(self, value):
-        logging.warning('Cannot set V object.')
+        awelogger.logger.warning('Cannot set V object.')
 
     @property
     def Xdot(self):
@@ -267,11 +269,11 @@ class NLP(object):
 
     @Xdot_fun.setter
     def Xdot_fun(self, value):
-        logging.warning('Cannot set Xdot_fun object.')
+        awelogger.logger.warning('Cannot set Xdot_fun object.')
 
     @Xdot.setter
     def Xdot(self, value):
-        logging.warning('Cannot set Xdot object.')
+        awelogger.logger.warning('Cannot set Xdot object.')
 
     @property
     def P(self):
@@ -279,7 +281,7 @@ class NLP(object):
 
     @P.setter
     def P(self, value):
-        logging.warning('Cannot set P object.')
+        awelogger.logger.warning('Cannot set P object.')
 
     @property
     def Outputs_fun(self):
@@ -287,7 +289,7 @@ class NLP(object):
 
     @Outputs_fun.setter
     def Outputs_fun(self, value):
-        logging.warning('Cannot set Outputs_fun object.')
+        awelogger.logger.warning('Cannot set Outputs_fun object.')
 
     @property
     def Outputs(self):
@@ -295,7 +297,7 @@ class NLP(object):
 
     @Outputs.setter
     def Outputs(self, value):
-        logging.warning('Cannot set Outputs object.')
+        awelogger.logger.warning('Cannot set Outputs object.')
 
     @property
     def timings(self):
@@ -303,7 +305,7 @@ class NLP(object):
 
     @timings.setter
     def timings(self, value):
-        logging.warning('Cannot set timings object.')
+        awelogger.logger.warning('Cannot set timings object.')
 
     @property
     def discretization(self):
@@ -311,7 +313,7 @@ class NLP(object):
 
     @discretization.setter
     def discretization(self, value):
-        logging.warning('Cannot set discretization object.')
+        awelogger.logger.warning('Cannot set discretization object.')
 
     @property
     def time_grids(self):
@@ -319,7 +321,7 @@ class NLP(object):
 
     @time_grids.setter
     def time_grids(self, value):
-        logging.warning('Cannot set time_grids object.')
+        awelogger.logger.warning('Cannot set time_grids object.')
 
     @property
     def Multiple_shooting(self):
@@ -332,7 +334,7 @@ class NLP(object):
 
     @Collocation.setter
     def Collocation(self, value):
-        logging.warning('Cannot set Collocation object.')
+        awelogger.logger.warning('Cannot set Collocation object.')
 
     @property
     def options(self):
@@ -340,4 +342,12 @@ class NLP(object):
 
     @options.setter
     def options(self, value):
-        logging.warning('Cannot set options object.')
+        awelogger.logger.warning('Cannot set options object.')
+
+    @property
+    def ocp_cstr_list(self):
+        return self.__ocp_cstr_list
+
+    @ocp_cstr_list.setter
+    def ocp_cstr_list(self, value):
+        awelogger.logger.warning('Cannot set ocp_cstr_list object.')

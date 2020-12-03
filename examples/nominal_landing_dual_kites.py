@@ -1,10 +1,8 @@
 #!/usr/bin/python3
 
 import awebox as awe
-import logging
 import matplotlib.pyplot as plt
 import copy
-logging.basicConfig(filemode='w',format='%(levelname)s:    %(message)s', level=logging.DEBUG)
 
 
 
@@ -12,7 +10,7 @@ logging.basicConfig(filemode='w',format='%(levelname)s:    %(message)s', level=l
 # GENERATE TRIAL OPTIONS #
 ##########################
 
-## PUMPING TRIAL 
+## PUMPING TRIAL
 
 # make pumping options object
 pumping_options = awe.Options(True)
@@ -23,12 +21,13 @@ pumping_options['user_options']['system_model']['kite_dof'] = 3
 pumping_options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
 
 # trajectory should be a single pumping cycle with initial number of five windings
-pumping_options['user_options']['trajectory']['type'] = 'lift_mode'
+pumping_options['user_options']['trajectory']['type'] = 'power_cycle'
+pumping_options['user_options']['trajectory']['system_type'] = 'lift_mode'
 pumping_options['user_options']['trajectory']['lift_mode']['windings'] = 5
 
 # don't include induction effects, use simple tether drag
 pumping_options['user_options']['induction_model'] = 'not_in_use'
-pumping_options['user_options']['tether_drag_model'] = 'simple'
+pumping_options['user_options']['tether_drag_model'] = 'single'
 
 ## NOMINAL LANDING TRIAL
 
