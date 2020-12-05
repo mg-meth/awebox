@@ -1012,23 +1012,319 @@ energy_balancetotal:  PASSED
 
 solve_succeeded:  PASSED
 
-
 double_kite_no_gen\double_kite_7_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+c21:  PASSED
+
+dc21:  PASSED
+
+ddc21:  PASSED
+
+c31:  PASSED
+
+dc31:  PASSED
+
+ddc31:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balance2:  PASSED
+
+energy_balance3:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+TEST : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  FAILED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+bubbledancer\single_kite_2_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+bubbledancer\single_kite_3_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+bubbledancer\single_kite_4_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+bubbledancer\single_kite_5_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+bubbledancer\single_kite_6_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+bubbledancer\single_kite_7_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+bubbledancer_kite_no_gen\single_kite_2_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+bubbledancer_kite_no_gen\single_kite_3_log_wind : c10:  FAILED
+
+dc10:  PASSED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+bubbledancer_kite_no_gen\single_kite_4_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+bubbledancer_kite_no_gen\single_kite_5_log_wind : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+bubbledancer_kite_no_gen\single_kite_6_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+
+bubbledancer_kite_no_gen\single_kite_7_log_wind : c10:  PASSED
 dc10:  PASSED
 ddc10:  PASSED
-c21:  PASSED
-dc21:  PASSED
-ddc21:  PASSED
-c31:  PASSED
-dc31:  PASSED
-ddc31:  PASSED
 loyd_factor:  PASSED
 power_harvesting_factor:  PASSED
 tau_max:  PASSED
 t_f_min:  PASSED
 max_control_interval:  PASSED
 energy_balance1:  PASSED
-energy_balance2:  PASSED
-energy_balance3:  PASSED
 energy_balancetotal:  PASSED
 solve_succeeded:  PASSED
