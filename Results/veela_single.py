@@ -87,11 +87,11 @@ solve_succed(quality_print_results, name)
 
 
 
-wind_ref = [2,3,4,5,6,7]
+wind_ref = [3,4,5,6,7]
 name = []
 
 for w in wind_ref:
-    name = 'single_kite_125_kw\single_kite_' + str(w) + '_log_wind'
+    name = 'power_changed_125_kw\single_kite_' + str(w) + '_log_wind'
 
     print(name)
 
@@ -110,8 +110,8 @@ for w in wind_ref:
     options['user_options']['trajectory']['type'] = 'power_cycle'
     options['user_options']['trajectory']['system_type'] = 'lift_mode'
     options['user_options']['trajectory']['lift_mode']['windings'] = 3
-    options['solver']['max_iter'] = 6000
-    options['solver']['max_cpu_time'] = 1.e4
+    options['solver']['max_iter'] = 2000
+    options['solver']['max_cpu_time'] = 0.5e4
     """ ### """
     #options['model']['ground_station']['ddl_t_max'] = 95.04
 
