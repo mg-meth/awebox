@@ -363,8 +363,8 @@ def gen_pmsm(options, variables_si, outputs, architecture):
     v_sq = variables_si['u']['v_sq']
     i_sd = variables_si['xd']['i_sd']
     i_sq = variables_si['xd']['i_sq']
-    p_el = (1.5*((v_sd*i_sd)+(v_sq*i_sq)))
-
+    p_el = -(1.5*((v_sd*i_sd)+(v_sq*i_sq))) #+/- ??
+    print("hey")
 
     #!!!!!!!!#
     #p_el = 0.03*(i_sd**2 + i_sq**2)
