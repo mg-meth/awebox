@@ -105,6 +105,9 @@ def generator_ode(options, variables_si, outputs, parameters, architecture):
         i_sq_ode = v_sq + rs*i_sq + lq*di_sq + p_p*omega*phi_f + p_p*omega*ld*i_sd
         i_sd_ode = v_sd + rs*i_sd + ld*di_sd - p_p*omega*lq*i_sq
 
+        i_sq_ode = p_p*omega * (ld*i_sd + phi_f) + i_sq*r_s + lq*di_sq - v_sq
+        i_sd_ode = p_p*omega*lq*i_sq + i_sd*rs + ld*di_sd - v_sd
+
         i_sd_cstr = cstr_op.Constraint(expr=i_sd_ode, name='gen0', cstr_type='eq')
         cstr_list.append(i_sd_cstr)
 
