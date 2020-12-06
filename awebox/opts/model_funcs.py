@@ -235,15 +235,11 @@ def divide_options(options, options_tree, help_options):
     options_tree.append(('model', 'generator', None, 'type', options['type'], ('???', None),'x'))
     options_tree.append(('quality', 'test_param', None, 'generator_max_power', options['generator_max_power'], ('???', None),'x'))
     options_tree.append(('model', 'model_bounds', 'current', 'include', options['model_bounds'], ('???', None),'x'))
+    options_tree.append(('model', 'generator', None, 'gear_train', options['gear_train'], ('???', None),'x'))
 
     options_tree.append(('model', 'scaling', 'xd', 'i_sd', 1, ('descript', None), 'x'))
     options_tree.append(('model', 'scaling', 'xd', 'i_sq', 40., ('descript', None), 'x'))
 
-
-#    options_tree.append(('model', 'scaling', 'xd', 'v_sd', 1, ('descript', None), 'x'))
-#    options_tree.append(('model', 'scaling', 'xd', 'v_sq', 5., ('descript', None), 'x'))
-
-    #XXXXX = V_final['xd', :, 'i_s'] "average" werte
 
     for name in list(options.keys()):
         if name == 'ground_station':
