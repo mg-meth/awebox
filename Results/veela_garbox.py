@@ -90,7 +90,7 @@ wind_ref = [2,3,4,5,6,7]
 name = []
 
 for w in wind_ref:
-    name = 'single_kite_125_kw_gearbox_opti/single_kite_' + str(w) + '_log_wind'
+    name = 'single_kite_125_kw_gearbox_opti\single_kite_' + str(w) + '_log_wind.csv'
 
     print(name)
 
