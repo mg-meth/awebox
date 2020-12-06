@@ -152,6 +152,9 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     #current_cstr = current_inequality(options, system_variables['SI'], parameters, architecture, outputs)
     #cstr_list.append(current_cstr)
 
+    #k_gear_str = k_gear_inequality(options, system_variables['SI'], parameters, architecture, outputs)
+    #cstr_list.append(current_cstr)
+
     # ----------------------------------------
     #  construct outputs structure
     # ----------------------------------------
@@ -362,6 +365,10 @@ def gen_pmsm(options, variables_si, outputs, architecture):
     i_sq = variables_si['xd']['i_sq']
     p_el = (1.5*((v_sd*i_sd)+(v_sq*i_sq)))
 
+
+    #!!!!!!!!#
+    #p_el = 0.03*(i_sd**2 + i_sq**2)
+    #p_el = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * variables_si['xd']['dl_t']
     print("p_el")
     print(p_el)
 
@@ -530,6 +537,17 @@ def current_inequality(options, variables_si, parameters, architecture, outputs)
             cstr_list.append(i_sd_cstr)
             i_sq_cstr = cstr_op.Constraint(expr=i_q_ineq, name='i_q_ineq', cstr_type='ineq')
             cstr_list.append(i_sq_cstr)
+
+    return cstr_list
+
+
+def k_gear_inequality(options, variables_si, parameters, architecture, outputs):
+    cstr_list = mdl_constraint.MdlConstraintList()
+    if options['generator']['gear_train']['optimize']:
+        k_gear_upper = variables_si['xd']['k_gear'] - 10
+        k_gear_lower = -variables_si['xd']['k_gear'] + 1/10
+        k_gear_ineq_upper = cstr_op.Constraint(expr=k_gear_upper, name='k_gear_upper', cstr_type='ineq')
+        k_gear_ineq_lower = cstr_op.Constraint(expr=k_gear_lower, name='k_gear_lower', cstr_type='ineq')
 
     return cstr_list
 

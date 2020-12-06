@@ -8,6 +8,8 @@ def data_dict():
     data_dict['type'] = 'experimental'
     data_dict['generator_max_power'] = 1.25*10**5
     data_dict['model_bounds'] = True
+    data_dict['gear_train'] = False
+    data_dict['gear_train']['optimize'] = False
     data_dict['generator'] = winch_el()
     data_dict['ground_station'] = winch_mech()
 

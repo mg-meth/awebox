@@ -235,7 +235,7 @@ def set_default_options(default_user_options, help_options):
 
         #### ground_station
         ('params', 'ground_station', None, 'r_gen',            0.25,   ('winch generator drum radius [m], its possible to overwrite it with winch params',None),'x'),
-        ('params', 'ground_station', None, 'm_gen',            50.,   ('effective mass of generator [kg], guessed',None),'x'),
+        ('params', 'ground_station', None, 'm_gen',            50.,   ('effective mass of generator [kg], guessed, its possible to overwrite it with winch params',None),'x'),
         ('model', 'ground_station', None, 'ddl_t_max',        10,    ('reel-in/out acceleration limit on the tether [m/s^2]', None),'x'),
         ('model', 'ground_station', None, 'dddl_t_max',       100.,    ('reel-in/out jerk limit on the tether [m/s^2]', None), 'x'),
 
@@ -262,8 +262,14 @@ def set_default_options(default_user_options, help_options):
         ('model',  'generator', 'overwrite', 'phi_f',                           None,       ('generator flux [Wb]', None), 's'),
 
         ('model', 'ground_station', 'overwrite',           'j_winch',           None,       ('winch inertia [kg m^2] guess!', None), 's'),
-        ('model', 'ground_station', 'overwrite',            'f_c',              None,       ('winch friction coefficient [Nms/rad] guess!', None), 's'),
+        ('model', 'ground_station', 'overwrite',            'f_winch',              None,       ('winch friction coefficient [Nms/rad] guess!', None), 's'),
         ('model', 'ground_station', 'overwrite', 'name',                        None,       ('electrical machine', None), 's'),
+        ('model', 'ground_station', 'overwrite', 'r_gen_inner',                        None,       ('electrical machine', None), 's'),
+        ('model', 'ground_station', 'overwrite', 'rho_winch',                        None,       ('electrical machine', None), 's'),
+        ('model', 'ground_station', 'overwrite', 'j_gen',                        None,       ('electrical machine', None), 's'),
+        ('model', 'ground_station', 'overwrite', 'f_gen',                        None,       ('electrical machine', None), 's'),
+        ('model', 'ground_station', 'overwrite', 'k_gear',                        None,       ('electrical machine', None), 's'),
+
 
         ('model',   'model_bounds', 'current', 'include',                       None,       ('include a cap on maximum current magnitude for generators in constraints', [True, False]), 's'),
 

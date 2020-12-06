@@ -10,6 +10,8 @@ def data_dict():
     data_dict['control_var'] = 'asyn'
     data_dict['generator_max_power'] = 25*10**3
     data_dict['model_bounds'] = True
+    data_dict['gear_train'] = False
+    data_dict['gear_train']['optimize'] = False
     data_dict['generator'] = winch_el()
     data_dict['ground_station'] = winch_mech()
 

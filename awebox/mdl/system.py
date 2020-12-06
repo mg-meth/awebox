@@ -171,6 +171,8 @@ def generate_structure(options, architecture):
         system_states.extend([('i_sd', (1, 1))])
         system_controls.extend([('v_sd', (1, 1))])
         system_controls.extend([('v_sq', (1, 1))])
+        if options['generator']['gear_train']['optimize']:
+            system_states.extend([('k_gear', (1, 1))])
     else:
         raise ValueError('invalid tether control variable chosen')
 

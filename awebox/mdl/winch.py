@@ -22,28 +22,43 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
 
         t_em = t_em_ode(options, variables_si, outputs, parameters, architecture)
 
-        radius = parameters['theta0','ground_station','r_gen']
+        radius_winch = parameters['theta0','ground_station','r_gen']            #not optinal
         j_winch = parameters['theta0','ground_station','j_winch']
-        f_c = parameters['theta0','ground_station','f_c']
+        f_winch = parameters['theta0','ground_station','f_winch']
         l_t_full = variables_si['theta']['l_t_full']
-        phi = (l_t_full- variables_si['xd']['l_t']) / radius
-        omega = - variables_si['xd']['dl_t'] / radius
-        domega =  -variables_si['xddot']['ddl_t'] / radius
-        t_tether = -variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius
-        t_frict = -f_c * omega
+        phi = (l_t_full- variables_si['xd']['l_t']) / radius_winch
+        omega = - variables_si['xd']['dl_t'] / radius_winch
+        domega =  -variables_si['xddot']['ddl_t'] / radius_winch
+        t_tether = -variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius_winch
+        t_frict = -f_winch * omega
         t_inertia = j_winch * domega
         #t_inertia += options['scaling']['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius**3 * (omega*omega + domega*phi) #
 
         rhs = t_tether + t_em + t_frict
         lhs = t_inertia
 
+        if options['generator']['gear_train']['used']:
+            j_gen = parameters['theta0','ground_station','j_gen']
+            j_winch = parameters['theta0','ground_station','j_winch'] - j_gen   #normaly rigid body
+            f_gen = parameters['theta0','ground_station','f_gen']
 
-        i_sd = variables_si['xd']['i_sd']
-        i_sq = variables_si['xd']['i_sq']
-        torque = (((6*(0.892*i_sq))-(0.25*((variables_si['xa']['lambda10'])*(variables_si['xd']['l_t']))))+(1.57*((variables_si['xddot']['ddl_t'] )/0.25)))
+            if options['generator']['gear_train']['optimize']:
 
-        print("torque")
-        print(torque)
+                k = variables_si['xd']['k_gear']
+                dk = variables_si['xddot']['dk_gear']                           #const ratio
+                k_cstr = cstr_op.Constraint(expr=dk, name='k_gear_const', cstr_type='eq')
+                cstr_list.append(k_cstr)
+
+            else:
+
+                k = parameters['theta0','ground_station','k_gear']
+
+            t_gen = k**2*j_gen*domega
+            t_win = j_winch*domega + options['scaling']['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius_winch**3 * (omega*omega + domega*phi) #
+            lhs = t_gen + t_win
+            rhs = t_tether + omega*(f_winch + f_gen*k**2) + k*t_em
+
+
         torque = rhs - lhs
 
         winch_cstr = cstr_op.Constraint(expr=torque, name='winch', cstr_type='eq')
@@ -87,14 +102,6 @@ def generator_ode(options, variables_si, outputs, parameters, architecture):
         phi_f = parameters['theta0','generator','phi_f']
         p_p = parameters['theta0','generator','p_p']
 
-        i_sq_ode = ((((v_sq+(0.02*i_sq))+(0.001*di_sq))-(0.892*(4*((variables_si['xd']['dl_t'])/0.25))))-((0.001*(4*((variables_si['xd']['dl_t'])/0.25)))*i_sd))
-        i_sd_ode = (((v_sd+(0.02*i_sd))+(0.001*di_sd))+((0.001*(4*((variables_si['xd']['dl_t'])/0.25)))*i_sq))
-
-        print("i_sq_ode")
-        print(i_sq_ode)
-        print("i_sd_ode")
-        print(i_sd_ode)
-
         i_sq_ode = v_sq + rs*i_sq + lq*di_sq + p_p*omega*phi_f + p_p*omega*ld*i_sd
         i_sd_ode = v_sd + rs*i_sd + ld*di_sd - p_p*omega*lq*i_sq
 
@@ -105,35 +112,3 @@ def generator_ode(options, variables_si, outputs, parameters, architecture):
         cstr_list.append(i_sq_cstr)
 
     return cstr_list
-
-
-
-"""
-i_sd_cstr
-(30-xd_i_s_0)
-i_sq_cstr
-(30-xd_i_s_1)
-i_sd_ode
-@1=0.001, (((u_v_s_0+(0.02*xd_i_s_0))+(@1*xddot_di_s_0))+((@1*(4*((500*xd_dl_t)/0.25)))*xd_i_s_1))
-i_sq_ode
-@1=0.001, @2=4, @3=((500*xd_dl_t)/0.25), ((((u_v_s_1+(0.02*xd_i_s_1))+(@1*xddot_di_s_1))-(0.892*(@2*@3)))-((@1*(@2*@3))*xd_i_s_0))
-(500*theta_l_t_full)
-phi
-@1=500, (((@1*theta_l_t_full)-(@1*xd_l_t))/0.25)
-lambda10
-(8322.91*xa_lambda10)
-t_inertia
-(-(1.57*((500*xddot_ddl_t)/0.25)))
-torque
-@1=0.25, @2=500, (((6*(0.892*xd_i_s_1))-(@1*((8322.91*xa_lambda10)*(@2*xd_l_t))))+(1.57*((@2*xddot_ddl_t)/@1)))
-p_el
-(1.5*((u_v_s_0*xd_i_s_0)+(u_v_s_1*xd_i_s_1)))
-
-
-
-@1=0.25, @2=500, (((6*(0.892*xd_i_s_1))-(@1*((261.094*xa_lambda10)*(@2*xd_l_t))))+(1.57*((@2*xddot_ddl_t)/@1)))
-i_sq_ode
-@1=0.001, @2=4, @3=((500*xd_dl_t)/0.25), ((((u_v_s_1+(0.02*xd_i_s_1))+(@1*xddot_di_s_1))-(0.892*(@2*@3)))-((@1*(@2*@3)*xd_i_s_0))
-i_sd_ode
-@1=0.001, (((u_v_s_0+(0.02*xd_i_s_0))+(@1*xddot_di_s_0))+((@1*(4*((500*xd_dl_t)/0.25)))*xd_i_s_1))
-"""

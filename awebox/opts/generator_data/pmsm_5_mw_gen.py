@@ -10,6 +10,8 @@ def data_dict():
     data_dict['control_var'] = 'pmsm'
     data_dict['generator_max_power'] = 5e6
     data_dict['model_bounds'] = True
+    data_dict['gear_train']['used'] = False
+    data_dict['gear_train']['optimize'] = False
     data_dict['generator'] = winch_el()
     data_dict['ground_station'] = winch_mech()
 
@@ -38,11 +40,23 @@ def winch_mech():
 
     winch_mech = {}
 
-    winch_mech['r_gen'] = 0.1925
+#    winch_mech['r_gen'] = 0.1925
     winch_mech['m_gen'] = 5057      #muss schauen ob überschrieben wird
-    winch_mech['j_winch'] = 268
-    winch_mech['f_c'] = 0
+    winch_mech['j_gen'] = 268
     #kein ddl_t_max und dddl_t_max
+
+
+    winch_mech['r_gen'] = 0.265                                                 #outer radius of fecreate winch
+    winch_mech['r_gen_inner'] = 0.24                                            #guessed inner radius of fecreate winch
+    winch_mech['rho_winch'] = 7900                                              #stainless stell density
+
+    winch_mech['j_winch'] = np.pi/2 * (winch_mech['r_gen']**4 - winch_mech['r_gen_inner']**4) * winch_mech['rho_winch']
+    winch_mech['j_gen'] = winch_mech['j_gen'] + winch_mech['j_winch']           #generator/motor and winch one rigid body if 'gear_train' active => j_gen and j_winch will be used separately
+    winch_mech['m_gen'] += winch_mech['m_gen'] * np.pi/2 * (winch_mech['r_gen']**2 - winch_mech['r_gen_inner']**2) * winch_mech['rho_winch']                       #generator/motor and winch one rigid body
+    winch_mech['k_gear'] = 0
+    winch_mech['f_winch'] = 0
+    winch_mech['f_gen'] = 0
+
 
     return winch_mech
 
