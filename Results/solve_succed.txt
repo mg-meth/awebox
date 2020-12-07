@@ -1316,8 +1316,530 @@ energy_balancetotal:  PASSED
 
 solve_succeeded:  PASSED
 
-
 bubbledancer_kite_no_gen\single_kite_7_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+TEST : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  FAILED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+single_kite_125_kw\single_kite_5_log_wind : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+single_kite_125_kw\single_kite_6_log_wind : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+single_kite_125_kw\single_kite_7_log_wind : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+single_kite_5_mw\single_kite_4_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+single_kite_5_mw\single_kite_5_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+single_kite_5_mw\single_kite_7_log_wind : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+TEST : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  FAILED
+
+power_harvesting_factor:  FAILED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  FAILED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+TEST : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  FAILED
+
+power_harvesting_factor:  FAILED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  FAILED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+power_changed_125_kw\single_kite_3_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  FAILED
+
+loyd_factor:  FAILED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+power_changed_125_kw\single_kite_4_log_wind : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  FAILED
+
+min_node_height:  FAILED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+power_changed_125_kw\single_kite_5_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+power_changed_125_kw\single_kite_6_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+power_changed_125_kw\single_kite_7_log_wind : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+single_kite_no_gen\single_kite_3_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+single_kite_no_gen\single_kite_4_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+single_kite_no_gen\single_kite_5_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+single_kite_no_gen\single_kite_6_log_wind : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+single_kite_no_gen\single_kite_7_log_wind : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+single_kite_125_kw_gearbox_opti\single_kite_2_log_wind.csv : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+min_node_height:  FAILED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+single_kite_125_kw_gearbox_opti\single_kite_3_log_wind.csv : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+
+single_kite_125_kw_gearbox_opti\single_kite_4_log_wind.csv : c10:  PASSED
 dc10:  PASSED
 ddc10:  PASSED
 loyd_factor:  PASSED
@@ -1327,4 +1849,4 @@ t_f_min:  PASSED
 max_control_interval:  PASSED
 energy_balance1:  PASSED
 energy_balancetotal:  PASSED
-solve_succeeded:  PASSED
+solve_succeeded:  FAILED
