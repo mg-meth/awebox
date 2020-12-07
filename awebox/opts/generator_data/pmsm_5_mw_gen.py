@@ -10,6 +10,7 @@ def data_dict():
     data_dict['control_var'] = 'pmsm'
     data_dict['generator_max_power'] = 5e6
     data_dict['model_bounds'] = True
+    data_dict['gear_train'] = {}
     data_dict['gear_train']['used'] = False
     data_dict['gear_train']['optimize'] = False
     data_dict['generator'] = winch_el()
