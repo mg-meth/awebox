@@ -548,7 +548,7 @@ def k_gear_inequality(options, variables_si, parameters, architecture, outputs):
         k_gear_lower = -variables_si['xd']['k_gear'] + 1/10
         k_gear_ineq_upper = cstr_op.Constraint(expr=k_gear_upper, name='k_gear_upper', cstr_type='ineq')
         k_gear_ineq_lower = cstr_op.Constraint(expr=k_gear_lower, name='k_gear_lower', cstr_type='ineq')
-
+        print("k_cstr")
     return cstr_list
 
 
