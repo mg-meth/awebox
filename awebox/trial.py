@@ -154,6 +154,20 @@ class Trial(object):
                                         self.optimization.integral_outputs_final, self.options, self.optimization.time_grids,
                                         cost, self.name, self.__optimization.V_ref)
 
+
+
+        V_final = self.optimization.V_final
+        V_solution_scaled = self.nlp.V(self.optimization.solution['x'])
+        cost_fun = self.nlp.cost_components[0]
+        cost = struct_op.evaluate_cost_dict(cost_fun, V_solution_scaled, self.optimization.p_fix_num)
+        for cost_name in cost.keys():
+            print(cost_name + ': ' + str(cost[cost_name]))
+        f_fun_eval = self.nlp.f_fun(V_solution_scaled, self.optimization.p_fix_num)
+        print('f_fun:' + str(f_fun_eval))
+
+
+
+
         # perform quality check
         self.__quality.check_quality(self)
 

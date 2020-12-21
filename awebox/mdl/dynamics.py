@@ -67,7 +67,6 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     # generate system states, controls, algebraic vars, lifted vars, generalized coordinates
     # --------------------------------------------------------------------------------------
 
-
     [system_variable_list, system_gc] = system.generate_structure(options, architecture)
 
 
@@ -76,9 +75,9 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     # -----------------------------------
     system_variables = {}
     system_variables['scaled'], variables_dict = struct_op.generate_variable_struct(system_variable_list)
+    print(system_variables['scaled'])
     system_variables['SI'], options['scaling'] = generate_si_variables(options['scaling'], system_variables['scaled'])
     scaling = options['scaling']
-
     # -----------------------------------
     # prepare empty constraints list and outputs
     # -----------------------------------
@@ -109,13 +108,12 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     cstr_list.append(winch_cstr)
 
     # ensure that energy matches power integration
-    power = get_power(options, system_variables['SI'], outputs, architecture)
+    power = get_power(options, system_variables['SI'], outputs, architecture, parameters)
     integral_outputs_fun, integral_outputs_struct, integral_scaling, energy_cstr = manage_power_integration(options,
                                                                                                                 power,
                                                                                                                 system_variables,
                                                                                                                 parameters)
     cstr_list.append(energy_cstr)
-
 
     # --------------------------------------------
     # define the inequality constraints
@@ -149,11 +147,11 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     outputs, rotation_cstr = rotation_inequality(options, system_variables['SI'], parameters, architecture, outputs)
     cstr_list.append(rotation_cstr)
 
-    #current_cstr = current_inequality(options, system_variables['SI'], parameters, architecture, outputs)
-    #cstr_list.append(current_cstr)
+    current_cstr = current_inequality(options, system_variables['SI'], parameters, architecture, outputs)
+    cstr_list.append(current_cstr)
 
-    #k_gear_str = k_gear_inequality(options, system_variables['SI'], parameters, architecture, outputs)
-    #cstr_list.append(current_cstr)
+    k_gear_str = k_gear_inequality(options, system_variables['SI'], parameters, architecture, outputs)
+    cstr_list.append(k_gear_str)
 
     # ----------------------------------------
     #  construct outputs structure
@@ -227,14 +225,17 @@ def manage_power_integration(options, power, system_variables, parameters):
     integral_scaling = {}
 
     if options['integral_outputs']:
+        print(power / options['scaling']['xd']['e'])
         integral_outputs = cas.struct_SX([cas.entry('e', expr=power / options['scaling']['xd']['e'])])
         integral_outputs_struct = cas.struct_symSX([cas.entry('e')])
 
         integral_scaling['e'] = options['scaling']['xd']['e']
+        print(power)
+        print(options['scaling']['xd']['e'])
+        print(power / options['scaling']['xd']['e'])
 
     else:
         energy_resi = (system_variables['SI']['xddot']['de'] - power) / options['scaling']['xd']['e']
-
         energy_cstr = cstr_op.Constraint(expr=energy_resi,
                                        name='energy',
                                        cstr_type='eq')
@@ -248,7 +249,7 @@ def manage_power_integration(options, power, system_variables, parameters):
 
     integral_outputs_fun = cas.Function('integral_outputs', [system_variables['scaled'], parameters],
                                         [integral_outputs], opts)
-
+    print(system_variables['scaled'])
     return integral_outputs_fun, integral_outputs_struct, integral_scaling, cstr_list
 
 def make_output_structure(outputs, system_variables, parameters):
@@ -323,7 +324,7 @@ def get_drag_power_from_kite(kite, variables_si, outputs, architecture):
     return kite_drag_power
 
 
-def get_power(options, variables_si, outputs, architecture):
+def get_power(options, variables_si, outputs, architecture, parameters):
     if options['trajectory']['system_type'] == 'drag_mode':
         power = cas.SX.zeros(1, 1)
         for kite in architecture.kite_nodes:
@@ -332,18 +333,19 @@ def get_power(options, variables_si, outputs, architecture):
         if not options['generator']['type']:
             """ ### if options """
             power = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * variables_si['xd']['dl_t']
+            print(power)
         else:
-            power = power_el(options, variables_si, outputs, architecture)
+            power = power_el(options, variables_si, outputs, architecture, parameters)
     return power
 
-def power_el(options, variables_si, outputs, architecture):  #vlt dann auch in ein neues Dokument
+def power_el(options, variables_si, outputs, architecture, parameters):  #vlt dann auch in ein neues Dokument
     gen_type = options['generator']['type']
     if gen_type == 'pmsm':
-        return gen_pmsm(options, variables_si, outputs, architecture)
+        return gen_pmsm(options, variables_si, outputs, architecture, parameters)
     elif gen_type == 'asynchronous_motor':
-        return gen_asynchron(options, variables_si, outputs, architecture)
+        return gen_asynchron(options, variables_si, outputs, architecture, parameters)
     elif gen_type == 'experimental':
-        return gen_experimental(options, variables_si)
+        return gen_experimental(options, variables_si, parameters)
 
 
 def gen_experimental(options, variables_si, parameters):
@@ -357,18 +359,32 @@ def gen_experimental(options, variables_si, parameters):
     return p_el
 
 
-def gen_pmsm(options, variables_si, outputs, architecture):
+def gen_pmsm(options, variables_si, outputs, architecture, parameters):
     """ electrically power of a pmsm generator """
-    v_sd = variables_si['u']['v_sd']
-    v_sq = variables_si['u']['v_sq']
-    i_sd = variables_si['xd']['i_sd']
+#    v_sd = variables_si['u']['v_sd']
+#    v_sq = variables_si['u']['v_sq']
+#    i_sd = variables_si['xd']['i_sd']
     i_sq = variables_si['xd']['i_sq']
-    p_el = (1.5*((v_sd*i_sd)+(v_sq*i_sq))) #+/- ??
+#    p_el = (1.5*((v_sd*i_sd)+(v_sq*i_sq))) #+/- ??
+
+    #sign = variables_si['u']['sign']
     print("hey")
 
     #!!!!!!!!#
     #p_el = 0.03*(i_sd**2 + i_sq**2)
     #p_el = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * variables_si['xd']['dl_t']
+
+    radius_winch = parameters['theta0','ground_station','r_gen']
+    j_gen = parameters['theta0','ground_station','j_gen']
+    j_winch = parameters['theta0','ground_station','j_winch']
+    l_t = variables_si['xd']['l_t']
+    lam = variables_si['xa']['lambda10']
+    p_p = parameters['theta0','generator','p_p']
+    phi_f = parameters['theta0','generator','phi_f']
+    v_sq = variables_si['xd']['v_sq']
+
+    #i_sq = (lam*l_t*radius_winch**2 - (j_gen + j_winch)) / (1.5*p_p*phi_f*radius_winch)
+    p_el = -1.5 * v_sq *i_sq  #-1.5*v_sd*i_sd #* (2-sign)             #    *cas.sign(dl_t)
     print("p_el")
     print(p_el)
 
@@ -517,24 +533,30 @@ def current_inequality(options, variables_si, parameters, architecture, outputs)
 
     if options['model_bounds']['current']['include']:
         if options['generator']['type'] == 'pmsm':
-            i_d = variables_si['xd']['i_s'][0]
-            i_q = variables_si['xd']['i_s'][1]
-
-            i_d_ineq = -i_d + 30
+        #    i_d = variables_si['xd']['i_sd']
+        #    i_q = variables_si['xd']['i_sq']
+            radius_winch = parameters['theta0','ground_station','r_gen']
+            j_gen = parameters['theta0','ground_station','j_gen']
+            j_winch = parameters['theta0','ground_station','j_winch']
+            l_t = variables_si['xd']['l_t']
+            lam = variables_si['xa']['lambda10']
+            p_p = parameters['theta0','generator','p_p']
+            phi_f = parameters['theta0','generator','phi_f']
+            i_q = (lam*l_t*radius_winch**2 - (j_gen + j_winch)) / (1.5*p_p*phi_f*radius_winch)
+        #    i_d_ineq = -i_d  + 30
             i_q_ineq = -i_q + 30
 
 
+            #i_d_ineq = (30-i_d)
+            #i_q_ineq = (30-i_q)
 
-            i_d_ineq = (30-i_d)
-            i_q_ineq = (30-i_q)
-
-            print("i_sd_ineq")
-            print(i_d_ineq)
+        #    print("i_sd_ineq")
+        #    print(i_d_ineq)
             print("i_sq_ineq")
             print(i_q_ineq)
 
-            i_sd_cstr = cstr_op.Constraint(expr=i_d_ineq, name='i_d_ineq', cstr_type='ineq')
-            cstr_list.append(i_sd_cstr)
+        #    i_sd_cstr = cstr_op.Constraint(expr=i_d_ineq, name='i_d_ineq', cstr_type='ineq')
+        #    cstr_list.append(i_sd_cstr)
             i_sq_cstr = cstr_op.Constraint(expr=i_q_ineq, name='i_q_ineq', cstr_type='ineq')
             cstr_list.append(i_sq_cstr)
 
@@ -543,12 +565,15 @@ def current_inequality(options, variables_si, parameters, architecture, outputs)
 
 def k_gear_inequality(options, variables_si, parameters, architecture, outputs):
     cstr_list = mdl_constraint.MdlConstraintList()
-    if options['generator']['gear_train']['optimize']:
-        k_gear_upper = variables_si['xd']['k_gear'] - 10
-        k_gear_lower = -variables_si['xd']['k_gear'] + 1/10
-        k_gear_ineq_upper = cstr_op.Constraint(expr=k_gear_upper, name='k_gear_upper', cstr_type='ineq')
-        k_gear_ineq_lower = cstr_op.Constraint(expr=k_gear_lower, name='k_gear_lower', cstr_type='ineq')
-        print("k_cstr")
+    if options['generator']['type']:
+        if options['generator']['gear_train']['optimize']:
+            k_gear_upper = variables_si['xd']['k_gear'] - 10
+            k_gear_lower = -variables_si['xd']['k_gear'] + 1/10
+            k_gear_ineq_upper = cstr_op.Constraint(expr=k_gear_upper, name='k_gear_upper', cstr_type='ineq')
+            k_gear_ineq_lower = cstr_op.Constraint(expr=k_gear_lower, name='k_gear_lower', cstr_type='ineq')
+            cstr_list.append(k_gear_ineq_upper)
+            cstr_list.append(k_gear_ineq_lower)
+            print("k_cstr")
     return cstr_list
 
 
@@ -925,6 +950,8 @@ def generate_si_variables(scaling_options, variables):
 
         for var_name in struct_op.subkeys(variables, var_type):
 
+            print(var_name)
+
             stripped_name, _ = struct_op.split_name_and_node_identifier(var_name)
             prepared_names = scaling_options[var_type].keys()
 
@@ -982,7 +1009,6 @@ def generate_si_variables(scaling_options, variables):
     variables_si = {}
     for var_type in list(scaling.keys()):
         subkeys = struct_op.subkeys(variables, var_type)
-
         variables_si[var_type] = cas.struct_SX(
             [cas.entry(var_name, expr=struct_op.var_scaled_to_si(var_type, var_name, variables[var_type, var_name], scaling)) for var_name in subkeys])
 

@@ -168,11 +168,14 @@ def generate_structure(options, architecture):
     elif tether_control_var == 'pmsm':
         system_states.extend([('ddl_t', (1, 1))])
         system_states.extend([('i_sq', (1, 1))])
-        system_states.extend([('i_sd', (1, 1))])
-        system_controls.extend([('v_sd', (1, 1))])
-        system_controls.extend([('v_sq', (1, 1))])
+    #    system_states.extend([('i_sd', (1, 1))])
+    #    system_controls.extend([('sign', (1, 1))])
+    #    system_controls.extend([('v_sd', (1, 1))])
+        system_states.extend([('v_sq', (1, 1))])
+        system_controls.extend([('dv_sq', (1, 1))])
         if options['generator']['gear_train']['optimize']:
             system_states.extend([('k_gear', (1, 1))])
+            #system_states.extend([('dot_k_gear', (1, 1))])
     else:
         raise ValueError('invalid tether control variable chosen')
 

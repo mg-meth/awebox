@@ -145,13 +145,15 @@ def setup_nlp_cost():
 
 
 def setup_nlp_p_fix(V, model):
+    struct=model.variables
 
     # fixed system parameters
     p_fix = cas.struct_symSX([(
         cas.entry('ref', struct=V),     # tracking reference for cost function
         cas.entry('weights', struct=model.variables)  # weights for cost function
     )])
-
+    print("modelvar")
+    print(V)
     return p_fix
 
 def setup_nlp_p(V, model):
@@ -349,5 +351,3 @@ def discretize(nlp_options, model, formulation):
                                                 ms_vars, ms_params, Outputs)
 
     return V, P, Xdot_struct, Xdot_fun, ocp_cstr_list, Outputs_struct, Outputs_fun, Integral_outputs_struct, Integral_outputs_fun, time_grids, Collocation, Multiple_shooting
-
-
