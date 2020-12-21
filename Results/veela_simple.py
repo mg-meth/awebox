@@ -176,11 +176,11 @@ trial.write_to_csv()
 
 
 
-wind_ref = [2,3,4,5,6,7]
+wind_ref = [5,7]
 name = []
 
 for w in wind_ref:
-    name = 'single_kite_125_kw_gearbox_opti_q_only\single_kite_' + str(w) + '_log_wind.csv'
+    name = 'double_kite_only_q\double_kite_' + str(w) + '_log_wind'
 
     print(name)
 
@@ -192,7 +192,7 @@ for w in wind_ref:
     options = awe.Options(internal_access = True)
 
         # single kite with point-mass model
-    options['user_options']['system_model']['architecture'] = {1:0}
+    options['user_options']['system_model']['architecture'] = {1:0, 2:1, 3:1}
     options['user_options']['system_model']['kite_dof'] = 3
     options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
     #options['model']['tether']['control_var'] = 'dddl_t'
@@ -203,7 +203,7 @@ for w in wind_ref:
         # trajectory should be a single pumping cycle with initial number of five windings
     options['user_options']['trajectory']['type'] = 'power_cycle'
     options['user_options']['trajectory']['system_type'] = 'lift_mode'
-    options['user_options']['trajectory']['lift_mode']['windings'] = 3
+    options['user_options']['trajectory']['lift_mode']['windings'] = 5
 
     options['solver']['max_iter'] = 4000
     options['solver']['max_cpu_time'] = 1.e4
@@ -228,7 +228,7 @@ for w in wind_ref:
         # OPTIMIZE TRIAL #
         ##################
 
-    options['solver']['linear_solver'] = 'mumps'
+    options['solver']['linear_solver'] = 'ma57'
     #options['solver']['initialization']['fix_tether_length'] = True
 
     # initialize and optimize trial
