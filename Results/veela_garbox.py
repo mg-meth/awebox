@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from awebox.logger.logger import Logger as awelogger
-#awelogger.logger.setLevel(10)
+awelogger.logger.setLevel(10)
 import awebox as awe
 import matplotlib.pyplot as plt
 import pdb
@@ -26,7 +26,7 @@ def solve_succed(quality_print_results, name):
         f.write(string)
 
 
-"""
+
 name = 'TEST'
 
     # make default options object
@@ -36,7 +36,7 @@ options = awe.Options(True)
 options['user_options']['system_model']['architecture'] = {1:0}
 options['user_options']['system_model']['kite_dof'] = 6
 options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
-options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
+#options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
 
 
     # trajectory should be a single pumping cycle with initial number of five windings
@@ -77,14 +77,19 @@ trial.optimize()
 trial.plot('level_3')
 trial.write_to_csv()
     #pdb.set_trace()
+plt.show()
 V_final = trial.optimization.V_final
 V_solution_scaled = trial.nlp.V(trial.optimization.solution['x'])
+
 print(V_final['xd', :, 'i_sd'],V_final['xd', :, 'i_sq'])
 print(V_solution_scaled['xd', :, 'i_sd'],V_solution_scaled['xd', :, 'i_sq'])
 
 #solve_succed(quality_print_results, name)
 
-"""
+
+
+input()
+
 
 wind_ref = [2,3,4,5,6,7]
 name = []

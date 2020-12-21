@@ -845,8 +845,10 @@ def build_tether_control_options(options, options_tree, fixed_params):
 
         elif control_name == 'pmsm':
             voltage = options['user_options']['generator']['generator']
-            options_tree.append(('model', 'system_bounds', 'u', 'v_sd', [voltage['voltage_d_min'], voltage['voltage_d_max']],   ('winch generator d-q model [V]', None),'x'))
-            options_tree.append(('model', 'system_bounds', 'u', 'v_sq', [voltage['voltage_q_min'], voltage['voltage_q_max']],   ('winch generator d-q model [V]', None),'x'))
+            #options_tree.append(('model', 'system_bounds', 'u', 'v_sd', [voltage['voltage_d_min'], voltage['voltage_d_max']],   ('winch generator d-q model [V]', None),'x'))
+            options_tree.append(('model', 'system_bounds', 'u', 'dv_sq', [voltage['voltage_q_min'], voltage['voltage_q_max']],   ('winch generator d-q model [V]', None),'x'))
+            #options_tree.append(('model', 'system_bounds', 'u', 'sign', [0.9, 4.1],   ('winch generator d-q model [V]', None),'x'))
+            #options_tree.append(('model', 'system_bounds', 'u', 'k_gear', [1/10, 10],   ('winch generator d-q model [V]', None),'x'))
 
         else:
             raise ValueError('invalid tether control variable chosen')

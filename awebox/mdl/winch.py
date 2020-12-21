@@ -12,8 +12,41 @@ import numpy as np
 
 
 from awebox.logger.logger import Logger as awelogger
+"""
+def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, architecture):
+    cstr_list = mdl_constraint.MdlConstraintList()
+    if options['generator']['type'] != None and options['generator']['type'] != 'experimental':
+        radius_winch = parameters['theta0','ground_station','r_gen']
+        j_gen = parameters['theta0','ground_station','j_gen']
+        j_winch = parameters['theta0','ground_station','j_winch']
+        #v_sq = variables_si['u']['v_sq']
+        l_t = variables_si['xd']['l_t']
+        dl_t = variables_si['xd']['dl_t']
+        ddl_t = variables_si['xd']['ddl_t']
+        dddl_t = variables_si['xddot']['dddl_t']
+        lam = variables_si['xa']['lambda10']
+        print(variables_si.keys())
+        #dlam = variables_si['xadot']['lambda10']
+    #    ld = parameters['theta0','generator','l_d']
+        lq = parameters['theta0','generator','l_q']
+        rs = parameters['theta0','generator','r_s']
+        p_p = parameters['theta0','generator','p_p']
+        phi_f = parameters['theta0','generator','phi_f']
 
+        v_sq_ode = variables_si['xddot']['dv_sq'] - variables_si['u']['dv_sq']
+        v_sq_ode = cstr_op.Constraint(expr=v_sq_ode, name='v_sq_ode', cstr_type='eq')
+        cstr_list.append(v_sq_ode)
+        v_sq = variables_si['xd']['v_sq']
 
+        i_sq = (lam*l_t*radius_winch**2 - (j_gen + j_winch)) / (1.5*p_p*phi_f*radius_winch)
+        ode = -v_sq + rs * i_sq - dl_t/radius_winch * p_p * phi_f + lq / (1.5*p_p*phi_f*radius_winch) * ( lam*dl_t*radius_winch**2 - (j_gen + j_winch)*dddl_t)    #dlam*l_t*radius_winch**2 +
+
+        winch_cstr = cstr_op.Constraint(expr=ode, name='winch', cstr_type='eq')
+        cstr_list.append(winch_cstr)
+
+    return cstr_list
+
+"""
 def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, architecture):
 
     cstr_list = mdl_constraint.MdlConstraintList()
@@ -23,6 +56,7 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
         t_em = t_em_ode(options, variables_si, outputs, parameters, architecture)
 
         radius_winch = parameters['theta0','ground_station','r_gen']            #not optinal
+        j_gen = parameters['theta0','ground_station','j_gen']
         j_winch = parameters['theta0','ground_station','j_winch']
         f_winch = parameters['theta0','ground_station','f_winch']
         l_t_full = variables_si['theta']['l_t_full']
@@ -37,6 +71,150 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
         rhs = t_tether + t_em + t_frict
         lhs = t_inertia
 
+
+
+        rhs = (j_gen+j_winch)*variables_si['xddot']['ddl_t']/radius_winch
+        lhs = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius_winch - t_em
+
+
+
+        if options['generator']['gear_train']['used']:
+            j_gen = parameters['theta0','ground_station','j_gen']
+            j_winch = parameters['theta0','ground_station','j_winch']   #normaly rigid body
+            f_gen = parameters['theta0','ground_station','f_gen']
+
+            if options['generator']['gear_train']['optimize']:
+            #    k_ode = variables_si['xddot']['dk_gear'] - variables_si['u']['dk_gear']
+            #    k_ode = cstr_op.Constraint(expr=k_ode, name='k_ode', cstr_type='eq')
+            #    cstr_list.append(k_ode)
+            #    k = variables_si['xd']['k_gear']
+
+            #    k = variables_si['u']['k_gear']
+
+                dk = variables_si['xddot']['dk_gear']                           #const ratio
+                k_cstr = cstr_op.Constraint(expr=dk, name='k_gear_const', cstr_type='eq')
+                cstr_list.append(k_cstr)
+                k = variables_si['xd']['k_gear']
+            else:
+
+                k = parameters['theta0','ground_station','k_gear']
+
+            t_gen = k**2*j_gen*variables_si['xddot']['ddl_t']/radius_winch
+            t_win = j_winch*variables_si['xddot']['ddl_t']/radius_winch#+ options['scaling']['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius_winch**3 * (omega*omega + domega*phi) #
+            lhs = -t_gen - t_win
+            rhs = -variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius_winch  + k*t_em #+ omega*(f_winch + f_gen*k**2)
+
+
+        if options['generator']['type'] == 'pmsm':
+            generator = generator_ode(options, variables_si, outputs, parameters, architecture)
+            cstr_list.append(generator)
+#            sign = variables_si['u']['sign']
+#            sign_eq = sign**2 - 4*sign + 3
+#            sign_ineq = -variables_si['u']['v_sq']/(sign)
+#            sign_eq = cstr_op.Constraint(expr=sign_eq, name='sign_eq', cstr_type='eq')
+#            cstr_list.append(sign_eq)
+#            sign_ineq = cstr_op.Constraint(expr=sign_ineq, name='sign_ineq', cstr_type='ineq')
+#            cstr_list.append(sign_ineq)
+            #sign = p_el_sign(options, variables_si, outputs, parameters, architecture)
+            #cstr_list.append(sign)
+
+
+
+        torque = rhs - lhs
+
+        print("torque")
+        print(torque)
+        winch_cstr = cstr_op.Constraint(expr=torque, name='winch', cstr_type='eq')
+        cstr_list.append(winch_cstr)
+
+
+
+    return cstr_list
+
+
+
+
+def t_em_ode(options, variables_si, outputs, parameters, architecture):
+
+    if options['generator']['type'] == 'pmsm':
+    #    i_sd = variables_si['xd']['i_sd']
+        i_sq = variables_si['xd']['i_sq']
+        ld = parameters['theta0','generator','l_d']
+        lq = parameters['theta0','generator','l_q']
+        rs = parameters['theta0','generator','r_s']
+        p_p = parameters['theta0','generator','p_p']
+        phi_f = parameters['theta0','generator','phi_f']
+        t_em = 3/2 * p_p * (i_sq * phi_f)   #(ld - lq) * i_sd*i_sq +
+
+    return t_em
+
+def generator_ode(options, variables_si, outputs, parameters, architecture):
+
+    cstr_list = mdl_constraint.MdlConstraintList()
+
+    if options['generator']['type'] == 'pmsm':
+#        v_sd = variables_si['u']['v_sd']
+        #v_sq = variables_si['u']['v_sq']
+        v_sq_ode = variables_si['xddot']['dv_sq'] - variables_si['u']['dv_sq']
+        v_sq_ode = cstr_op.Constraint(expr=v_sq_ode, name='v_sq_ode', cstr_type='eq')
+        cstr_list.append(v_sq_ode)
+        v_sq = variables_si['xd']['v_sq']
+#        i_sd = variables_si['xd']['i_sd']
+        i_sq = variables_si['xd']['i_sq']
+#        di_sd = variables_si['xddot']['di_sd']
+        di_sq = variables_si['xddot']['di_sq']
+        ld = parameters['theta0','generator','l_d']
+        lq =parameters['theta0','generator','l_q']
+        rs = parameters['theta0','generator','r_s']
+        phi_f = parameters['theta0','generator','phi_f']
+        p_p = parameters['theta0','generator','p_p']
+
+
+        omega = -variables_si['xd']['dl_t'] / parameters['theta0','ground_station','r_gen']
+        i_sq_ode = -v_sq + rs*i_sq + phi_f*omega*p_p + lq*di_sq #+ omega*p_p*i_sd*ld
+        #i_sd_ode = -v_sd + rs*i_sd - omega*p_p*i_sq*lq + ld*di_sd
+
+        if options['generator']['gear_train']['used']:
+
+            if options['generator']['gear_train']['optimize']:
+                #k = variables_si['u']['k_gear']
+                #k = variables_si['xd']['k_gear']
+                k = variables_si['xd']['k_gear']
+            else:
+                k = parameters['theta0','ground_station','k_gear']
+
+            omega = k* variables_si['xd']['dl_t'] / parameters['theta0','ground_station','r_gen']
+            i_sq_ode = -v_sq + rs*i_sq - phi_f*omega*p_p + lq*di_sq
+
+        print("i_sq_ode")
+        print(i_sq_ode)
+
+        i_sq_cstr = cstr_op.Constraint(expr=i_sq_ode, name='gen1', cstr_type='eq')
+        cstr_list.append(i_sq_cstr)
+        #i_sd_cstr = cstr_op.Constraint(expr=i_sd_ode, name='gen0', cstr_type='eq')
+        #cstr_list.append(i_sd_cstr)
+    return cstr_list
+
+
+def alte_func():
+    omega = variables_si['xd']['dl_t'] / parameters['theta0','ground_station','r_gen']
+
+    #    i_sq_ode = v_sq + rs*i_sq + lq*di_sq + p_p*omega*phi_f + p_p*omega*ld*i_sd
+    #    i_sd_ode = v_sd + rs*i_sd + ld*di_sd - p_p*omega*lq*i_sq
+
+    #    i_sq_ode = p_p*omega * (ld*i_sd + phi_f) + i_sq*rs + lq*di_sq - v_sq
+    #    i_sd_ode = p_p*omega*lq*i_sq + i_sd*rs + ld*di_sd - v_sd
+
+    i_sq_ode = v_sq + rs*i_sq + phi_f*omega*p_p + lq*di_sq
+        #i_sd_ode = v_sd + lq*i_sq*omega
+
+    #    i_sd_cstr = cstr_op.Constraint(expr=i_sd_ode, name='gen0', cstr_type='eq')
+    #    cstr_list.append(i_sd_cstr)
+
+
+
+
+    """
         if options['generator']['gear_train']['used']:
             j_gen = parameters['theta0','ground_station','j_gen']
             j_winch = parameters['theta0','ground_station','j_winch'] - j_gen   #normaly rigid body
@@ -53,65 +231,147 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
 
                 k = parameters['theta0','ground_station','k_gear']
 
+            omega = - variables_si['xd']['dl_t'] / radius_winch
             t_gen = k**2*j_gen*domega
             t_win = j_winch*domega + options['scaling']['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius_winch**3 * (omega*omega + domega*phi) #
             lhs = t_gen + t_win
             rhs = t_tether + omega*(f_winch + f_gen*k**2) + k*t_em
+    """
+
+    rhs = j_winch*variables_si['xddot']['ddl_t']/radius_winch
+    lhs = -variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius_winch - t_em
+    torque = rhs - lhs
 
 
-        torque = rhs - lhs
 
-        winch_cstr = cstr_op.Constraint(expr=torque, name='winch', cstr_type='eq')
-        cstr_list.append(winch_cstr)
 
-        if options['generator']['type'] == 'pmsm':
-            generator = generator_ode(options, variables_si, outputs, parameters, architecture)
-            cstr_list.append(generator)
+
+
+
+
+def p_el_sign(options, variables_si, outputs, parameters, architecture):
+
+    n_k = options['aero']['vortex']['n_k']
+    d = options['aero']['vortex']['d']
+    sign = variables_si['u']['sign']
+    vortex_wake_nodes = options['induction']['vortex_wake_nodes']
+
+    cstr_list = cstr_op.ConstraintList()
+
+    rings = vortex_wake_nodes - 1
+
+    for ring in range(rings):
+        wake_node = ring
+        for ndx in range(n_k):
+            for ddx in range(d):
+
+                local_name = 'p_el_sign_' + str(ring) + '_' + str(ndx) + '_' + str(ddx)
+                ndx_shed = n_k - 1  - wake_node
+                ddx_shed = d - 1
+
+                already_shed = False
+                if (ndx > ndx_shed):
+                    already_shed = True
+                elif ((ndx == ndx_shed) and (ddx == ddx_shed)):
+                    already_shed = True
+
+                if already_shed:
+                    sign_eq = sign - 1.
+                else:
+                    sign_eq = sign + 1
+
+                print(sign_eq)
+
+                sign_eq = cstr_op.Constraint(expr = sign_eq, name = local_name, cstr_type='eq')
+                cstr_list.append(sign_eq)
 
     return cstr_list
 
-def t_em_ode(options, variables_si, outputs, parameters, architecture):
 
-    if options['generator']['type'] == 'pmsm':
-        i_sd = variables_si['xd']['i_sd']
-        i_sq = variables_si['xd']['i_sq']
-        ld = parameters['theta0','generator','l_d']
-        lq = parameters['theta0','generator','l_q']
-        rs = parameters['theta0','generator','r_s']
-        p_p = parameters['theta0','generator','p_p']
-        phi_f = parameters['theta0','generator','phi_f']
-        t_em = 3/2 * p_p * ((ld - lq) * i_sd*i_sq + i_sq * phi_f)
 
-    return t_em
 
-def generator_ode(options, variables_si, outputs, parameters, architecture):
 
-    cstr_list = mdl_constraint.MdlConstraintList()
+def get_strength_constraint(options, V, Outputs, model):
 
-    omega = -variables_si['xd']['dl_t'] / parameters['theta0','ground_station','r_gen']
-    if options['generator']['type'] == 'pmsm':
-        v_sd = variables_si['u']['v_sd']
-        v_sq = variables_si['u']['v_sq']
-        i_sd = variables_si['xd']['i_sd']
-        i_sq = variables_si['xd']['i_sq']
-        di_sd = variables_si['xddot']['di_sd']
-        di_sq = variables_si['xddot']['di_sq']
-        ld = parameters['theta0','generator','l_d']
-        lq =parameters['theta0','generator','l_q']
-        rs = parameters['theta0','generator','r_s']
-        phi_f = parameters['theta0','generator','phi_f']
-        p_p = parameters['theta0','generator','p_p']
+    n_k = options['n_k']
+    d = options['collocation']['d']
 
-        i_sq_ode = v_sq + rs*i_sq + lq*di_sq + p_p*omega*phi_f + p_p*omega*ld*i_sd
-        i_sd_ode = v_sd + rs*i_sd + ld*di_sd - p_p*omega*lq*i_sq
+    comparison_labels = options['induction']['comparison_labels']
+    wake_nodes = options['induction']['vortex_wake_nodes']
+    rings = wake_nodes - 1
+    kite_nodes = model.architecture.kite_nodes
 
-        #i_sq_ode = p_p*omega * (ld*i_sd + phi_f) + i_sq*rs + lq*di_sq - v_sq
-        #i_sd_ode = p_p*omega*lq*i_sq + i_sd*rs + ld*di_sd - v_sd
+    strength_scale = tools.get_strength_scale(options)
 
-        i_sd_cstr = cstr_op.Constraint(expr=i_sd_ode, name='gen0', cstr_type='eq')
-        cstr_list.append(i_sd_cstr)
+    Xdot = struct_op.construct_Xdot_struct(options, model.variables_dict)(0.)
 
-        i_sq_cstr = cstr_op.Constraint(expr=i_sq_ode, name='gen1', cstr_type='eq')
-        cstr_list.append(i_sq_cstr)
+    cstr_list = cstr_op.ConstraintList()
+
+    any_vor = any(label[:3] == 'vor' for label in comparison_labels)
+    if any_vor:
+
+        for kite in kite_nodes:
+            for ring in range(rings):
+                wake_node = ring
+
+                for ndx in range(n_k):
+                    for ddx in range(d):
+
+                        local_name = 'vortex_strength_' + str(kite) + '_' + str(ring) + '_' + str(ndx) + '_' + str(ddx)
+
+                        variables = struct_op.get_variables_at_time(options, V, Xdot, model.variables, ndx, ddx)
+                        wg_local = tools.get_ring_strength(variables, kite, ring)
+
+                        ndx_shed = n_k - 1 - wake_node
+                        ddx_shed = d - 1
+
+                        # working out:
+                        # n_k = 3
+                        # if ndx = 0 and ddx = 0 -> shed: wn >= n_k
+                        #     wn: 0 sheds at ndx = 2, ddx = -1 : unshed,    period = 0
+                        #     wn: 1 sheds at ndx = 1, ddx = -1 : unshed,    period = 0
+                        #     wn: 2 sheds at ndx = 0, ddx = -1 : unshed,    period = 0
+                        #     wn: 3 sheds at ndx = -1, ddx = -1 : SHED      period = 1
+                        #     wn: 4 sheds at ndx = -2,                      period = 1
+                        #     wn: 5 sheds at ndx = -3                       period = 1
+                        #     wn: 6 sheds at ndx = -4                       period = 2
+                        # if ndx = 1 and ddx = 0 -> shed: wn >= n_k - ndx
+                        #     wn: 0 sheds at ndx = 2, ddx = -1 : unshed,
+                        #     wn: 1 sheds at ndx = 1, ddx = -1 : unshed,
+                        #     wn: 2 sheds at ndx = 0, ddx = -1 : SHED,
+                        #     wn: 3 sheds at ndx = -1, ddx = -1 : SHED
+                        # if ndx = 0 and ddx = -1 -> shed:
+                        #     wn: 0 sheds at ndx = 2, ddx = -1 : unshed,
+                        #     wn: 1 sheds at ndx = 1, ddx = -1 : unshed,
+                        #     wn: 2 sheds at ndx = 0, ddx = -1 : SHED,
+                        #     wn: 3 sheds at ndx = -1, ddx = -1 : SHED
+
+                        already_shed = False
+                        if (ndx > ndx_shed):
+                            already_shed = True
+                        elif ((ndx == ndx_shed) and (ddx == ddx_shed)):
+                            already_shed = True
+
+                        if already_shed:
+
+                            # working out:
+                            # n_k = 3
+                            # period_0 -> wn 0, wn 1, wn 2 -> floor(ndx_shed / n_k)
+                            # period_1 -> wn 3, wn 4, wn 5
+
+                            period_number = int(np.floor(float(ndx_shed)/float(n_k)))
+                            ndx_shed_w_periodicity = ndx_shed - period_number * n_k
+
+                            gamma_val = Outputs['coll_outputs', ndx_shed_w_periodicity, ddx_shed, 'aerodynamics', 'circulation' + str(kite)]
+                            wg_ref = 1. * gamma_val / strength_scale
+                        else:
+                            wg_ref = 0.
+
+                        local_resi = (wg_local - wg_ref)
+
+                        local_cstr = cstr_op.Constraint(expr = local_resi,
+                                                        name = local_name,
+                                                        cstr_type='eq')
+                        cstr_list.append(local_cstr)
 
     return cstr_list
