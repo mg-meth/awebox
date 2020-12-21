@@ -209,7 +209,7 @@ for w in wind_ref:
     options['solver']['max_cpu_time'] = 1.e4
         #options['model']['ground_station']['ddl_t_max'] = 95.04
 
-    options['user_options']['wind']['u_ref'] = 5
+    options['user_options']['wind']['u_ref'] = w
 
     options['nlp']['n_k'] = 40
         #options['model']['system_bounds']['u']['dkappa'] = [-1.0, 1.0]
