@@ -236,6 +236,7 @@ def divide_options(options, options_tree, help_options):
     options_tree.append(('quality', 'test_param', None, 'generator_max_power', options['generator_max_power'], ('???', None),'x'))
     options_tree.append(('model', 'model_bounds', 'current', 'include', options['model_bounds'], ('???', None),'x'))
     options_tree.append(('model', 'generator', None, 'gear_train', options['gear_train'], ('???', None),'x'))
+    options_tree.append(('model', 'generator', None, 'dv_sd', options['dv_sd'], ('???', None),'x'))
 
     options_tree.append(('model', 'scaling', 'xd', 'i_sd', 1, ('descript', None), 'x'))
     options_tree.append(('model', 'scaling', 'xd', 'i_sq', 40., ('descript', None), 'x'))
@@ -835,6 +836,10 @@ def build_tether_control_options(options, options_tree, fixed_params):
         if user_options['generator']:
             if user_options['generator']['control_var']:
                 control_name = user_options['generator']['control_var']
+                if options['user_options']['generator']['gear_train']['optimize']:
+                    k_gear = options['user_options']['generator']['gear_train']
+                    options_tree.append(('model', 'system_bounds', 'u', 'k_gear', [k_gear['min'], k_gear['max']],   ('winch generator d-q model [V]', None),'x'))
+
 
         if control_name == 'ddl_t':
             options_tree.append(('model', 'system_bounds', 'u', 'ddl_t', [-1. * ddl_t_max, ddl_t_max],   ('main tether max acceleration [m/s^2]', None),'x'))
@@ -845,10 +850,11 @@ def build_tether_control_options(options, options_tree, fixed_params):
 
         elif control_name == 'pmsm':
             voltage = options['user_options']['generator']['generator']
-            #options_tree.append(('model', 'system_bounds', 'u', 'v_sd', [voltage['voltage_d_min'], voltage['voltage_d_max']],   ('winch generator d-q model [V]', None),'x'))
-            options_tree.append(('model', 'system_bounds', 'u', 'dv_sq', [voltage['voltage_q_min'], voltage['voltage_q_max']],   ('winch generator d-q model [V]', None),'x'))
+#            options_tree.append(('model', 'system_bounds', 'u', 'v_sd', [voltage['voltage_d_min'], voltage['voltage_d_max']],   ('winch generator d-q model [V]', None),'x'))
+            options_tree.append(('model', 'system_bounds', 'u', 'dv_sq', [voltage['dot_v_sq_min'], voltage['dot_v_sq_max']],   ('winch generator d-q model [V]', None),'x'))
             #options_tree.append(('model', 'system_bounds', 'u', 'sign', [0.9, 4.1],   ('winch generator d-q model [V]', None),'x'))
-            #options_tree.append(('model', 'system_bounds', 'u', 'k_gear', [1/10, 10],   ('winch generator d-q model [V]', None),'x'))
+            if options['user_options']['generator']['dv_sd']:
+                options_tree.append(('model', 'system_bounds', 'u', 'dv_sd', [voltage['dot_v_sd_min'], voltage['dot_v_sd_max']],   ('winch generator d-q model [V]', None),'x'))
 
         else:
             raise ValueError('invalid tether control variable chosen')

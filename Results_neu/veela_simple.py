@@ -28,7 +28,7 @@ def solve_succed(quality_print_results, name):
         f.write(string)
 
 
-zus = 'no_gen_no_winch'
+zus = 'lag: mein winch'
 
     # make default options object
 options = awe.Options(internal_access = True)
@@ -37,15 +37,13 @@ options = awe.Options(internal_access = True)
 options['user_options']['system_model']['architecture'] = {1:0}
 options['user_options']['system_model']['kite_dof'] = 6
 options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
-#options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
+options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
 #options['user_options']['generator']['gear_train']['used'] = True
 #options['user_options']['generator']['gear_train']['optimize'] = True
-#options['user_options']['generator']['gear_train']['j_gen_var'] = False
-#options['user_options']['generator']['dv_sd'] = False
-#options['user_options']['generator']['control_var'] = 'dddl_t'
-options['model']['tether']['control_var'] = 'dddl_t'
+options['user_options']['generator']['dv_sd'] = False
+#options['user_options']['generator']['control_var'] = 'ddl_t'
+#options['model']['tether']['control_var'] = 'ddl_t'
 #options['user_options']['generator']['type'] = None
-#options['user_options']['generator']['ground_station']['in_lag_dyn'] = True
 
     # trajectory should be a single pumping cycle with initial number of five windings
 options['user_options']['trajectory']['system_type'] = 'lift_mode'

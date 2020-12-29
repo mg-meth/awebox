@@ -238,6 +238,8 @@ def set_default_options(default_user_options, help_options):
         ('params', 'ground_station', None, 'm_gen',            50.,   ('effective mass of generator [kg], guessed, its possible to overwrite it with winch params',None),'x'),
         ('model', 'ground_station', None, 'ddl_t_max',        10,    ('reel-in/out acceleration limit on the tether [m/s^2]', None),'x'),
         ('model', 'ground_station', None, 'dddl_t_max',       100.,    ('reel-in/out jerk limit on the tether [m/s^2]', None), 'x'),
+        ('model', 'ground_station', None, 'in_lag_dyn',                  True,       ('drum of the winch, mech model in lag dyn', None), 'x'),
+        ('model', 'ground_station', None, 'name',                  None,       ('drum of the winch, mech model in lag dyn', None), 'x'),
 
         ### winch + generator
         ('model',  'generator', 'overwrite', 'type',                            None,     ('electrical machine', None), 's'),
@@ -251,10 +253,10 @@ def set_default_options(default_user_options, help_options):
         ('model',  'generator', 'overwrite', 'a_4',                             None,       ('winch generator experimental equation, coefficient [1/(Nm*s)]', None), 's'),
         ('model',  'generator', 'overwrite', 'a_5',                             None,       ('winch generator experimental equation, coefficient [-]', None), 's'),
 
-        ('model',  'generator', 'overwrite', 'voltage_d_max',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
-        ('model',  'generator', 'overwrite', 'voltage_d_min',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
-        ('model',  'generator', 'overwrite', 'voltage_q_max',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
-        ('model',  'generator', 'overwrite', 'voltage_q_min',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
+        ('model',  'generator', 'overwrite', 'dot_v_sd_min',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
+        ('model',  'generator', 'overwrite', 'dot_v_sd_max',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
+        ('model',  'generator', 'overwrite', 'dot_v_sq_min',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
+        ('model',  'generator', 'overwrite', 'dot_v_sq_max',                   None,       ('winch generator d-q model [V] guess!', None), 's'),
         ('model',  'generator', 'overwrite', 'l_d',                             None,       ('d-axis inductance [H]', None), 's'),
         ('model',  'generator', 'overwrite', 'l_q',                             None,       ('q-axis inductance [H]', None), 's'),
         ('model',  'generator', 'overwrite', 'r_s',                             None,       ('stator resistance [Ohm]', None), 's'),

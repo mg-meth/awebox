@@ -175,7 +175,7 @@ def define_bounds_to_update(model, bounds_schedule, formulation):
         tether_release_updates[0] = ['dddl_t', 'dddl_t']
     elif 'dv_sq' in list(model.variables_dict['u'].keys()):
         tether_release_updates[0] = ['dv_sq', 'dv_sq']
-
+#['psi'] + struct_op.subkeys(model.variables, 'theta') * 2
     power_updates = {}
     # check which tether length variable is a control variable
     if 'ddl_t' in list(model.variables_dict['u'].keys()):

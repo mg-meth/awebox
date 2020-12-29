@@ -1,0 +1,15 @@
+6 DOF, 3 Windings, 60 n_k, no_gen: dddl_t
+
+
+TEST : c10:  FAILED
+dc10:  FAILED
+ddc10:  FAILED
+loyd_factor:  PASSED
+power_harvesting_factor:  PASSED
+tau_max:  PASSED
+t_f_min:  PASSED
+max_control_interval:  FAILED
+energy_balance1:  PASSED
+energy_balancetotal:  PASSED
+solve_succeeded:  PASSED
+aero_conversion:  FAILED

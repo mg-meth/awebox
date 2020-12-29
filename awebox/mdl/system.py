@@ -41,8 +41,7 @@ def generate_structure(options, architecture):
     kite_dof = options['kite_dof']
     surface_control = options['surface_control']
     tether_control_var = options['tether']['control_var']
-    print("generate_structure")
-    print(tether_control_var)
+
 
     # _system architecture (see _zanon2013a)
     number_of_nodes = architecture.number_of_nodes
@@ -159,6 +158,8 @@ def generate_structure(options, architecture):
     # _add global states and controls
     system_states.extend([('l_t', (1, 1)), ('dl_t', (1, 1))]) # main tether length and speed
 
+    print('tether_control_var')
+    print(tether_control_var)
     # _energy + main tether length and speed
     if tether_control_var == 'ddl_t':
         system_controls.extend([('ddl_t', (1, 1))])  # main tether acceleration
@@ -168,14 +169,21 @@ def generate_structure(options, architecture):
     elif tether_control_var == 'pmsm':
         system_states.extend([('ddl_t', (1, 1))])
         system_states.extend([('i_sq', (1, 1))])
-    #    system_states.extend([('i_sd', (1, 1))])
     #    system_controls.extend([('sign', (1, 1))])
-    #    system_controls.extend([('v_sd', (1, 1))])
+#        system_controls.extend([('v_sd', (1, 1))])
+
+        if options['generator']['dv_sd']:
+            system_states.extend([('v_sd', (1, 1))])
+            system_controls.extend([('dv_sd', (1, 1))])
+            system_states.extend([('i_sd', (1, 1))])
+
+
         system_states.extend([('v_sq', (1, 1))])
         system_controls.extend([('dv_sq', (1, 1))])
         if options['generator']['gear_train']['optimize']:
-            system_states.extend([('k_gear', (1, 1))])
+#            system_states.extend([('k_gear', (1, 1))])
             #system_states.extend([('dot_k_gear', (1, 1))])
+            system_controls.extend([('k_gear', (1, 1))])
     else:
         raise ValueError('invalid tether control variable chosen')
 
