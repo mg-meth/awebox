@@ -724,15 +724,147 @@ solve_succeeded:  PASSED
 
 aero_conversion:  FAILED
 
-
 veela_single_125_kw_gen_265_mm_k_gear_opti_no_vsd_u_ref_7_log_wind : c10:  PASSED
+
 dc10:  PASSED
+
 ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_265_mm_u_ref_2_log_wind : c10:  FAILED
+
+dc10:  PASSED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+veela_single_125_kw_gen_265_mm_u_ref_3_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_265_mm_u_ref_4_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_265_mm_u_ref_5_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_265_mm_u_ref_6_log_wind : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+
+veela_single_125_kw_gen_265_mm_u_ref_7_log_wind : c10:  FAILED
+dc10:  FAILED
+ddc10:  FAILED
 loyd_factor:  PASSED
 power_harvesting_factor:  PASSED
 tau_max:  PASSED
 t_f_min:  PASSED
 max_control_interval:  PASSED
-energy_balance1:  PASSED
-energy_balancetotal:  PASSED
-solve_succeeded:  PASSED
+energy_balance1:  FAILED
+energy_balancetotal:  FAILED
+solve_succeeded:  FAILED
