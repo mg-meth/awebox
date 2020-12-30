@@ -38,6 +38,7 @@ import awebox.tools.print_operations as print_op
 from awebox.logger.logger import Logger as awelogger
 
 def energy_outputs(options, parameters, outputs, node_masses_si, variables_si, architecture):
+    print(parameters['theta0'])
 
     # kinetic and potential energy in the system
     energy_types = ['e_kinetic', 'e_potential']
@@ -50,9 +51,8 @@ def energy_outputs(options, parameters, outputs, node_masses_si, variables_si, a
         outputs = add_node_kinetic(node, options, node_masses_si, variables_si, parameters, outputs, architecture)
         outputs = add_node_potential(node, node_masses_si, variables_si, parameters, outputs, architecture)
 
-    outputs = add_groundstation_kinetic(options, node_masses_si, variables_si, outputs)
+    outputs = add_groundstation_kinetic(options, parameters, node_masses_si, variables_si, outputs)
     outputs = add_groundstation_potential(outputs)
-
     return outputs
 
 
@@ -106,15 +106,17 @@ def add_groundstation_potential(outputs):
     return outputs
 
 
-def add_groundstation_kinetic(options, node_masses_si, variables_si, outputs):
+def add_groundstation_kinetic(options, parameters, node_masses_si, variables_si, outputs):
 
     # = 1/2 i omega_gen^2, with no-slip condition
     # add mass of first half of main tether, and the mass of wound tether.
 
     total_groundstation_mass = node_masses_si['groundstation']
+    tether_ground_station_mass = cas.DM(0.)
 
     if options['tether']['use_wound_tether']:
         total_groundstation_mass += node_masses_si['m00']
+        tether_ground_station_mass = node_masses_si['m00']
 
     dq10 = variables_si['xd']['dq10']
     q10 = variables_si['xd']['q10']
@@ -122,8 +124,22 @@ def add_groundstation_kinetic(options, node_masses_si, variables_si, outputs):
 
     speed_groundstation = cas.mtimes(dq10.T, q10) / l_t
 
-    e_kinetic = 0.25 * total_groundstation_mass * speed_groundstation ** 2.
+#if (not g_s_in_lagr_dyn) and (use_generator_model)
+    if not options['ground_station']['in_lag_dyn'] and options['generator']['type']:
+        e_kinetic = cas.DM(0.)
 
+    elif options['ground_station']['in_lag_dyn'] and options['ground_station']['name']:
+        radius_winch = parameters['theta0','ground_station','r_gen']
+        j_gen = parameters['theta0','ground_station','j_gen']
+        j_winch = parameters['theta0','ground_station','j_winch']
+        e_kinetic = 0.5 * (j_gen + j_winch) * speed_groundstation ** 2 * 1/radius_winch**2
+        e_kinetic += 0.5 * tether_ground_station_mass * speed_groundstation ** 2
+
+    else:
+        e_kinetic = 0.25 * total_groundstation_mass * speed_groundstation ** 2.
+
+    print("e_kinetic")
+    print(e_kinetic)
     outputs['e_kinetic']['groundstation'] = e_kinetic
 
     return outputs

@@ -130,7 +130,7 @@ def generate_mass_dictionary_for_all_nodes(options, variables, parameters, archi
     for kite in kite_nodes:
         node_masses = add_kite_mass(kite, node_masses, architecture, parameters)
 
-    node_masses = add_groundstation_mass(node_masses, parameters)
+    node_masses = add_groundstation_mass(options, node_masses, parameters)
 
     if not use_wound_tether:
         node_masses = remove_wound_tether_entry(node_masses)
@@ -138,10 +138,14 @@ def generate_mass_dictionary_for_all_nodes(options, variables, parameters, archi
     return node_masses
 
 
-def add_groundstation_mass(node_masses, parameters):
+def add_groundstation_mass(options, node_masses, parameters):
     m_groundstation = parameters['theta0', 'ground_station', 'm_gen']
     node_masses['groundstation'] += m_groundstation
+    if not options['ground_station']['in_lag_dyn']:
+        node_masses['groundstation'] = cas.DM(0.)
 
+    print("node_masses['groundstation']")
+    print(node_masses['groundstation'])
     return node_masses
 
 

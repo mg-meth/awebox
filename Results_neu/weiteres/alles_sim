@@ -1,0 +1,79 @@
+6 kite_dof
+60 n_k
+3 Widnings (sonst 5)
+wenn no_gen dddl_t (gl winch => nix lagrange)
+
+sim.:
+
++ single:
+  -125kw:
+    #mit vsd und ohne k_gear
+    #no vsd und ohne k_gear
+    #mit vsd mit k_gear opti
+    #no vsd und mit k_gear
+  -5mw:
+    #mit vsd und ohne k_gear
+    #no vsd und ohne k_gear
+    #mit vsd mit k_gear opti
+    #no vsd und mit k_gear
+  -no gen:
+    #mit gl winch
+
++ double:
+  -125kw:
+    #mit vsd und ohne k_gear
+    #no vsd und ohne k_gear
+    #mit vsd mit k_gear opti
+    #no vsd und mit k_gear
+  -no gen:
+    #mit gl winch
+
++ bubble:
+-125kw:
+  #mit vsd und ohne k_gear
+  #no vsd und ohne k_gear
+  #mit vsd mit k_gear opti
+  #no vsd und mit k_gear
+-no gen:
+  #mit gl winch
+
+
+
+
++evtl.:
+  -5mw double:
+    #mit vsd und ohne k_gear
+    #no vsd und ohne k_gear
+    #mit vsd mit k_gear opti
+    #no vsd und mit k_gear
+
+  -no_gen:
+    #auch mal mit in lagrange vgl
+
+  -25kw single:
+    #mit vsd und ohne k_gear
+    #no vsd und ohne k_gear
+    #mit vsd mit k_gear opti
+    #no vsd und mit k_gear
+
+  -125kw double double:
+    #mit vsd und ohne k_gear
+    #no vsd und ohne k_gear
+    #mit vsd mit k_gear opti
+    #no vsd und mit k_gear
+
+
++wenn es funktioniert:
+  -upsaling mit 5mw (b, j & m upsalen bis mw bereich erreicht ist):
+    #single: mit vsd und ohne k_gear & mit vsd mit k_gear opti
+    #double: mit vsd und ohne k_gear & mit vsd mit k_gear opti
+
+  -upsaling mit 125kw (b, j & m upsalen bis niedriger 100 kw bereich erreicht ist):
+    #single: mit vsd und ohne k_gear & mit vsd mit k_gear opti
+    #double: mit vsd und ohne k_gear & mit vsd mit k_gear opti
+
+  -annäherung mit gauss:
+    #single mit 125 kw (natürlich ohne k_gear oder etwa doch mit??)
+    #double mit 125 kw (natürlich ohne k_gear oder etwa doch mit??)
+    #double double mit 125 kw (natürlich ohne k_gear oder etwa doch mit??)
+    #upsaling mit 125 kw und single sowie double

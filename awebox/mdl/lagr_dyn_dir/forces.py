@@ -173,4 +173,3 @@ def generate_tether_moments(options, variables_si, variables_scaled, holonomic_c
             outputs['tether_moments']['n{}{}'.format(kite, parent)] = tether_moment
 
     return outputs
-

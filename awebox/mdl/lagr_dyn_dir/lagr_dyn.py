@@ -247,5 +247,3 @@ def generate_generalized_coordinates(system_variables, system_gc):
         #      for name in system_gc])
 
     return generalized_coordinates
-
-
