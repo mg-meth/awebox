@@ -28,11 +28,11 @@ def solve_succed(quality_print_results, name):
         f.write(string)
 
 
-wind_ref = [2,3,4,5,6,7]
+wind_ref = [4,7]
 
 for w in wind_ref:
 
-    name = 'veela_single_no_gen_265_mm_u_ref_' + str(w) + '_log_wind'
+    name = 'veela_single_no_gen_265_mm_u_ref_' + str(w) + '_log_wind_n_k_61'
 
         # make default options object
     options = awe.Options(True)
@@ -60,7 +60,7 @@ for w in wind_ref:
         #options['model']['ground_station']['ddl_t_max'] = 95.04
 
     options['user_options']['wind']['u_ref'] = w
-    options['nlp']['n_k'] = 60
+    options['nlp']['n_k'] = 61
         #options['model']['system_bounds']['u']['dkappa'] = [-1.0, 1.0]
 
         #options['model']['system_bounds']['xd']['l_t'] = [1.0e-2, 1.0e3]
@@ -86,3 +86,4 @@ for w in wind_ref:
     trial.optimize()
     quality_print_results = trial.quality.return_results()
     solve_succed(quality_print_results, name)
+    trial.write_to_csv()

@@ -57,10 +57,10 @@ def winch_mech():
     winch_mech['m_gen'] = 50                                                         #generator mass guessed
 
     winch_mech['j_gen'] = 1.57
-    winch_mech['j_winch'] =  np.pi/2 * (winch_mech['r_gen']**4 - winch_mech['r_gen_inner']**4) * winch_mech['rho_winch']
+    winch_mech['j_winch'] = 1.2*  np.pi/2 * (winch_mech['r_gen']**4 - winch_mech['r_gen_inner']**4) * winch_mech['rho_winch']
 
 #    winch_mech['j_winch'] = winch_mech['j_gen'] + winch_mech['j_winch']           #generator/motor and winch one rigid body if 'gear_train' active => j_gen and j_winch will be used separately
-    winch_mech['m_gen'] = winch_mech['m_gen'] + np.pi/2 * (winch_mech['r_gen']**2 - winch_mech['r_gen_inner']**2) * winch_mech['rho_winch']               #generator/motor and winch one rigid body
+ #   winch_mech['m_gen'] = winch_mech['m_gen'] + np.pi/2 * (winch_mech['r_gen']**2 - winch_mech['r_gen_inner']**2) * winch_mech['rho_winch']               #generator/motor and winch one rigid body
     winch_mech['k_gear'] = 1
     winch_mech['f_winch'] = 0
     winch_mech['f_gen'] = 0
