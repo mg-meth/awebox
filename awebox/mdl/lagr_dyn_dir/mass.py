@@ -162,8 +162,9 @@ def add_wound_tether_mass(node_masses, options, architecture, variables, paramet
         awelogger.logger.error('unknown option in mass dictionary generation')
 
     wound_mass = wound_cross_section * parameters['theta0', 'tether', 'rho'] * wound_length
-    node_masses['m00'] += wound_mass
-
+    node_masses['m00'] = wound_mass
+    print("node_masses['m00']")
+    print(node_masses['m00'])
     return node_masses
 
 

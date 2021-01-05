@@ -29,7 +29,7 @@ def solve_succed(quality_print_results, name):
 
 
 b_var = [5.5,10,20,50,100]
-
+w = 7
 for b in b_var:
 
     name = 'veela_single_5_mw_gen_265_mm_u_ref_' + '7' + '_log_wind' + '_upscale_b_' + str(b)
@@ -48,11 +48,11 @@ for b in b_var:
     #options['user_options']['generator']['control_var'] = 'dddl_t'
     #options['model']['tether']['control_var'] = 'dddl_t'
     #options['user_options']['generator']['type'] = None
-
+    print( options['user_options']['kite_standard']['geometry']['j'])
     kappa = 2.4
-    options['user_options']['kite_standard']['j'] = options['user_options']['kite_standard']['j'] * (b/options['user_options']['kite_standard']['b_ref'])**(kappa + 2)
-    options['user_options']['kite_standard']['m_k'] = options['user_options']['kite_standard']['m_k'] * (b/options['user_options']['kite_standard']['b_ref'])**(kappa)
-    options['user_options']['kite_standard']['b_ref'] = b
+    options['user_options']['kite_standard']['geometry']['j'] = options['user_options']['kite_standard']['geometry']['j'] * (b/options['user_options']['kite_standard']['geometry']['b_ref'])**(kappa + 2)
+    options['user_options']['kite_standard']['geometry']['m_k'] = options['user_options']['kite_standard']['geometry']['m_k'] * (b/options['user_options']['kite_standard']['geometry']['b_ref'])**(kappa)
+    options['user_options']['kite_standard']['geometry']['b_ref'] = b
 
         # trajectory should be a single pumping cycle with initial number of five windings
     options['user_options']['trajectory']['system_type'] = 'lift_mode'
@@ -90,3 +90,4 @@ for b in b_var:
     trial.optimize()
     quality_print_results = trial.quality.return_results()
     solve_succed(quality_print_results, name)
+    trial.write_to_csv()

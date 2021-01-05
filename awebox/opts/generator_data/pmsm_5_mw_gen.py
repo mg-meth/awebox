@@ -61,7 +61,7 @@ def winch_mech():
     winch_mech['m_gen'] = 5057                                           #stainless stell density
 
     winch_mech['j_gen'] = 268
-    winch_mech['j_winch'] =  np.pi/2 * (winch_mech['r_gen']**4 - winch_mech['r_gen_inner']**4) * winch_mech['rho_winch']
+    winch_mech['j_winch'] = 1.2* np.pi/2 * (winch_mech['r_gen']**4 - winch_mech['r_gen_inner']**4) * winch_mech['rho_winch']
 
     winch_mech['m_gen'] = winch_mech['m_gen'] + np.pi/2 * (winch_mech['r_gen']**2 - winch_mech['r_gen_inner']**2) * winch_mech['rho_winch']               #generator/motor and winch one rigid body
     winch_mech['k_gear'] = 1

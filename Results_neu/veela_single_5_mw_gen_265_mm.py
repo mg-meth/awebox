@@ -28,11 +28,11 @@ def solve_succed(quality_print_results, name):
         f.write(string)
 
 
-wind_ref = [2,3,4,5,6,7]
+wind_ref = [(58,3),(59,3),(60,3),(61,3),(62,3),(58,4),(59,4),(60,4),(61,4),(62,4),(58,5),(59,5),(60,5),(61,5),(62,5)]
 
 for w in wind_ref:
 
-    name = 'veela_single_5_mw_gen_265_mm_u_ref_' + str(w) + '_log_wind'
+    name = 'veela_single_5_mw_gen_265_mm_u_ref_' + '7'  + '_log_wind_4WD' + '_n_k_'  + str(w[0]) + '_WD_' + str(w[1])
 
         # make default options object
     options = awe.Options(True)
@@ -52,14 +52,14 @@ for w in wind_ref:
         # trajectory should be a single pumping cycle with initial number of five windings
     options['user_options']['trajectory']['system_type'] = 'lift_mode'
     options['user_options']['trajectory']['type'] = 'power_cycle'
-    options['user_options']['trajectory']['lift_mode']['windings'] = 3
+    options['user_options']['trajectory']['lift_mode']['windings'] = w[1]
 
     options['solver']['max_iter'] = 4000
     options['solver']['max_cpu_time'] = 1.e4
         #options['model']['ground_station']['ddl_t_max'] = 95.04
 
-    options['user_options']['wind']['u_ref'] = w
-    options['nlp']['n_k'] = 60
+    options['user_options']['wind']['u_ref'] = 7
+    options['nlp']['n_k'] = w[0]
         #options['model']['system_bounds']['u']['dkappa'] = [-1.0, 1.0]
 
         #options['model']['system_bounds']['xd']['l_t'] = [1.0e-2, 1.0e3]
@@ -85,3 +85,4 @@ for w in wind_ref:
     trial.optimize()
     quality_print_results = trial.quality.return_results()
     solve_succed(quality_print_results, name)
+    trial.write_to_csv()

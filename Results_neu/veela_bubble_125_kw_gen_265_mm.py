@@ -29,10 +29,11 @@ def solve_succed(quality_print_results, name):
 
 
 wind_ref = [2,3,4,5,6,7]
+wind_ref = [4,5,6,7]
 
 for w in wind_ref:
 
-    name = 'veela_bubble_125_kw_gen_265_mm_u_ref_' + str(w) + '_log_wind'
+    name = 'veela_bubble_125_kw_gen_265_mm_u_ref_' + str(w) + '_log_wind_n_k_42_WD_1'
 
         # make default options object
     options = awe.Options(True)
@@ -52,14 +53,14 @@ for w in wind_ref:
         # trajectory should be a single pumping cycle with initial number of five windings
     options['user_options']['trajectory']['system_type'] = 'lift_mode'
     options['user_options']['trajectory']['type'] = 'power_cycle'
-    options['user_options']['trajectory']['lift_mode']['windings'] = 3
+    options['user_options']['trajectory']['lift_mode']['windings'] = 1
 
     options['solver']['max_iter'] = 4000
-    options['solver']['max_cpu_time'] = 1.e4
+    options['solver']['max_cpu_time'] = 3.e3
         #options['model']['ground_station']['ddl_t_max'] = 95.04
 
     options['user_options']['wind']['u_ref'] = w
-    options['nlp']['n_k'] = 60
+    options['nlp']['n_k'] = 42
         #options['model']['system_bounds']['u']['dkappa'] = [-1.0, 1.0]
 
         #options['model']['system_bounds']['xd']['l_t'] = [1.0e-2, 1.0e3]
