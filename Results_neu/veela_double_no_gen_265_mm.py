@@ -86,3 +86,5 @@ for w in wind_ref:
     trial.optimize()
     quality_print_results = trial.quality.return_results()
     solve_succed(quality_print_results, name)
+    trial.write_to_csv()
+

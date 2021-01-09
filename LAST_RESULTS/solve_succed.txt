@@ -1,0 +1,1945 @@
+6 DOF, 3 Windings, 60 n_k, no_gen: dddl_t
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_2_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_4_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_5_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_6_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_7_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_2_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_4_log_wind_nk_62_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_5_log_wind_nk_62_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_no_vsd_265_mm_u_ref_4_log_wind_nk_62_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_125_kw_gen_265_mm_u_ref_2_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_125_kw_gen_265_mm_u_ref_4_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_125_kw_gen_265_mm_u_ref_5_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_265_mm_u_ref_6_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_125_kw_gen_265_mm_u_ref_7_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_125_kw_265_mm_u_ref_2_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_125_kw_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_125_kw_265_mm_u_ref_4_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_125_kw_265_mm_u_ref_5_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_125_kw_265_mm_u_ref_6_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_125_kw_265_mm_u_ref_7_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_2_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  FAILED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_4_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_5_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_6_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_7_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_single_5_mw_gen_265_mm_u_ref_2_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_5_mw_gen_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_5_mw_gen_265_mm_u_ref_4_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+veela_single_5_mw_gen_265_mm_u_ref_5_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_5_mw_gen_265_mm_u_ref_6_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_5_mw_gen_265_mm_u_ref_7_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_bubble_no_gen_265_mm_u_ref_2_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_bubble_no_gen_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_bubble_no_gen_265_mm_u_ref_4_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_bubble_no_gen_265_mm_u_ref_5_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_bubble_no_gen_265_mm_u_ref_6_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_bubble_no_gen_265_mm_u_ref_7_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_bubble_125_kw_gen_265_mm_u_ref_2_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_bubble_125_kw_gen_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_bubble_125_kw_gen_265_mm_u_ref_4_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  PASSED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_bubble_125_kw_gen_265_mm_u_ref_5_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_bubble_125_kw_gen_265_mm_u_ref_6_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_bubble_125_kw_gen_265_mm_u_ref_7_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_7_log_wind_upscale_b_5.5_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_7_log_wind_upscale_b_7.5_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_7_log_wind_upscale_b_10_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_7_log_wind_upscale_b_12.5_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_7_log_wind_upscale_b_15_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  FAILED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_7_log_wind_upscale_b_20_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_7_log_wind_upscale_b_25_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_single_no_gen_5_mw_265_mm_u_ref_7_log_wind_upscale_b_30_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_single_5_mw_gen_265_mm_u_ref_7_log_wind_upscale_b_5.5_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_single_5_mw_gen_265_mm_u_ref_7_log_wind_upscale_b_7.5_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+veela_single_5_mw_gen_265_mm_u_ref_7_log_wind_upscale_b_10_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_5_mw_gen_265_mm_u_ref_7_log_wind_upscale_b_12.5_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_5_mw_gen_265_mm_u_ref_7_log_wind_upscale_b_15_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_5_mw_gen_265_mm_u_ref_7_log_wind_upscale_b_20_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_single_5_mw_gen_265_mm_u_ref_7_log_wind_upscale_b_25_n_k_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  FAILED
+
+veela_single_5_mw_gen_265_mm_u_ref_7_log_wind_upscale_b_30_n_k_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+veela_double_no_gen_265_mm_u_ref_2_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+c21:  PASSED
+
+dc21:  PASSED
+
+ddc21:  PASSED
+
+c31:  PASSED
+
+dc31:  PASSED
+
+ddc31:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  FAILED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  PASSED
+
+energy_balance3:  PASSED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_double_no_gen_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+c21:  PASSED
+
+dc21:  PASSED
+
+ddc21:  PASSED
+
+c31:  PASSED
+
+dc31:  PASSED
+
+ddc31:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  PASSED
+
+energy_balance3:  PASSED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_double_no_gen_265_mm_u_ref_4_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+c21:  PASSED
+
+dc21:  PASSED
+
+ddc21:  PASSED
+
+c31:  PASSED
+
+dc31:  PASSED
+
+ddc31:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  PASSED
+
+energy_balance3:  PASSED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_double_no_gen_265_mm_u_ref_5_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+c21:  PASSED
+
+dc21:  PASSED
+
+ddc21:  PASSED
+
+c31:  PASSED
+
+dc31:  PASSED
+
+ddc31:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  PASSED
+
+energy_balance3:  PASSED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_double_no_gen_265_mm_u_ref_6_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+c21:  PASSED
+
+dc21:  PASSED
+
+ddc21:  PASSED
+
+c31:  PASSED
+
+dc31:  PASSED
+
+ddc31:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  PASSED
+
+energy_balance3:  PASSED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_double_no_gen_265_mm_u_ref_7_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+c21:  PASSED
+
+dc21:  PASSED
+
+ddc21:  PASSED
+
+c31:  PASSED
+
+dc31:  PASSED
+
+ddc31:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  PASSED
+
+energy_balance3:  PASSED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_double_125_kw_gen_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+c21:  PASSED
+
+dc21:  PASSED
+
+ddc21:  PASSED
+
+c31:  PASSED
+
+dc31:  PASSED
+
+ddc31:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  PASSED
+
+energy_balance3:  PASSED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  PASSED
+
+veela_double_125_kw_gen_265_mm_u_ref_4_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+c21:  PASSED
+
+dc21:  PASSED
+
+ddc21:  PASSED
+
+c31:  PASSED
+
+dc31:  PASSED
+
+ddc31:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  PASSED
+
+energy_balance3:  PASSED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+veela_double_125_kw_gen_265_mm_u_ref_5_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+c21:  FAILED
+
+dc21:  FAILED
+
+ddc21:  FAILED
+
+c31:  FAILED
+
+dc31:  FAILED
+
+ddc31:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  FAILED
+
+energy_balance3:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_double_125_kw_gen_265_mm_u_ref_6_log_wind_nk_60_wd_3 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  FAILED
+
+c21:  PASSED
+
+dc21:  PASSED
+
+ddc21:  PASSED
+
+c31:  PASSED
+
+dc31:  PASSED
+
+ddc31:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  PASSED
+
+energy_balance3:  PASSED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+veela_double_125_kw_gen_265_mm_u_ref_7_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+c21:  FAILED
+
+dc21:  FAILED
+
+ddc21:  FAILED
+
+c31:  FAILED
+
+dc31:  FAILED
+
+ddc31:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balance2:  FAILED
+
+energy_balance3:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_125_kw_gen_265_mm_u_ref_3_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_125_kw_gen_265_mm_u_ref_4_log_wind_nk_60_wd_3 : c10:  FAILED
+
+dc10:  FAILED
+
+ddc10:  FAILED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  FAILED
+
+energy_balancetotal:  FAILED
+
+solve_succeeded:  FAILED
+
+aero_conversion:  FAILED
+
+veela_single_125_kw_gen_265_mm_u_ref_3_log_wind_nk_60_wd_5 : c10:  PASSED
+
+dc10:  PASSED
+
+ddc10:  PASSED
+
+loyd_factor:  PASSED
+
+power_harvesting_factor:  PASSED
+
+tau_max:  PASSED
+
+t_f_min:  PASSED
+
+max_control_interval:  PASSED
+
+energy_balance1:  PASSED
+
+energy_balancetotal:  PASSED
+
+solve_succeeded:  PASSED
+
+aero_conversion:  FAILED
+
+
+veela_single_125_kw_gen_265_mm_u_ref_4_log_wind_nk_60_wd_5 : c10:  PASSED
+dc10:  PASSED
+ddc10:  PASSED
+loyd_factor:  PASSED
+power_harvesting_factor:  PASSED
+tau_max:  PASSED
+t_f_min:  PASSED
+max_control_interval:  PASSED
+energy_balance1:  PASSED
+energy_balancetotal:  PASSED
+solve_succeeded:  PASSED
+aero_conversion:  FAILED

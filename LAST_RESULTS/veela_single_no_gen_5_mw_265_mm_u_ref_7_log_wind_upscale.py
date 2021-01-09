@@ -27,13 +27,17 @@ def solve_succed(quality_print_results, name):
         string += '\n' + name + ' : ' + quality_print_results
         f.write(string)
 
-#7: n_k=60
-wind_ref = [2,3,4,5,6]
-#wind_ref = [4,5,6,7]
 
-for w in wind_ref:
+b_var = [5.5, 7.5, 10, 12.5, 15, 20, 25, 30]
+w = 7
+wd = 3
+n_k = 60
+tim = 2e3
 
-    name = 'veela_bubble_125_kw_gen_265_mm_u_ref_' + str(w) + '_log_wind_WD_2_n_k_40'
+for b in b_var:
+
+    name = 'veela_single_no_gen_5_mw_265_mm_u_ref_' + '7' + '_log_wind' + '_upscale_b_' + str(b) + '_n_k_' + str(n_k) + '_wd_' + str(wd)
+
 
         # make default options object
     options = awe.Options(True)
@@ -41,8 +45,8 @@ for w in wind_ref:
         # single kite with point-mass model
     options['user_options']['system_model']['architecture'] = {1:0}
     options['user_options']['system_model']['kite_dof'] = 6
-    options['user_options']['kite_standard'] = awe.bubbledancer_data.data_dict()
-    options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
+    options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
+    options['user_options']['generator'] = awe.pmsm_5_mw_gen.data_dict()
     #options['user_options']['generator']['gear_train']['used'] = True
     #options['user_options']['generator']['gear_train']['optimize'] = True
     #options['user_options']['generator']['dv_sd'] = False
@@ -50,17 +54,35 @@ for w in wind_ref:
     #options['model']['tether']['control_var'] = 'dddl_t'
     #options['user_options']['generator']['type'] = None
 
+    options['user_options']['generator']['control_var'] = 'dddl_t'
+    options['model']['tether']['control_var'] = 'dddl_t'
+    options['user_options']['generator']['type'] = None
+    options['user_options']['generator']['ground_station']['in_lag_dyn'] = True
+
+
+    aspect_ratio = 5.5**2/3
+
+    options['user_options']['kite_standard']['geometry']['c_ref'] = b/aspect_ratio
+    options['user_options']['kite_standard']['geometry']['s_ref'] = b**2/aspect_ratio
+
+
+    print( options['user_options']['kite_standard']['geometry']['j'])
+    kappa = 2.4
+    options['user_options']['kite_standard']['geometry']['j'] = options['user_options']['kite_standard']['geometry']['j'] * (b/options['user_options']['kite_standard']['geometry']['b_ref'])**(kappa + 2)
+    options['user_options']['kite_standard']['geometry']['m_k'] = options['user_options']['kite_standard']['geometry']['m_k'] * (b/options['user_options']['kite_standard']['geometry']['b_ref'])**(kappa)
+    options['user_options']['kite_standard']['geometry']['b_ref'] = b
+
         # trajectory should be a single pumping cycle with initial number of five windings
     options['user_options']['trajectory']['system_type'] = 'lift_mode'
     options['user_options']['trajectory']['type'] = 'power_cycle'
-    options['user_options']['trajectory']['lift_mode']['windings'] = 2
+    options['user_options']['trajectory']['lift_mode']['windings'] = wd
 
     options['solver']['max_iter'] = 4000
-    options['solver']['max_cpu_time'] = 3.e3
+    options['solver']['max_cpu_time'] = tim
         #options['model']['ground_station']['ddl_t_max'] = 95.04
 
     options['user_options']['wind']['u_ref'] = w
-    options['nlp']['n_k'] =40 
+    options['nlp']['n_k'] = n_k
         #options['model']['system_bounds']['u']['dkappa'] = [-1.0, 1.0]
 
         #options['model']['system_bounds']['xd']['l_t'] = [1.0e-2, 1.0e3]
