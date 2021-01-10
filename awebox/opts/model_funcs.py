@@ -850,6 +850,7 @@ def build_tether_control_options(options, options_tree, fixed_params):
 
         elif control_name == 'pmsm':
             voltage = options['user_options']['generator']['generator']
+            ddl_t_max = 3
             options_tree.append(('model', 'system_bounds', 'xd', 'ddl_t', [-1. * ddl_t_max, ddl_t_max],   ('main tether max acceleration [m/s^2]', None),'x'))
 #            options_tree.append(('model', 'system_bounds', 'u', 'v_sd', [voltage['voltage_d_min'], voltage['voltage_d_max']],   ('winch generator d-q model [V]', None),'x'))
             options_tree.append(('model', 'system_bounds', 'u', 'dv_sq', [voltage['dot_v_sq_min'], voltage['dot_v_sq_max']],   ('winch generator d-q model [V]', None),'x'))

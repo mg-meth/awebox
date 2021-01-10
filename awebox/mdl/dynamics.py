@@ -200,7 +200,6 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
 def acceleration_ground_station_inequality(options, variables, parameters, architecture, outputs):
 
     cstr_list = mdl_constraint.MdlConstraintList()
-    pdb.set_trace()
 
 
     if options['generator']:
@@ -209,7 +208,7 @@ def acceleration_ground_station_inequality(options, variables, parameters, archi
        #     radius_winch = parameters['theta0','ground_station','r_gen']
         #    j_gen = parameters['theta0','ground_station','j_gen']
          #   j_winch = parameters['theta0','ground_station','j_winch']
-            acc_max = 2
+            acc_max = 3
 
             acc = variables['xd']['ddl_t']
             acc_sq = cas.mtimes(acc.T, acc)
@@ -577,7 +576,7 @@ def current_inequality(options, variables_si, parameters, architecture, outputs)
             phi_f = parameters['theta0','generator','phi_f']
         #    i_q = (lam*l_t*radius_winch**2 - (j_gen + j_winch)) / (1.5*p_p*phi_f*radius_winch)
         #    i_d_ineq = -i_d  + 30
-            i_q_ineq = -i_q + 10
+            i_q_ineq = -i_q + 30
 
 
             #i_d_ineq = (30-i_d)
