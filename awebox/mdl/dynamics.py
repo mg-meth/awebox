@@ -219,6 +219,23 @@ def acceleration_ground_station_inequality(options, variables, parameters, archi
             acc_groundstation_cstr = cstr_op.Constraint(expr=acc_groundstation_ineq, name='acc_groundstation_ineq', cstr_type='ineq')
             cstr_list.append(acc_groundstation_cstr)
 
+        else:
+
+       #     radius_winch = parameters['theta0','ground_station','r_gen']
+        #    j_gen = parameters['theta0','ground_station','j_gen']
+         #   j_winch = parameters['theta0','ground_station','j_winch']
+            acc_max = 3
+
+            acc = variables['xd']['ddl_t']
+            acc_sq = cas.mtimes(acc.T, acc)
+            acc_sq_norm = acc_sq / acc_max ** 2.
+
+                # acc^2 < acc_max^2 -> acc^2 / acc_max^2 - 1 < 0
+            acc_groundstation_ineq = acc_sq_norm - 1.
+            acc_groundstation_cstr = cstr_op.Constraint(expr=acc_groundstation_ineq, name='acc_groundstation_ineq', cstr_type='ineq')
+            cstr_list.append(acc_groundstation_cstr)
+
+
     return cstr_list
 
 
