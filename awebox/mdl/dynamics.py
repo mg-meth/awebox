@@ -59,6 +59,8 @@ import awebox.tools.constraint_operations as cstr_op
 
 from awebox.logger.logger import Logger as awelogger
 
+
+import pdb
 def make_dynamics(options, atmos, wind, parameters, architecture):
 
     # system architecture (see zanon2013a)
@@ -149,6 +151,9 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     current_cstr = current_inequality(options, system_variables['SI'], parameters, architecture, outputs)
     cstr_list.append(current_cstr)
 
+    acceleration_ground_station_cstr = acceleration_ground_station_inequality(options, system_variables['SI'], parameters, architecture, outputs)
+    cstr_list.append(acceleration_ground_station_cstr)
+
 #    k_gear_str = k_gear_inequality(options, system_variables['SI'], parameters, architecture, outputs)
 #    cstr_list.append(k_gear_str)
 
@@ -190,6 +195,35 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
         integral_outputs_struct,
         integral_outputs_fun,
         integral_scaling]
+
+
+def acceleration_ground_station_inequality(options, variables, parameters, architecture, outputs):
+
+    cstr_list = mdl_constraint.MdlConstraintList()
+    pdb.set_trace()
+
+
+    if options['generator']:
+        if options['generator']['type'] == 'pmsm':
+
+       #     radius_winch = parameters['theta0','ground_station','r_gen']
+        #    j_gen = parameters['theta0','ground_station','j_gen']
+         #   j_winch = parameters['theta0','ground_station','j_winch']
+            acc_max = 2
+
+            acc = variables['xd']['ddl_t']
+            acc_sq = cas.mtimes(acc.T, acc)
+            acc_sq_norm = acc_sq / acc_max ** 2.
+
+                # acc^2 < acc_max^2 -> acc^2 / acc_max^2 - 1 < 0
+            acc_groundstation_ineq = acc_sq_norm - 1.
+            acc_groundstation_cstr = cstr_op.Constraint(expr=acc_groundstation_ineq, name='acc_groundstation_ineq', cstr_type='ineq')
+            cstr_list.append(acc_groundstation_cstr)
+
+    return cstr_list
+
+
+
 
 
 def get_induction_cstr(options, atmos, wind, variables_si, parameters, outputs, architecture):

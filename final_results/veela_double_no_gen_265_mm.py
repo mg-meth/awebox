@@ -29,22 +29,19 @@ def solve_succed(quality_print_results, name):
 
 
 
-
-wind_ref = [7]
+wind_ref = [2,3,4,5,6,7]
 n_k = 60
-wd = 5
-tim = 2e3
+wd = 3
 
 for w in wind_ref:
 
-
-    name = 'veela_single_no_gen_125_kw_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd)
+    name = 'veela_double_no_gen_265_mm_u_ref_' + str(w) + '_log_wind'  + '_nk_' + str(n_k) + '_wd_' + str(wd)
 
         # make default options object
     options = awe.Options(True)
 
         # single kite with point-mass model
-    options['user_options']['system_model']['architecture'] = {1:0}
+    options['user_options']['system_model']['architecture'] = {1:0, 2:1, 3:1}
     options['user_options']['system_model']['kite_dof'] = 6
     options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
     options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
@@ -62,7 +59,7 @@ for w in wind_ref:
     options['user_options']['trajectory']['lift_mode']['windings'] = wd
 
     options['solver']['max_iter'] = 4000
-    options['solver']['max_cpu_time'] = tim
+    options['solver']['max_cpu_time'] = 1.e4
         #options['model']['ground_station']['ddl_t_max'] = 95.04
 
     options['user_options']['wind']['u_ref'] = w
@@ -93,3 +90,4 @@ for w in wind_ref:
     quality_print_results = trial.quality.return_results()
     solve_succed(quality_print_results, name)
     trial.write_to_csv()
+
