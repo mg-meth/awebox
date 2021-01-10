@@ -384,7 +384,9 @@ def isRotationMatrix(R):
     resi = norm(diff_vert)**0.5
 
     threshold = 1.e-1
-
+    
+    if resi > threshold:
+        print('resi:' + str(resi) + ' threshold: ' + str(threshold))
     return resi < threshold
 
 # Calculates rotation matrix to euler angles
