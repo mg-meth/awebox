@@ -30,9 +30,9 @@ def solve_succed(quality_print_results, name):
 
 
 
-wind_ref = [2,3,4,5,6,7]
-n_k = 60
-wd = 4
+wind_ref = [6]
+n_k = 62
+wd = 3
 tim = 2e3
 
 for w in wind_ref:
