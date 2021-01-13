@@ -197,6 +197,8 @@ def guess_values_at_time(t, init_options, model, formulation, tf_guess, ntp_dict
 
 def set_nontime_system_parameters(init_options, model, V_init):
     for name in set(struct_op.subkeys(model.variables, 'theta')) - set(['t_f']):
+        print(init_options['theta'].keys())
+        print(name)
         if name in list(init_options['theta'].keys()):
             V_init['theta', name] = init_options['theta'][name]
         elif name[:3] == 'l_c':
@@ -209,6 +211,8 @@ def set_nontime_system_parameters(init_options, model, V_init):
                 V_init['theta', name] += - init_options['sys_params_num']['geometry']['b_ref']
         elif name[:6] == 'diam_c':
             V_init['theta', name] = init_options['theta']['diam_c']
+        elif name[:7] == 'k_gear':
+            V_init['theta', name] = 1
         else:
             raise ValueError("please specify an initial value for variable '" + name + "' of type 'theta'")
 

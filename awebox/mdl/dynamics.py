@@ -616,8 +616,8 @@ def k_gear_inequality(options, variables_si, parameters, architecture, outputs):
     cstr_list = mdl_constraint.MdlConstraintList()
     if options['generator']['type']:
         if options['generator']['gear_train']['used']:
-            k_gear_upper = variables_si['xd']['k_gear'] - 5
-            k_gear_lower = -variables_si['xd']['k_gear'] + 1/5
+            k_gear_upper = variables_si['theta']['k_gear'] - 5
+            k_gear_lower = -variables_si['theta']['k_gear'] + 1/5
             k_gear_ineq_upper = cstr_op.Constraint(expr=k_gear_upper, name='k_gear_upper', cstr_type='ineq')
             k_gear_ineq_lower = cstr_op.Constraint(expr=k_gear_lower, name='k_gear_lower', cstr_type='ineq')
             cstr_list.append(k_gear_ineq_upper)

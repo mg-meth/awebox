@@ -188,6 +188,7 @@ def set_default_options(default_user_options, help_options):
         ('model',  'system_bounds', 'theta',       't_f',          [1e-3, 500.0],                                                                   ('main tether max acceleration [m/s^2]', None),'x'),
         ('model',  'system_bounds', 'xa',          'lambda',       [0., cas.inf],                                                                   ('multiplier bounds', None),'x'),
         ('model',  'system_bounds', 'u',           'dkappa',       [-1000.0, 1000.0],                                                               ('generator braking constant [kg/m/s]', None),'x'),
+        ('model',  'system_bounds', 'theta',       'k_gear',          [0.2, 5],                                                                   ('main tether max acceleration [m/s^2]', None),'x'),
 
         #### model bounds (range of validity)
         ('model',   'model_bounds', 'wound_tether_length', 'include',        True,      ('include constraint that total main tether length include the unrolled main tether length in constraints', [True, False]), 'x'),

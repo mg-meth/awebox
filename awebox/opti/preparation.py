@@ -166,7 +166,7 @@ def set_initial_bounds(nlp, model, formulation, options, V_init):
         V_bounds['ub']['xi', name] = xi_bounds[name][1]
 
     for name in struct_op.subkeys(model.variables, 'theta'):
-        if not name == 't_f' and not name[:3] == 'l_c' and not name[:6] == 'diam_c':
+        if not name == 't_f' and not name[:3] == 'l_c' and not name[:6] == 'diam_c' and not name[:7] == 'k_gear':
             initial_si_value = options['initialization']['theta'][name]
             initial_scaled_value = initial_si_value / model.scaling['theta'][name]
 
@@ -179,6 +179,9 @@ def set_initial_bounds(nlp, model, formulation, options, V_init):
     # set theta parameters
     V_bounds['lb']['theta', 't_f'] = initial_scaled_time
     V_bounds['ub']['theta', 't_f'] = initial_scaled_time
+
+    V_bounds['ub']['theta', 'k_gear'] = 1
+    V_bounds['lb']['theta', 'k_gear'] = 1
 
     # set fictitious forces bounds
     for name in list(model.variables_dict['u'].keys()):

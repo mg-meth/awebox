@@ -96,7 +96,7 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
             j_winch = parameters['theta0','ground_station','j_winch']   #normaly rigid body
             f_gen = parameters['theta0','ground_station','f_gen']
 
-            k = variables_si['xd']['k_gear']
+            k = variables_si['theta']['k_gear']
 
             t_win = j_winch*variables_si['xddot']['ddl_t']/radius_winch+ options['scaling']['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius_winch**3 * (-omega*omega + domega*phi) #
             j_gen *= k**2
@@ -113,13 +113,14 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
 
         if options['generator']['gear_train']['used']:
 
-            k   = variables_si['xd']['k_gear']
-            dk  = variables_si['xddot']['dk_gear']
+            k   = variables_si['theta']['k_gear']
+#            dk  = variables_si['xddot']['dk_gear']
 
-            dk_ineq         = dk
-            dk_ineq_cstr    = cstr_op.Constraint(expr=dk_ineq, name='dk_ineq', cstr_type='eq')
-            cstr_list.append(dk_ineq_cstr)
-
+ #           dk_ineq         = dk
+  
+#          dk_ineq_cstr    = cstr_op.Constraint(expr=dk_ineq, name='dk_ineq', cstr_type='eq')
+   #         cstr_list.append(dk_ineq_cstr)
+#
             len_zstl    = 0.1
             delta_r     = 0.05
             rho_zstl    = 2700
@@ -225,7 +226,7 @@ def generator_ode(options, variables_si, outputs, parameters, architecture):
             i_sd_ode = -v_sd + rs*i_sd - omega*p_p*i_sq*lq + ld*di_sd
 
         if options['generator']['gear_train']['used']:
-            k = variables_si['xd']['k_gear']
+            k = variables_si['theta']['k_gear']
 
             r_gen       = parameters['theta0','ground_station','r_gen']
             omega       = k* variables_si['xd']['dl_t'] / r_gen

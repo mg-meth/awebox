@@ -180,10 +180,10 @@ def generate_structure(options, architecture):
 
         system_states.extend([('v_sq', (1, 1))])
         system_controls.extend([('dv_sq', (1, 1))])
-        if options['generator']['gear_train']['used']:
+    #    if options['generator']['gear_train']['used']:
 #            system_states.extend([('k_gear', (1, 1))])
             #system_states.extend([('dot_k_gear', (1, 1))])
-            system_states.extend([('k_gear', (1, 1))])
+   #         system_states.extend([('k_gear', (1, 1))])
     else:
         raise ValueError('invalid tether control variable chosen')
 
@@ -204,7 +204,8 @@ def generate_structure(options, architecture):
     system_parameters = [('l_s', (1, 1)), ('l_i', (1, 1)), ('diam_s', (1, 1)), ('diam_t', (1, 1)), ('t_f',(1,1))]
     if options['tether']['use_wound_tether']:
         system_parameters += [('l_t_full', (1, 1))]
-
+    if options['generator']['gear_train']['used']:
+        system_parameters += [('k_gear', (1, 1))]
 
     # add cross-tether lengths and diameters
     if options['cross_tether'] and len(kite_nodes) > 1:
