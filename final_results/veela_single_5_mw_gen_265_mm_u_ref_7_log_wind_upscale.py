@@ -28,11 +28,11 @@ def solve_succed(quality_print_results, name):
         f.write(string)
 
 
-b_var = [5.5, 7.5, 10, 12.5, 15, 20, 25, 30]
+b_var = [25, 30]
 w = 7
 wd = 3
 n_k = 60
-tim = 1e3
+tim = 5e3
 
 for b in b_var:
 
@@ -53,6 +53,7 @@ for b in b_var:
     #options['model']['tether']['control_var'] = 'dddl_t'
     #options['user_options']['generator']['type'] = None
 
+    options['model']['ground_station']['ddl_t_max'] = 3
 
     aspect_ratio = 5.5**2/3
 

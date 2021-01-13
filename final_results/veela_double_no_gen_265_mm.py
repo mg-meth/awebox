@@ -30,8 +30,8 @@ def solve_succed(quality_print_results, name):
 
 
 wind_ref = [2,3,4,5,6,7]
-n_k = 60
-wd = 3
+n_k = 59
+wd =3
 
 for w in wind_ref:
 
@@ -52,6 +52,9 @@ for w in wind_ref:
     options['model']['tether']['control_var'] = 'dddl_t'
     options['user_options']['generator']['type'] = None
     options['user_options']['generator']['ground_station']['in_lag_dyn'] = True
+
+    options['model']['ground_station']['ddl_t_max'] = 3
+
 
         # trajectory should be a single pumping cycle with initial number of five windings
     options['user_options']['trajectory']['system_type'] = 'lift_mode'

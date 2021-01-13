@@ -75,7 +75,7 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
         t_tether = -variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius_winch
         t_frict = -f_winch * omega
         t_inertia = j_winch * domega
-        t_inertia += options['scaling']['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius_winch**3 * (omega*omega + domega*phi) #
+        t_inertia += variables_si['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius_winch**3 * (omega*omega + domega*phi) #
 
         rhs = t_tether + t_em + t_frict
         lhs = t_inertia
@@ -86,7 +86,7 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
         phi = (l_t_full- variables_si['xd']['l_t']) / radius_winch
 
         rhs = (j_gen+j_winch)*variables_si['xddot']['ddl_t']/radius_winch
-        rhs += options['scaling']['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius_winch**3 * (-omega*omega + domega*phi)
+        rhs += variables_si['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius_winch**3 * (-omega*omega + domega*phi)
         lhs = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius_winch - t_em
 
 
@@ -96,34 +96,54 @@ def get_winch_cstr(options, atmos, wind, variables_si, parameters, outputs, arch
             j_winch = parameters['theta0','ground_station','j_winch']   #normaly rigid body
             f_gen = parameters['theta0','ground_station','f_gen']
 
-            if options['generator']['gear_train']['optimize']:
-            #    k_ode = variables_si['xddot']['dk_gear'] - variables_si['u']['dk_gear']
-            #    k_ode = cstr_op.Constraint(expr=k_ode, name='k_ode', cstr_type='eq')
-            #    cstr_list.append(k_ode)
-            #    k = variables_si['xd']['k_gear']
-
-                k = variables_si['u']['k_gear']
-
-            #    dk = variables_si['xddot']['dk_gear']                           #const ratio
-            #    k_cstr = cstr_op.Constraint(expr=dk, name='k_gear_const', cstr_type='eq')
-            #    cstr_list.append(k_cstr)
-            #    k = variables_si['xd']['k_gear']
-            else:
-
-                k = parameters['theta0','ground_station','k_gear']
+            k = variables_si['xd']['k_gear']
 
             t_win = j_winch*variables_si['xddot']['ddl_t']/radius_winch+ options['scaling']['theta']['diam_t']**2 / 4 * np.pi * parameters['theta0', 'tether', 'rho']*radius_winch**3 * (-omega*omega + domega*phi) #
             j_gen *= k**2
             t_tether = -variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius_winch
-            if options['generator']['gear_train']['j_gen_var']:
-                j_gen *= k
-                j_gen += parameters['theta0', 'ground_station', 'rho_winch'] * 0.1 * np.pi/2 *(0.2*radius_winch**3 - 0.06 * radius_winch**2 * k + 0.05 * radius_winch * k**2 - 1/1600 * k**3)
-                t_win *= k
-                t_em *= k
-                t_tether *= k
+
             t_gen = j_gen*variables_si['xddot']['ddl_t']/radius_winch
             lhs = -t_gen - t_win
             rhs = t_tether + k*t_em #+ omega*(f_winch + f_gen*k**2)
+
+
+
+
+
+
+        if options['generator']['gear_train']['used']:
+
+            k   = variables_si['xd']['k_gear']
+            dk  = variables_si['xddot']['dk_gear']
+
+            dk_ineq         = dk
+            dk_ineq_cstr    = cstr_op.Constraint(expr=dk_ineq, name='dk_ineq', cstr_type='eq')
+            cstr_list.append(dk_ineq_cstr)
+
+            len_zstl    = 0.1
+            delta_r     = 0.05
+            rho_zstl    = 2700
+            j_zstl      = np.pi *len_zstl *rho_zstl *(-3 *k *radius_winch**2 *delta_r**2 + 2 *k**2 *delta_r**3 *radius_winch + 2 *delta_r *radius_winch**3 - 1/2 *k**3 *delta_r**4)
+
+            j_gen_zstl = k**3 *j_gen + j_zstl
+
+            t_tether = variables_si['xa']['lambda10'] * variables_si['xd']['l_t'] * radius_winch
+
+            t_angular_momentum          = (j_gen_zstl + k*j_winch) *domega
+            t_angular_momentum_tether   = k* variables_si['theta']['diam_t']**2 / 4 *np.pi *parameters['theta0', 'tether', 'rho']
+            t_angular_momentum_tether  *= radius_winch**3 *(-omega *omega + domega *phi)
+
+            rhs =   t_angular_momentum + t_angular_momentum_tether
+            rhs +=  omega *(f_winch *k**3)
+            lhs =   t_tether *k - k**2 *t_em
+
+
+
+
+
+
+
+
 
 
         if options['generator']['type'] == 'pmsm':
@@ -205,18 +225,13 @@ def generator_ode(options, variables_si, outputs, parameters, architecture):
             i_sd_ode = -v_sd + rs*i_sd - omega*p_p*i_sq*lq + ld*di_sd
 
         if options['generator']['gear_train']['used']:
+            k = variables_si['xd']['k_gear']
 
-            if options['generator']['gear_train']['optimize']:
-                k = variables_si['u']['k_gear']
-                #k = variables_si['xd']['k_gear']
-                #k = variables_si['xd']['k_gear']
-            else:
-                k = parameters['theta0','ground_station','k_gear']
+            r_gen       = parameters['theta0','ground_station','r_gen']
+            omega       = k* variables_si['xd']['dl_t'] / r_gen
+            i_sq_ode    = -v_sq + rs*i_sq - phi_f*omega*p_p + lq*di_sq
 
-            omega = k* variables_si['xd']['dl_t'] / parameters['theta0','ground_station','r_gen']
-            i_sq_ode = -v_sq + rs*i_sq - phi_f*omega*p_p + lq*di_sq
-
-            if options['generator']['dv_sd']:   ####?????????
+            if options['generator']['dv_sd']:
                 i_sq_ode += -omega*p_p*i_sd*ld
                 i_sd_ode = -v_sd + rs*i_sd + omega*p_p*i_sq*lq + ld*di_sd
 

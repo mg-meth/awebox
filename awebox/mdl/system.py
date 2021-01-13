@@ -180,10 +180,10 @@ def generate_structure(options, architecture):
 
         system_states.extend([('v_sq', (1, 1))])
         system_controls.extend([('dv_sq', (1, 1))])
-        if options['generator']['gear_train']['optimize']:
+        if options['generator']['gear_train']['used']:
 #            system_states.extend([('k_gear', (1, 1))])
             #system_states.extend([('dot_k_gear', (1, 1))])
-            system_controls.extend([('k_gear', (1, 1))])
+            system_states.extend([('k_gear', (1, 1))])
     else:
         raise ValueError('invalid tether control variable chosen')
 

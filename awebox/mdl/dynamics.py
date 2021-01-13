@@ -154,8 +154,8 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     acceleration_ground_station_cstr = acceleration_ground_station_inequality(options, system_variables['SI'], parameters, architecture, outputs)
     cstr_list.append(acceleration_ground_station_cstr)
 
-#    k_gear_str = k_gear_inequality(options, system_variables['SI'], parameters, architecture, outputs)
-#    cstr_list.append(k_gear_str)
+    k_gear_str = k_gear_inequality(options, system_variables['SI'], parameters, architecture, outputs)
+    cstr_list.append(k_gear_str)
 
     # ----------------------------------------
     #  construct outputs structure
@@ -224,7 +224,7 @@ def acceleration_ground_station_inequality(options, variables, parameters, archi
        #     radius_winch = parameters['theta0','ground_station','r_gen']
         #    j_gen = parameters['theta0','ground_station','j_gen']
          #   j_winch = parameters['theta0','ground_station','j_winch']
-            acc_max = 3
+            acc_max = 1
 
             acc = variables['xd']['ddl_t']
             acc_sq = cas.mtimes(acc.T, acc)
@@ -615,9 +615,9 @@ def current_inequality(options, variables_si, parameters, architecture, outputs)
 def k_gear_inequality(options, variables_si, parameters, architecture, outputs):
     cstr_list = mdl_constraint.MdlConstraintList()
     if options['generator']['type']:
-        if options['generator']['gear_train']['optimize']:
-            k_gear_upper = variables_si['xd']['k_gear'] - 10
-            k_gear_lower = -variables_si['xd']['k_gear'] + 1/10
+        if options['generator']['gear_train']['used']:
+            k_gear_upper = variables_si['xd']['k_gear'] - 5
+            k_gear_lower = -variables_si['xd']['k_gear'] + 1/5
             k_gear_ineq_upper = cstr_op.Constraint(expr=k_gear_upper, name='k_gear_upper', cstr_type='ineq')
             k_gear_ineq_lower = cstr_op.Constraint(expr=k_gear_lower, name='k_gear_lower', cstr_type='ineq')
             cstr_list.append(k_gear_ineq_upper)
