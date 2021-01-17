@@ -30,15 +30,15 @@ def solve_succed(quality_print_results, name):
 
 
 
-wind_ref = [2,3,4]
-n_k = 25
+wind_ref = [6,7]
+n_k = 35
 wd = 1
-tim = 2e3
+tim = 3e3
 
 for w in wind_ref:
 
 
-    name = 'veela_bubble_no_gen_125_kw_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd) + 'invest'
+    name = 'veela_single_5_mw_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd) + 'invest'
 
         # make default options object
     options = awe.Options(True)
@@ -46,15 +46,15 @@ for w in wind_ref:
         # single kite with point-mass model
     options['user_options']['system_model']['architecture'] = {1:0}
     options['user_options']['system_model']['kite_dof'] = 6
-    options['user_options']['kite_standard'] = awe.bubbledancer_data.data_dict()
-    options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
-    #options['user_options']['generator']['gear_train']['used'] = True
+    options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
+    options['user_options']['generator'] = awe.pmsm_5_mw_gen.data_dict()
+#    options['user_options']['generator']['gear_train']['used'] = True
     #options['user_options']['generator']['gear_train']['optimize'] = True
     #options['user_options']['generator']['dv_sd'] = False
-    options['user_options']['generator']['control_var'] = 'dddl_t'
-    options['model']['tether']['control_var'] = 'dddl_t'
-    options['user_options']['generator']['type'] = None
-    options['user_options']['generator']['ground_station']['in_lag_dyn'] = True
+#    options['user_options']['generator']['control_var'] = 'dddl_t'
+ #   options['model']['tether']['control_var'] = 'dddl_t'
+  #  options['user_options']['generator']['type'] = None
+   # options['user_options']['generator']['ground_station']['in_lag_dyn'] = True
 
   #  options['model']['ground_station']['ddl_t_max'] = 3
 

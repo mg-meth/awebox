@@ -10,7 +10,7 @@
 #    awebox is free software; you can redistribute it and/or
 #    modify it under the terms of the GNU Lesser General Public
 #    License as published by the Free Software Foundation; either
-#    vversion 3 of the License, or (at your option) any later version.
+#    version 3 of the License, or (at your option) any later version.
 #
 #    awebox is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -118,52 +118,18 @@ def interpolate_data(trial, freq):
     V_plot = trial.optimization.V_opt
 
     V_final = trial.optimization.V_final
- #   V_plot = V_final
- #   periodicity = V_final['xd', 0, 'v_sq'] - V_final['xd', -1, 'v_sq']
-   # print('v_sq_diff')
-  #  print(periodicity)
- #   periodicity = V_final['xd', 0, 'v_sd'] - V_final['xd', -1, 'v_sd']
- #   print('v_sd_diff')
-#    print(periodicity)
-   # periodicity = V_final['xd', 0, 'i_sq'] - V_final['xd', -1, 'i_sq']
-  #  print('i_sq_diff')
-#    print(periodicity)
-  #  periodicity = V_final['xd', 0, 'i_sd'] - V_final['xd', -1, 'i_sd']
- #   print('i_sd_diff')
-  #  print(periodicity)
-#
-
-#    periodicity = V_final['xd', 0, 'v_sq'] 
- #   print('v_sq_diff_0')
- #   print(periodicity)
-  #  periodicity = V_final['xd', 0, 'v_sd'] 
-   # print('v_sd_0')
-    #print(periodicity)
-#    periodicity = V_final['xd', 0, 'i_sq'] 
- #   print('i_sq_0')
-  #  print(periodicity)
-   # periodicity = V_final['xd', 0, 'i_sd'] 
-#    print('i_sd_0')
- #   print(periodicity)
-
-
-
-
-#    periodicity = V_final['xd', -1, 'v_sq']
-  #  print('v_sq_diff_T')
-   # print(periodicity)
- #   periodicity = V_final['xd', -1, 'v_sd']
-#    print('v_sd_T')
- #   print(periodicity)
-  #  periodicity = V_final['xd', -1, 'i_sq']
-   # print('i_sq_T')
-   # print(periodicity)
-  #  periodicity = V_final['xd', -1, 'i_sd']
- #   print('i_sd_T')
-#    print(periodicity)
-
-
-
+    periodicity = V_final['xd', 0, 'v_sq'] - V_final['xd', -1, 'v_sq']
+    print('v_sq')
+    print(periodicity)
+    periodicity = V_final['xd', 0, 'v_sd'] - V_final['xd', -1, 'v_sd']
+    print('v_sd')
+    print(periodicity)
+    periodicity = V_final['xd', 0, 'i_sq'] - V_final['xd', -1, 'i_sq']
+    print('i_sq')
+    print(periodicity)
+    periodicity = V_final['xd', 0, 'i_sd'] - V_final['xd', -1, 'i_sd']
+    print('i_sd')
+    print(periodicity)
 
 
     p_fix_num = trial.optimization.p_fix_num

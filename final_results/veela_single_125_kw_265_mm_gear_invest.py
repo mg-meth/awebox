@@ -30,9 +30,9 @@ def solve_succed(quality_print_results, name):
 
 
 
-wind_ref = [2,7]
+wind_ref = [6,7]
 
-n_k = 25
+n_k = 35
 wd =1
 tim = 2e4
 
@@ -57,7 +57,7 @@ for w in wind_ref:
     #options['user_options']['generator']['type'] = None
     #options['user_options']['generator']['ground_station']['in_lag_dyn'] = True
 
-    options['model']['ground_station']['ddl_t_max'] = 3
+#    options['model']['ground_station']['ddl_t_max'] = 3
 
         # trajectory should be a single pumping cycle with initial number of five windings
     options['user_options']['trajectory']['system_type'] = 'lift_mode'
