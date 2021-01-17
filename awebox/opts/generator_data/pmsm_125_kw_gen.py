@@ -51,8 +51,8 @@ def winch_mech():
 
     winch_mech['name'] = 'winch_265_mm'
     winch_mech['in_lag_dyn'] = False
-    winch_mech['r_gen'] = 0.265                                                 #outer radius of fecreate winch #4500 titanium
-    winch_mech['r_gen_inner'] = 0.24                                            #guessed inner radius of fecreate winch
+    winch_mech['r_gen'] = 0.265       	                                          #outer radius of fecreate winch #4500 titanium
+    winch_mech['r_gen_inner'] = 0.24                                           #guessed inner radius of fecreate winch
     winch_mech['rho_winch'] = 2700                                              #aluminum density
     winch_mech['m_gen'] = 50                                                         #generator mass guessed
 

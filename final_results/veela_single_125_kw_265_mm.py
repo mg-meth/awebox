@@ -30,8 +30,8 @@ def solve_succed(quality_print_results, name):
 
 
 
-wind_ref = [6]
-n_k = 62
+wind_ref = [5]
+n_k = 60
 wd = 3
 tim = 2e3
 

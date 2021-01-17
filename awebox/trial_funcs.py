@@ -116,6 +116,22 @@ def interpolate_data(trial, freq):
     # recalibrate plot_dict
     plot_dict = trial.visualization.plot_dict
     V_plot = trial.optimization.V_opt
+
+    V_final = trial.optimization.V_final
+#    periodicity = V_final['xd', 0, 'v_sq'] - V_final['xd', -1, 'v_sq']
+ #   print('v_sq')
+  #  print(periodicity)
+#    periodicity = V_final['xd', 0, 'v_sd'] - V_final['xd', -1, 'v_sd']
+ #   print('v_sd')
+  #  print(periodicity)
+   # periodicity = V_final['xd', 0, 'i_sq'] - V_final['xd', -1, 'i_sq']
+#    print('i_sq')
+ #   print(periodicity)
+  #  periodicity = V_final['xd', 0, 'i_sd'] - V_final['xd', -1, 'i_sd']
+   # print('i_sd')
+  #  print(periodicity)
+
+
     p_fix_num = trial.optimization.p_fix_num
     output_vals = trial.optimization.output_vals
     time_grids = trial.optimization.time_grids

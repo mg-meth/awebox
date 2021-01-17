@@ -29,32 +29,34 @@ def solve_succed(quality_print_results, name):
 
 
 
-wind_ref = [3,4,5,6,7]
-n_k = 60
-wd =3
+
+wind_ref = [2,3,4,5,6,7]
+n_k = 30
+wd = 1
+tim = 2e3
 
 for w in wind_ref:
 
-    name = 'veela_double_no_gen_265_mm_u_ref_' + str(w) + '_log_wind'  + '_nk_' + str(n_k) + '_wd_' + str(wd)
+
+    name = 'veela_single_125_kw_gen_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd) + 'invest'
 
         # make default options object
     options = awe.Options(True)
 
         # single kite with point-mass model
-    options['user_options']['system_model']['architecture'] = {1:0, 2:1, 3:1}
+    options['user_options']['system_model']['architecture'] = {1:0}
     options['user_options']['system_model']['kite_dof'] = 6
     options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
     options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
     #options['user_options']['generator']['gear_train']['used'] = True
     #options['user_options']['generator']['gear_train']['optimize'] = True
     #options['user_options']['generator']['dv_sd'] = False
-    options['user_options']['generator']['control_var'] = 'dddl_t'
-    options['model']['tether']['control_var'] = 'dddl_t'
-    options['user_options']['generator']['type'] = None
-    options['user_options']['generator']['ground_station']['in_lag_dyn'] = True
+    #options['user_options']['generator']['control_var'] = 'dddl_t'
+    #options['model']['tether']['control_var'] = 'dddl_t'
+    #options['user_options']['generator']['type'] = None
+    #options['user_options']['generator']['ground_station']['in_lag_dyn'] = True
 
-    options['model']['ground_station']['ddl_t_max'] = 3
-
+#    options['model']['ground_station']['ddl_t_max'] = 3
 
         # trajectory should be a single pumping cycle with initial number of five windings
     options['user_options']['trajectory']['system_type'] = 'lift_mode'
@@ -62,7 +64,7 @@ for w in wind_ref:
     options['user_options']['trajectory']['lift_mode']['windings'] = wd
 
     options['solver']['max_iter'] = 4000
-    options['solver']['max_cpu_time'] = 1.e4
+    options['solver']['max_cpu_time'] = tim
         #options['model']['ground_station']['ddl_t_max'] = 95.04
 
     options['user_options']['wind']['u_ref'] = w
@@ -93,4 +95,3 @@ for w in wind_ref:
     quality_print_results = trial.quality.return_results()
     solve_succed(quality_print_results, name)
     trial.write_to_csv()
-

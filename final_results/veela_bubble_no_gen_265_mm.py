@@ -29,15 +29,16 @@ def solve_succed(quality_print_results, name):
 
 
 
-wind_ref = [2,3,4,5,6,7]
+wind_ref = [4,5,6,7]
 n_k = 40
 wd = 1
+
 tim = 1e3
 
 for w in wind_ref:
 
  
-    name = 'veela_bubble_no_gen_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd)
+    name = 'veela_bubble_no_gen_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd) + '_0.2525'
 
         # make default options object
     options = awe.Options(True)

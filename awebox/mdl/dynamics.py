@@ -151,8 +151,8 @@ def make_dynamics(options, atmos, wind, parameters, architecture):
     current_cstr = current_inequality(options, system_variables['SI'], parameters, architecture, outputs)
     cstr_list.append(current_cstr)
 
-    acceleration_ground_station_cstr = acceleration_ground_station_inequality(options, system_variables['SI'], parameters, architecture, outputs)
-    cstr_list.append(acceleration_ground_station_cstr)
+#    acceleration_ground_station_cstr = acceleration_ground_station_inequality(options, system_variables['SI'], parameters, architecture, outputs)
+ #   cstr_list.append(acceleration_ground_station_cstr)
 
     k_gear_str = k_gear_inequality(options, system_variables['SI'], parameters, architecture, outputs)
     cstr_list.append(k_gear_str)
