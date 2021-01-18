@@ -1,4 +1,4 @@
-#
+#k_gea
 #   This file is part of awebox.
 #
 #    awebox -- A modeling and optimization framework for multi-kite AWE systems.
@@ -180,8 +180,8 @@ def set_initial_bounds(nlp, model, formulation, options, V_init):
     V_bounds['lb']['theta', 't_f'] = initial_scaled_time
     V_bounds['ub']['theta', 't_f'] = initial_scaled_time
 
-#    V_bounds['ub']['theta', 'k_gear'] = 1
- #   V_bounds['lb']['theta', 'k_gear'] = 1
+    V_bounds['ub']['theta', 'k_gear'] = 1
+    V_bounds['lb']['theta', 'k_gear'] = 1
 
     # set fictitious forces bounds
     for name in list(model.variables_dict['u'].keys()):

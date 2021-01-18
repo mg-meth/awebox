@@ -30,7 +30,7 @@ def solve_succed(quality_print_results, name):
 
 
 
-wind_ref = [4]
+wind_ref = [5,6,7]
 n_k = 75
 wd = 3
 tim = 3e3
@@ -38,7 +38,7 @@ tim = 3e3
 for w in wind_ref:
 
 
-    name = 'KKveela_single_125_kw_gen_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd)
+    name = 'KKveela_single_125_kw_gen_gear_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd)
 
         # make default options object
     options = awe.Options(True)
@@ -48,7 +48,7 @@ for w in wind_ref:
     options['user_options']['system_model']['kite_dof'] = 6
     options['user_options']['kite_standard'] = awe.ampyx_data.data_dict()
     options['user_options']['generator'] = awe.pmsm_125_kw_gen.data_dict()
-    #options['user_options']['generator']['gear_train']['used'] = True
+    options['user_options']['generator']['gear_train']['used'] = True
     #options['user_options']['generator']['gear_train']['optimize'] = True
     #options['user_options']['generator']['dv_sd'] = False
     #options['user_options']['generator']['control_var'] = 'dddl_t'
