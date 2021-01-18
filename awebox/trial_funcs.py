@@ -131,8 +131,14 @@ def interpolate_data(trial, freq):
   #  periodicity = V_final['xd', 0, 'i_sd'] - V_final['xd', -1, 'i_sd']
  #   print('i_sd_diff')
   #  print(periodicity)
-#
 
+    name = trial.name
+    print(name)
+    print('diam_t')
+    print(V_final['theta', 'diam_t',0])
+    
+  #
+ #   print(V_final['theta',  'k_gear',0])
 #    periodicity = V_final['xd', 0, 'v_sq'] 
  #   print('v_sq_diff_0')
  #   print(periodicity)

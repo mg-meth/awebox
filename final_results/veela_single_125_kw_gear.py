@@ -31,15 +31,14 @@ def solve_succed(quality_print_results, name):
 
 
 wind_ref = [2,3,4,5,6,7]
-
-n_k = 35
-wd =1
-tim = 2e4
+n_k = 70
+wd = 3
+tim = 1e4
 
 for w in wind_ref:
 
 
-    name = 'veela_single_125_kw_gen_265_mm_gear_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd) + 'invest'
+    name = 'KKveela_single_125_kw_gen_gear_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd)
 
         # make default options object
     options = awe.Options(True)
@@ -57,7 +56,7 @@ for w in wind_ref:
     #options['user_options']['generator']['type'] = None
     #options['user_options']['generator']['ground_station']['in_lag_dyn'] = True
 
-#    options['model']['ground_station']['ddl_t_max'] = 3
+    options['model']['ground_station']['ddl_t_max'] = 3
 
         # trajectory should be a single pumping cycle with initial number of five windings
     options['user_options']['trajectory']['system_type'] = 'lift_mode'

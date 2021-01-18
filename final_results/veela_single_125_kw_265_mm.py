@@ -30,15 +30,15 @@ def solve_succed(quality_print_results, name):
 
 
 
-wind_ref = [5]
-n_k = 60
+wind_ref = [5,6,7,4]
+n_k = 70
 wd = 3
-tim = 2e3
+tim = 3e3
 
 for w in wind_ref:
 
 
-    name = 'veela_single_125_kw_gen_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd)
+    name = 'KKveela_single_125_kw_gen_265_mm_u_ref_' + str(w) + '_log_wind' + '_nk_' + str(n_k) + '_wd_' + str(wd)
 
         # make default options object
     options = awe.Options(True)
