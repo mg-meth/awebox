@@ -137,8 +137,8 @@ def interpolate_data(trial, freq):
     print('diam_t')
     print(V_final['theta', 'diam_t',0])
     
-    print('k_gear')
-    print(V_final['theta',  'k_gear',0])
+  #  print('k_gear')
+ #   print(V_final['theta',  'k_gear',0])
 #    periodicity = V_final['xd', 0, 'v_sq'] 
  #   print('v_sq_diff_0')
  #   print(periodicity)
